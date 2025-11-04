@@ -198,7 +198,19 @@ export function GuidedTour({ onComplete, forceShow = false }: GuidedTourProps) {
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+        className="fixed inset-x-0 top-0 z-40 h-[10vh] bg-gradient-to-b from-background/95 to-background/40"
+        aria-hidden="true"
+      />
+      <div
+        className="fixed inset-x-0 bottom-0 z-40 h-[10vh] bg-gradient-to-t from-background/95 to-background/40"
+        aria-hidden="true"
+      />
+      <div
+        className="fixed inset-y-[10vh] left-0 z-40 w-[18vw] bg-gradient-to-r from-background/95 to-background/30"
+        aria-hidden="true"
+      />
+      <div
+        className="fixed inset-y-[10vh] right-0 z-40 w-[18vw] bg-gradient-to-l from-background/95 to-background/30"
         onClick={handleSkip}
       />
 
@@ -228,8 +240,8 @@ export function GuidedTour({ onComplete, forceShow = false }: GuidedTourProps) {
       <Card
         className="fixed z-50 w-[400px] shadow-2xl border-primary/20"
         style={{
-          top: `${tooltipPosition.top}px`,
-          left: `${tooltipPosition.left}px`,
+          top: `${Math.min(Math.max(tooltipPosition.top, window.innerHeight * 0.12), window.innerHeight * 0.88)}px`,
+          left: `${Math.min(Math.max(tooltipPosition.left, window.innerWidth * 0.2), window.innerWidth * 0.8)}px`,
         }}
       >
         <CardContent className="p-6">
