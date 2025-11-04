@@ -1,0 +1,384 @@
+// Mixins - Reusable style patterns and utilities
+@import './variables';
+@import './breakpoints';
+
+// ============================================
+// Layout Mixins
+// ============================================
+
+// Flexbox utility
+@mixin flex($direction: row, $justify: flex-start, $align: stretch, $wrap: nowrap) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+  flex-wrap: $wrap;
+}
+
+// CSS Grid utility
+@mixin grid($columns: 12, $gap: $grid-gutter) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  gap: $gap;
+}
+
+// Center content
+@mixin center($horizontal: true, $vertical: true) {
+  @if $horizontal and $vertical {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  } @else if $horizontal {
+    margin-left: auto;
+    margin-right: auto;
+  } @else if $vertical {
+    display: flex;
+    align-items: center;
+  }
+}
+
+// Container with responsive max-widths
+@mixin container($padding: true) {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+
+  @if $padding {
+    padding-left: map-get($spacing, '4');
+    padding-right: map-get($spacing, '4');
+
+    @include min-width('md') {
+      padding-left: map-get($spacing, '6');
+      padding-right: map-get($spacing, '6');
+    }
+
+    @include min-width('lg') {
+      padding-left: map-get($spacing, '8');
+      padding-right: map-get($spacing, '8');
+    }
+  }
+
+  @each $breakpoint, $max-width in $container-max-widths {
+    @include min-width($breakpoint) {
+      max-width: $max-width;
+    }
+  }
+}
+
+// ============================================
+// Typography Mixins
+// ============================================
+
+// Font smoothing for better rendering
+@mixin font-smoothing() {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Text truncation with ellipsis
+@mixin truncate($width: 100%) {
+  max-width: $width;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Multi-line truncation
+@mixin line-clamp($lines: 3) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Responsive font size
+@mixin responsive-font($min-size, $max-size, $min-vw: 320px, $max-vw: 1920px) {
+  font-size: $min-size;
+
+  @media screen and (min-width: $min-vw) {
+    font-size: calc(#{$min-size} + #{strip-unit($max-size - $min-size)} * ((100vw - #{$min-vw}) / #{strip-unit($max-vw - $min-vw)}));
+  }
+
+  @media screen and (min-width: $max-vw) {
+    font-size: $max-size;
+  }
+}
+
+// ============================================
+// Visual Effects Mixins
+// ============================================
+
+// Box shadow with multiple options
+@mixin shadow($type: 'medium') {
+  @if $type == 'small' {
+    box-shadow: var(--shadow-sm);
+  } @else if $type == 'medium' {
+    box-shadow: var(--shadow-md);
+  } @else if $type == 'large' {
+    box-shadow: var(--shadow-lg);
+  } @else if $type == 'none' {
+    box-shadow: none;
+  } @else {
+    box-shadow: $type;
+  }
+}
+
+// Gradient background
+@mixin gradient($start-color, $end-color, $direction: 135deg) {
+  background: linear-gradient($direction, $start-color, $end-color);
+}
+
+// Overlay for images/backgrounds
+@mixin overlay($color: rgba(0, 0, 0, 0.5)) {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: $color;
+    pointer-events: none;
+  }
+}
+
+// ============================================
+// Animation Mixins
+// ============================================
+
+// Transition with defaults
+@mixin transition($properties: all, $duration: map-get($transitions, 'base'), $easing: map-get($easings, 'smooth')) {
+  transition: $properties $duration $easing;
+}
+
+// Keyframe animation helper
+@mixin animate($name, $duration: 1s, $easing: ease, $delay: 0s, $iterations: 1, $direction: normal, $fill-mode: both) {
+  animation: $name $duration $easing $delay $iterations $direction $fill-mode;
+}
+
+// Pulse animation
+@mixin pulse($scale: 1.05) {
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale($scale);
+    }
+  }
+  animation: pulse 2s infinite;
+}
+
+// ============================================
+// Interaction Mixins
+// ============================================
+
+// Focus visible styles
+@mixin focus-visible($color: var(--color-primary), $offset: 2px) {
+  &:focus-visible {
+    outline: 2px solid $color;
+    outline-offset: $offset;
+  }
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+// Interactive states
+@mixin interactive-states($hover-opacity: 0.8, $active-scale: 0.95) {
+  transition: opacity 0.2s ease, transform 0.1s ease;
+
+  @include can-hover {
+    &:hover {
+      opacity: $hover-opacity;
+    }
+  }
+
+  &:active {
+    transform: scale($active-scale);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+// Touch-friendly tap target
+@mixin touch-target($size: $touch-target-min) {
+  position: relative;
+  min-width: $size;
+  min-height: $size;
+
+  // Increase tap area without affecting visual size
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: $size;
+    height: $size;
+    min-width: $size;
+    min-height: $size;
+  }
+}
+
+// ============================================
+// Component Mixins
+// ============================================
+
+// Button base styles
+@mixin button-base() {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $btn-padding-y $btn-padding-x;
+  font-size: $btn-font-size;
+  font-weight: 500;
+  line-height: 1.5;
+  border-radius: $btn-border-radius;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  white-space: nowrap;
+  @include transition();
+  @include font-smoothing();
+  @include focus-visible();
+  @include interactive-states();
+
+  @include touch-device {
+    @include touch-target();
+  }
+}
+
+// Card styles
+@mixin card($padding: $card-padding, $radius: $card-border-radius) {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: $radius;
+  padding: $padding;
+  @include shadow('medium');
+}
+
+// Input base styles
+@mixin input-base() {
+  display: block;
+  width: 100%;
+  padding: $input-padding-y $input-padding-x;
+  font-size: map-get($font-sizes, 'base');
+  line-height: 1.5;
+  color: var(--input-text);
+  background-color: var(--input-bg);
+  border: $input-border-width solid var(--input-border);
+  border-radius: $input-border-radius;
+  @include transition();
+  @include font-smoothing();
+
+  &:focus {
+    outline: none;
+    border-color: var(--input-focus-border);
+    @include shadow('small');
+  }
+
+  &::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: var(--bg-tertiary);
+  }
+
+  @include touch-device {
+    font-size: 16px; // Prevent zoom on iOS
+    @include touch-target($touch-target-comfortable);
+  }
+}
+
+// ============================================
+// Utility Mixins
+// ============================================
+
+// Visually hidden but accessible
+@mixin sr-only() {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Reset button styles
+@mixin reset-button() {
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+// Clearfix
+@mixin clearfix() {
+  &::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+// Aspect ratio box
+@mixin aspect-ratio($ratio: 1/1) {
+  position: relative;
+
+  &::before {
+    content: '';
+    display: block;
+    padding-top: percentage(1 / $ratio);
+  }
+
+  > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// GPU acceleration
+@mixin gpu-accelerate() {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+// Quick size utility
+@mixin size($size) {
+  width: $size;
+  height: $size;
+}
+
+// ============================================
+// Helper Functions (used by mixins)
+// ============================================
+
+@function strip-unit($number) {
+  @if type-of($number) == 'number' and not unitless($number) {
+    @return $number / ($number * 0 + 1);
+  }
+  @return $number;
+}

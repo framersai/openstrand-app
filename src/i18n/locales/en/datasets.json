@@ -1,0 +1,154 @@
+{
+  "title": "Dataset Catalog",
+  "upload": {
+    "title": "Upload Dataset",
+    "description": "Upload a CSV or JSON file to start visualizing",
+    "dropzone": {
+      "idle": "Drop your CSV file here",
+      "active": "Drop your file here",
+      "processing": "Processing file...",
+      "or": "or click to browse",
+      "supports": "Supports CSV and TSV files up to {maxSize}MB"
+    },
+    "placeholder": "Dataset name",
+    "button": "Upload Dataset",
+    "success": "Dataset loaded: {rowCount} rows, {columnCount} columns",
+    "sampleLoaded": "Sample dataset loaded: {rowCount} rows"
+  },
+  "samples": {
+    "title": "Sample Datasets",
+    "description": "Load a bundled dataset without uploading a file",
+    "empty": "No sample datasets available. Upload your own CSV to get started.",
+    "load": "Load",
+    "active": "Active",
+    "default": "Default",
+    "use": "Use dataset"
+  },
+  "current": {
+    "label": "Current Dataset",
+    "rows": "Rows",
+    "columns": "Columns",
+    "fields": "Fields",
+    "clear": "Clear"
+  },
+  "metadata": {
+    "title": "Dataset Metadata",
+    "samples": "Samples",
+    "type": "Type",
+    "size": "Size",
+    "updated": "Updated",
+    "status": "Status",
+    "visibility": "Visibility",
+    "provider": "Provider",
+    "generated": "Generated",
+    "noData": "Upload a dataset to see column stats, sample values, and semantic tags",
+    "suggestedBy": "Suggested by schema intelligence",
+    "moreColumns": "+ {count} more columns summarized"
+  },
+  "quickActions": {
+    "title": "Quick actions",
+    "autoInsights": "Run Auto Insights (LLM)",
+    "topPerformers": "Top performers ranking",
+    "segmentShare": "Segment share chart",
+    "dataTable": "Data table overview"
+  },
+  "prompts": {
+    "topRanking": "Rank the top 10 companies by ARR and include their year-over-year growth percentage",
+    "stackedBar": "Create a stacked bar chart showing industry share broken down by funding stage",
+    "tableOverview": "Show a table with ARR, valuation, and employees sorted by ARR descending",
+    "pieChart": "Create a pie chart of industry breakdown",
+    "correlation": "Show correlation between founded year and valuation",
+    "investors": "Which investors appear most frequently?",
+    "compareARR": "Compare ARR across different industries",
+    "topValuation": "Top 10 companies by valuation"
+  },
+  "exploration": {
+    "title": "Exploration recipes",
+    "description": "Kickstart analyses with curated templates",
+    "recipes": {
+      "topPerformers": {
+        "title": "Top performers",
+        "description": "Rank the top 10 companies by ARR with growth %",
+        "highlights": ["ARR", "Growth %"]
+      },
+      "trendLine": {
+        "title": "Trend line",
+        "description": "Plot ARR trend over the last 12 months",
+        "highlights": ["Monthly ARR", "Peaks"]
+      },
+      "segmentShare": {
+        "title": "Segment share",
+        "description": "Stacked bar by industry and funding stage",
+        "highlights": ["Industries", "Stages"]
+      },
+      "retentionCohort": {
+        "title": "Retention cohort",
+        "description": "Cohort table by signup month",
+        "highlights": ["Signup month", "Retention %"]
+      },
+      "correlationHeatmap": {
+        "title": "Correlation heatmap",
+        "description": "ARR vs valuation vs team size",
+        "highlights": ["ARR", "Valuation", "Team size"]
+      },
+      "autoInsights": {
+        "title": "Auto insights",
+        "description": "Let the LLM surface correlations, outliers, and recommended charts",
+        "highlights": ["Correlations", "Outliers", "Recommendations"]
+      }
+    },
+    "categories": {
+      "rankings": "Rankings",
+      "trends": "Trends",
+      "segments": "Segments",
+      "cohorts": "Cohorts"
+    }
+  },
+  "autoInsights": {
+    "title": "Auto insights",
+    "button": "Run Auto Insights (LLM)",
+    "success": "Auto insights generated via LLM",
+    "empty": "Trigger Auto Insights to see correlations, outliers, and recommended visuals inline",
+    "recommendations": {
+      "title": "Recommended visuals",
+      "empty": "No visual recommendations returned"
+    },
+    "correlations": {
+      "title": "Correlations",
+      "empty": "No strong correlations detected"
+    },
+    "outliers": {
+      "title": "Outliers",
+      "empty": "No outliers flagged"
+    },
+    "quality": {
+      "title": "Quality flags"
+    }
+  },
+  "feedback": {
+    "title": "Community feedback",
+    "description": "Vote once per dataset and see what the community prefers",
+    "signInPrompt": "Sign in to share thumbs up/down votes or save this dataset as a favorite",
+    "votes": "{up} up / {down} down / {favorites} favorites"
+  },
+  "errors": {
+    "uploadFailed": "Failed to upload dataset",
+    "loadFailed": "Failed to load sample dataset",
+    "sizeLimitExceeded": "File size exceeds {size}MB limit",
+    "invalidFileType": "Please upload a CSV or TSV file",
+    "processingFailed": "Failed to process file",
+    "noDataset": "Please upload a dataset first",
+    "attachFile": "Attach a CSV or JSON file",
+    "autoInsightsNeedData": "Upload a dataset first to run Auto Insights",
+    "unableToLoad": "Unable to load dataset",
+    "catalogLoadFailed": "Unable to load catalog",
+    "feedbackFailed": "Unable to submit dataset feedback",
+    "favoriteFailed": "Unable to update dataset favorite",
+    "submissionFailed": "Submission failed",
+    "planLimit": "{plan} uploads are limited to {limit}. Upgrade to push bigger files"
+  },
+  "leaderboard": {
+    "title": "Datasets",
+    "score": "Score {score}"
+  }
+}

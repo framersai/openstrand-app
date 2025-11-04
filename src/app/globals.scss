@@ -1,0 +1,479 @@
+// Global SCSS Entry Point for OpenStrand
+// This file imports the comprehensive design system and integrates with Tailwind
+
+// Import the main SCSS design system
+@import '../styles/main';
+
+// Additional global styles that work with the design system
+@layer base {
+  // CSS custom properties are defined by the theme system
+  // These provide fallbacks if no theme is selected
+  :root {
+    // Fallback colors (overridden by theme)
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+
+    // Mobile-first font sizing
+    --font-size-base: 14px;
+
+    @include min-width('md') {
+      --font-size-base: 16px;
+    }
+
+    @include min-width('xl') {
+      --font-size-base: 18px;
+    }
+  }
+
+  // Dark mode fallbacks (overridden by theme dark variants)
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+  }
+}
+
+@layer components {
+  // Enhanced visualization components with mobile-first design
+  .visualization-card {
+    @apply rounded-lg border bg-card shadow-sm;
+    transition: all var(--transition-base);
+
+    @include can-hover {
+      &:hover {
+        @apply shadow-md;
+        transform: translateY(-2px);
+      }
+    }
+
+    // Mobile optimization
+    @include max-width('md') {
+      @apply rounded-md;
+      margin: 0 -1rem; // Full bleed on mobile
+      border-left: none;
+      border-right: none;
+    }
+  }
+
+  .chart-container {
+    @apply relative w-full;
+    min-height: 250px;
+
+    @include min-width('md') {
+      min-height: 300px;
+    }
+
+    @include min-width('lg') {
+      min-height: 400px;
+    }
+
+    // Responsive aspect ratio
+    aspect-ratio: 16 / 9;
+
+    @include max-width('md') {
+      aspect-ratio: 4 / 3;
+    }
+
+    canvas {
+      max-width: 100% !important;
+      height: auto !important;
+    }
+  }
+
+  // Landing page helpers
+  .landing-section {
+    position: relative;
+  }
+
+  .gradient-surface {
+    background:
+      radial-gradient(ellipse at top left, rgba(59, 130, 246, 0.12), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(168, 85, 247, 0.12), transparent 52%),
+      var(--bg-primary);
+  }
+
+  .gradient-surface::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 70%);
+    pointer-events: none;
+  }
+
+  .gradient-surface > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .aurora-gradient {
+    background: linear-gradient(
+      135deg,
+      rgba(0, 212, 255, 0.12),
+      rgba(168, 85, 247, 0.1),
+      rgba(34, 211, 238, 0.1),
+      rgba(251, 191, 36, 0.06)
+    );
+    background-size: 400% 400%;
+    animation: landing-aurora-flow 18s ease infinite;
+  }
+
+  .card-aurora {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    box-shadow:
+      0 20px 40px rgba(15, 23, 42, 0.08),
+      0 4px 12px rgba(15, 23, 42, 0.05);
+    backdrop-filter: blur(12px);
+  }
+
+  @keyframes landing-aurora-flow {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .theme-preview-surface {
+    position: relative;
+    min-height: 320px;
+    border-radius: clamp(16px, 5vw, 28px);
+    border: 1px solid var(--border-color);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(139, 92, 246, 0.08));
+    overflow: hidden;
+  }
+
+  .theme-preview-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: clamp(12px, 3vw, 22px);
+    transition: transform 200ms ease, box-shadow 200ms ease;
+
+    @include can-hover {
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+    }
+  }
+
+  .preview-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    border-radius: 9999px;
+    background: rgba(59, 130, 246, 0.12);
+    color: var(--color-primary);
+    padding: 0.35rem 1rem;
+  }
+
+  @media (prefers-contrast: more) {
+    :root {
+      --border-color: hsl(210 40% 40%);
+      --outline-color: var(--color-primary-dark, #1e3a8a);
+    }
+
+    a,
+    button {
+      text-decoration: underline;
+    }
+
+    * {
+      border-width: max(1px, var(--border-width, 1px));
+    }
+  }
+
+  // Data table with mobile scroll
+  .data-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    @include max-width('md') {
+      margin: 0 -1rem;
+      padding: 0 1rem;
+    }
+  }
+
+  .data-table {
+    @apply w-full border-collapse;
+    min-width: 600px; // Ensure table doesn't compress too much
+
+    th {
+      @apply bg-muted font-semibold text-left p-2 border-b;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    td {
+      @apply p-2 border-b;
+    }
+
+    tr {
+      @include can-hover {
+        &:hover {
+          @apply bg-muted/50;
+        }
+      }
+    }
+
+    // Mobile optimization
+    @include max-width('md') {
+      font-size: 0.875rem;
+
+      th, td {
+        padding: 0.5rem;
+      }
+    }
+  }
+
+  // Gradient backgrounds for different themes
+  .gradient-bg {
+    background: var(--gradient-primary, linear-gradient(135deg, var(--color-primary), var(--color-primary-dark)));
+
+    &.secondary {
+      background: var(--gradient-secondary, linear-gradient(135deg, var(--color-secondary), var(--color-secondary-dark)));
+    }
+
+    &.accent {
+      background: var(--gradient-accent, linear-gradient(135deg, var(--color-accent), var(--color-accent-dark)));
+    }
+  }
+
+  // Glass morphism for modern themes
+  .glass-effect {
+    @include glassmorphism(0.8, 16px);
+  }
+
+  // Mobile-first form elements
+  .form-input {
+    @include input-base();
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: spacing('2');
+    font-weight: font-weight('medium');
+    font-size: font-size('sm');
+    color: var(--text-secondary);
+  }
+
+  // Mobile-optimized buttons
+  .btn {
+    @include button-base();
+  }
+
+  // Responsive navigation
+  .nav-responsive {
+    @apply flex flex-col;
+
+    @include min-width('md') {
+      @apply flex-row items-center gap-4;
+    }
+  }
+
+  // Mobile menu toggle
+  .mobile-menu-toggle {
+    @include touch-target();
+    display: block;
+
+    @include min-width('md') {
+      display: none;
+    }
+  }
+
+  // Responsive grid layouts
+  .grid-responsive {
+    display: grid;
+    gap: spacing('4');
+    grid-template-columns: 1fr;
+
+    @include min-width('sm') {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include min-width('md') {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @include min-width('lg') {
+      grid-template-columns: repeat(4, 1fr);
+      gap: spacing('6');
+    }
+  }
+}
+
+@layer utilities {
+  // Animation utilities with reduced motion support
+  .animate-in {
+    animation: animateIn var(--transition-base) var(--easing-smooth);
+
+    @include reduced-motion {
+      animation: none;
+    }
+  }
+
+  .animate-out {
+    animation: animateOut var(--transition-base) var(--easing-smooth);
+
+    @include reduced-motion {
+      animation: none;
+    }
+  }
+
+  @keyframes animateIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes animateOut {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+
+  // Custom scrollbar with theme support
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--border-color);
+      border-radius: 3px;
+
+      @include can-hover {
+        &:hover {
+          background-color: var(--text-muted);
+        }
+      }
+    }
+  }
+
+  // Safe area padding for mobile devices
+  .safe-area-padding {
+    @include safe-area-insets();
+  }
+
+  // Text selection colors
+  ::selection {
+    background: var(--color-primary);
+    color: var(--text-inverse);
+  }
+
+  // Print utilities
+  @include print {
+    .no-print {
+      display: none !important;
+    }
+
+    .print-only {
+      display: block !important;
+    }
+  }
+
+  // Responsive text utilities
+  @each $breakpoint in map-keys($breakpoints) {
+    @include min-width($breakpoint) {
+      .text-#{$breakpoint}-xs { font-size: font-size('xs'); }
+      .text-#{$breakpoint}-sm { font-size: font-size('sm'); }
+      .text-#{$breakpoint}-base { font-size: font-size('base'); }
+      .text-#{$breakpoint}-lg { font-size: font-size('lg'); }
+      .text-#{$breakpoint}-xl { font-size: font-size('xl'); }
+      .text-#{$breakpoint}-2xl { font-size: font-size('2xl'); }
+      .text-#{$breakpoint}-3xl { font-size: font-size('3xl'); }
+    }
+  }
+
+  // Responsive spacing utilities
+  @each $breakpoint in map-keys($breakpoints) {
+    @include min-width($breakpoint) {
+      @each $size, $value in $spacing {
+        .p-#{$breakpoint}-#{$size} { padding: $value; }
+        .m-#{$breakpoint}-#{$size} { margin: $value; }
+        .pt-#{$breakpoint}-#{$size} { padding-top: $value; }
+        .pb-#{$breakpoint}-#{$size} { padding-bottom: $value; }
+        .pl-#{$breakpoint}-#{$size} { padding-left: $value; }
+        .pr-#{$breakpoint}-#{$size} { padding-right: $value; }
+        .mt-#{$breakpoint}-#{$size} { margin-top: $value; }
+        .mb-#{$breakpoint}-#{$size} { margin-bottom: $value; }
+        .ml-#{$breakpoint}-#{$size} { margin-left: $value; }
+        .mr-#{$breakpoint}-#{$size} { margin-right: $value; }
+      }
+    }
+  }
+
+  // Hide/show utilities for responsive design
+  @each $breakpoint in map-keys($breakpoints) {
+    @include max-width($breakpoint) {
+      .hide-#{$breakpoint} {
+        display: none !important;
+      }
+    }
+
+    @include min-width($breakpoint) {
+      .show-#{$breakpoint} {
+        display: block !important;
+      }
+    }
+  }
+}

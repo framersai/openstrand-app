@@ -1,0 +1,103 @@
+[
+  {
+    "path": "/",
+    "title": "OpenStrand - AI-Enhanced Personal Knowledge Management System",
+    "description": "Transform your data into interactive visual stories with OpenStrand. Offline-ready analytics blend with optional generative AI overlays.",
+    "keywords": [
+      "PKMS",
+      "knowledge management",
+      "data visualization",
+      "AI visualization",
+      "offline analytics",
+      "OpenStrand"
+    ]
+  },
+  {
+    "path": "/landing",
+    "title": "OpenStrand Landing - Guided Visual Storytelling Platform",
+    "description": "Explore the OpenStrand marketing hub: offline-first analytics, guided storytelling, optional AI overlays, and a built-in admin console for Stripe & LemonSqueezy telemetry.",
+    "keywords": [
+      "OpenStrand landing",
+      "AI storytelling platform",
+      "offline analytics",
+      "data visualization",
+      "knowledge management"
+    ]
+  },
+  {
+    "path": "/pricing",
+    "title": "Pricing - OpenStrand",
+    "description": "Compare OpenStrand plans. Start with offline core features and scale to AI-powered storytelling with Pro and Enterprise tiers.",
+    "keywords": [
+      "OpenStrand pricing",
+      "AI visualization pricing",
+      "knowledge management plans"
+    ]
+  },
+  {
+    "path": "/tutorials",
+    "title": "OpenStrand Tutorial Suite",
+    "description": "Browse a multi-guide learning hub for analog workflows, deterministic analytics, AI augmentation, metadata governance, and DX/UX operations.",
+    "keywords": [
+      "openstrand tutorials",
+      "knowledge management guides",
+      "ai workflows",
+      "metadata playbook"
+    ]
+  },
+  {
+    "path": "/tutorials/pen-and-paper-strand",
+    "title": "Tutorial: Start a Strand with Pen and Paper",
+    "description": "Learn the essentials of creating a collaborative zettelkasten strand from pen-and-paper sketches to AI-enhanced workflows and team publishing.",
+    "keywords": [
+      "zettelkasten tutorial",
+      "pen and paper notes",
+      "collaborative knowledge management",
+      "OpenStrand tutorial"
+    ]
+  },
+  {
+    "path": "/tutorials/offline-analytics",
+    "title": "Tutorial: Modeling Strands Without LLMs",
+    "description": "Follow a deterministic enrichment pipeline—from statistical profiling to extractive summarisation—tailored for regulated or offline deployments.",
+    "keywords": [
+      "deterministic summarisation",
+      "offline analytics",
+      "compliance data",
+      "knowledge management"
+    ]
+  },
+  {
+    "path": "/tutorials/llm-augmentations",
+    "title": "Tutorial: LLM-Augmented Strand Workflows",
+    "description": "Design prompt chains, queue jobs, and human review flows so AI-assisted strands remain auditable and cost efficient.",
+    "keywords": [
+      "prompt chaining",
+      "ai knowledge management",
+      "openstrand ai",
+      "llm workflow"
+    ]
+  },
+  {
+    "path": "/tutorials/metadata-playbook",
+    "title": "Tutorial: Metadata Architecture Playbook",
+    "description": "Standardise taxonomy, authorship, and retention policies for strands and dashboards with reusable templates and governance checklists.",
+    "keywords": [
+      "metadata governance",
+      "knowledge taxonomy",
+      "retention policies",
+      "openstrand metadata"
+    ]
+  },
+  {
+    "path": "/tutorials/dx-ux-blueprint",
+    "title": "Tutorial: Developer & Experience Blueprint",
+    "description": "Coordinate DX and UX workflows when extending OpenStrand components, tutorials, composer metadata, and dashboards.",
+    "keywords": [
+      "developer experience",
+      "ux blueprint",
+      "design systems",
+      "openstrand dx"
+    ]
+  }
+]

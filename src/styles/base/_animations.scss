@@ -1,0 +1,388 @@
+// Animations - Keyframes and animation utilities
+// Mobile-optimized with reduced motion support
+
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+@import '../abstracts/breakpoints';
+
+// ============================================
+// Core Animations
+// ============================================
+
+// Fade animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+// Slide animations
+@keyframes slideInUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// Scale animations
+@keyframes zoomIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes zoomOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+}
+
+// Pulse animation
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+// Bounce animation
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-20px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  75% {
+    transform: translateY(-15px);
+  }
+}
+
+// Rotate animations
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-3deg);
+  }
+  75% {
+    transform: rotate(3deg);
+  }
+}
+
+// Loading animations
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes skeleton {
+  0% {
+    background-color: var(--bg-secondary);
+  }
+  50% {
+    background-color: var(--bg-tertiary);
+  }
+  100% {
+    background-color: var(--bg-secondary);
+  }
+}
+
+// Progress animations
+@keyframes progress {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes indeterminate {
+  0% {
+    left: -35%;
+    right: 100%;
+  }
+  60% {
+    left: 100%;
+    right: -90%;
+  }
+  100% {
+    left: 100%;
+    right: -90%;
+  }
+}
+
+// ============================================
+// Animation Classes
+// ============================================
+
+.animate-fadeIn {
+  animation: fadeIn var(--transition-base) var(--easing-smooth);
+}
+
+.animate-fadeOut {
+  animation: fadeOut var(--transition-base) var(--easing-smooth);
+}
+
+.animate-slideInUp {
+  animation: slideInUp var(--transition-base) var(--easing-smooth);
+}
+
+.animate-slideInDown {
+  animation: slideInDown var(--transition-base) var(--easing-smooth);
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft var(--transition-base) var(--easing-smooth);
+}
+
+.animate-slideInRight {
+  animation: slideInRight var(--transition-base) var(--easing-smooth);
+}
+
+.animate-zoomIn {
+  animation: zoomIn var(--transition-base) var(--easing-smooth);
+}
+
+.animate-zoomOut {
+  animation: zoomOut var(--transition-base) var(--easing-smooth);
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 1s ease-in-out infinite;
+}
+
+// ============================================
+// Loading States
+// ============================================
+
+.skeleton-loading {
+  animation: skeleton 1.5s ease-in-out infinite;
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 25%,
+    var(--bg-tertiary) 50%,
+    var(--bg-secondary) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.spinner {
+  @include size(20px);
+  border: 2px solid var(--border-color);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+
+  &.lg {
+    @include size(40px);
+    border-width: 3px;
+  }
+
+  &.sm {
+    @include size(16px);
+    border-width: 1px;
+  }
+}
+
+// ============================================
+// Transition Utilities
+// ============================================
+
+.transition-all {
+  transition: all var(--transition-base) var(--easing-smooth);
+}
+
+.transition-colors {
+  transition: background-color var(--transition-base) var(--easing-smooth),
+              border-color var(--transition-base) var(--easing-smooth),
+              color var(--transition-base) var(--easing-smooth);
+}
+
+.transition-transform {
+  transition: transform var(--transition-base) var(--easing-smooth);
+}
+
+.transition-opacity {
+  transition: opacity var(--transition-base) var(--easing-smooth);
+}
+
+.transition-none {
+  transition: none;
+}
+
+// ============================================
+// Animation Delays
+// ============================================
+
+@for $i from 1 through 10 {
+  .animation-delay-#{$i * 100} {
+    animation-delay: #{$i * 100}ms;
+  }
+}
+
+// ============================================
+// Stagger Animations
+// ============================================
+
+.stagger-animation {
+  > * {
+    animation: fadeIn var(--transition-base) var(--easing-smooth) both;
+
+    @for $i from 1 through 10 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{$i * 50}ms;
+      }
+    }
+  }
+}
+
+// ============================================
+// Mobile Optimizations
+// ============================================
+
+@include touch-device {
+  // Reduce animation complexity on touch devices
+  * {
+    animation-duration: var(--transition-fast) !important;
+  }
+
+  // Disable parallax on mobile for performance
+  .parallax {
+    transform: none !important;
+  }
+}
+
+// ============================================
+// Reduced Motion Support
+// ============================================
+
+@include reduced-motion {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .animate-pulse,
+  .animate-bounce,
+  .animate-spin,
+  .animate-wiggle {
+    animation: none;
+  }
+
+  .skeleton-loading {
+    animation: none;
+    background: var(--bg-secondary);
+  }
+}
+
+// ============================================
+// GPU Acceleration
+// ============================================
+
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+.gpu-accelerated {
+  @include gpu-accelerate();
+}

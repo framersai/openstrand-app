@@ -1,0 +1,40 @@
+{
+  "app": {
+    "name": "OpenStrand",
+    "tagline": "قصص البيانات، بشكل أسرع",
+    "description": "قم بإنشاء سرد مرئي مقنع من البيانات الخام باستخدام ذكاء LLM الخالص"
+  },
+  "navigation": {
+    "home": "الرئيسية",
+    "datasets": "مجموعات البيانات",
+    "visualizations": "التصورات",
+    "pricing": "الأسعار",
+    "docs": "التوثيق",
+    "overview": "نظرة عامة",
+    "useCases": "حالات الاستخدام",
+    "roadmap": "خارطة الطريق",
+    "support": "الدعم",
+    "about": "حول",
+    "product": "المنتج"
+  },
+  "actions": {
+    "upload": "رفع",
+    "download": "تحميل",
+    "generate": "توليد",
+    "processing": "معالجة",
+    "clear": "مسح",
+    "clearAll": "مسح الكل",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تحرير",
+    "apply": "تطبيق",
+    "refresh": "تحديث",
+    "load": "تحميل",
+    "use": "استخدام",
+    "submit": "إرسال",
+    "submitting": "جاري الإرسال...",
+    "create": "إنشاء",
+    "copy": "نسخ"
+  }
+}

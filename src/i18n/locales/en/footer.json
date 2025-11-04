@@ -1,0 +1,91 @@
+{
+  "description": "Offline-first analytics, guided AI storytelling, and privacy-first knowledge management—all in one weave.",
+  "newsletter": {
+    "title": "Stay in the loop",
+    "subtitle": "Product updates, launch notes, and deep-dive tutorials. Sent monthly, no spam.",
+    "emailPlaceholder": "you@example.com",
+    "submit": "Notify me",
+    "pendingIntegration": "EmailOctopus form pending. We'll drop the full signup shortly.",
+    "offlineMessage": "Newsletter sign-up is disabled while offline. Reconnect to join the list.",
+    "success": "Thank you! We'll reach out soon.",
+    "error": "Something went wrong. Please try again."
+  },
+  "newsletterDisclaimer": "Subscribing is optional and does not affect product access.",
+  "newsletterOfflineCta": "Open the cloud edition to subscribe.",
+  "sections": {
+    "product": {
+      "title": "Product",
+      "links": {
+        "features": "Features",
+        "pricing": "Pricing",
+        "pkms": "PKMS",
+        "api": "API",
+        "showcase": "Showcase",
+        "roadmap": "Roadmap",
+        "changelog": "Changelog"
+      }
+    },
+    "company": {
+      "title": "Company",
+      "links": {
+        "about": "About Us",
+        "team": "Team",
+        "careers": "Careers",
+        "press": "Press Kit",
+        "contact": "Contact"
+      }
+    },
+    "resources": {
+      "title": "Resources",
+      "links": {
+        "docs": "Documentation",
+        "github": "GitHub",
+        "api": "API Reference",
+        "guides": "Guides & Tutorials",
+        "blog": "Blog",
+        "community": "Community"
+      }
+    },
+    "support": {
+      "title": "Support",
+      "links": {
+        "help": "Help Center",
+        "faq": "FAQ",
+        "status": "Status",
+        "security": "Security",
+        "issues": "Report Issue"
+      }
+    },
+    "legal": {
+      "title": "Legal",
+      "links": {
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service",
+        "cookies": "Cookie Policy",
+        "license": "License",
+        "compliance": "Compliance"
+      }
+    }
+  },
+  "social": {
+    "twitter": "Twitter",
+    "github": "GitHub",
+    "linkedin": "LinkedIn",
+    "discord": "Discord",
+    "youtube": "YouTube"
+  },
+  "certifications": {
+    "soc2": "SOC 2",
+    "gdpr": "GDPR",
+    "iso27001": "ISO 27001",
+    "hipaa": "HIPAA"
+  },
+  "bottom": {
+    "rights": "All rights reserved.",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "cookies": "Cookies",
+    "sitemap": "Sitemap",
+    "teamAttribution": "Built by the OpenStrand team."
+  }
+}

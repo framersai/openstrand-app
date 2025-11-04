@@ -1,0 +1,26 @@
+@import '../abstracts/mixins';
+
+.app-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border-color);
+  background: var(--background);
+
+  .footer-grid {
+    display: grid;
+    gap: 2rem;
+
+    @include min-width('lg') {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  a {
+    transition: color var(--transition-fast) var(--easing-smooth);
+
+    @include can-hover {
+      &:hover {
+        color: var(--color-primary);
+      }
+    }
+  }
+}
