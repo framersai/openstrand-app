@@ -144,6 +144,19 @@ export function GuidedTour({ onComplete, forceShow = false }: GuidedTourProps) {
     }
   }, [isActive, currentStep, highlightTarget, removeHighlight]);
 
+  const handleComplete = useCallback(() => {
+    setIsActive(false);
+    removeHighlight();
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('guidedTourCompleted', 'true');
+    }
+    onComplete?.();
+  }, [onComplete, removeHighlight]);
+
+  const handleSkip = useCallback(() => {
+    handleComplete();
+  }, [handleComplete]);
+
   /**
    * Provides an Escape key shortcut to dismiss the lightweight guided tour overlay.
    */
@@ -175,19 +188,6 @@ export function GuidedTour({ onComplete, forceShow = false }: GuidedTourProps) {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
-  };
-
-  const handleSkip = () => {
-    handleComplete();
-  };
-
-  const handleComplete = () => {
-    setIsActive(false);
-    removeHighlight();
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('guidedTourCompleted', 'true');
-    }
-    onComplete?.();
   };
 
   if (!isActive) return null;
