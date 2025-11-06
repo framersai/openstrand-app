@@ -1,0 +1,200 @@
+// Modern Theme - Clean, minimalist design with gradients and smooth shadows
+
+@import '../abstracts/breakpoints';
+@import './theme-engine';
+
+// Modern Light Theme
+@include define-theme(
+  'modern-light',
+  // Core colors
+  $primary: #3b82f6,              // Bright blue
+  $primary-light: #60a5fa,
+  $primary-dark: #2563eb,
+  $secondary: #8b5cf6,            // Purple
+  $secondary-light: #a78bfa,
+  $secondary-dark: #7c3aed,
+  $tertiary: #06b6d4,             // Cyan
+  $accent: #f59e0b,               // Amber
+  $accent-light: #fbbf24,
+  $accent-dark: #d97706,
+  // Backgrounds
+  $background: #ffffff,
+  $background-secondary: #f8fafc,
+  $background-tertiary: #f1f5f9,
+  $surface: #ffffff,
+  $surface-hover: #f8fafc,
+  // Text colors
+  $text-primary: #0f172a,
+  $text-secondary: #475569,
+  $text-muted: #94a3b8,
+  $text-inverse: #ffffff,
+  // UI elements
+  $border-color: #e2e8f0,
+  $border-light: #f1f5f9,
+  $border-heavy: #cbd5e1,
+  // Semantic colors
+  $success: #10b981,
+  $warning: #f59e0b,
+  $error: #ef4444,
+  $info: #3b82f6,
+  // Shadows
+  $shadow-small: 0 1px 3px rgba(0, 0, 0, 0.05),
+  $shadow-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+  $shadow-large: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+  $shadow-color: rgba(0, 0, 0, 0.05),
+  // Additional properties
+  $radius-small: 6px,
+  $radius-medium: 12px,
+  $radius-large: 20px,
+  $font-family-base: 'Inter'
+);
+
+// Modern Dark Theme
+@include define-dark-variant(
+  'modern-light',
+  (
+    // Backgrounds
+    'bg-primary': #0f172a,
+    'bg-secondary': #1e293b,
+    'bg-tertiary': #334155,
+    'bg-surface': #1e293b,
+    'bg-surface-hover': #334155,
+    // Text colors
+    'text-primary': #f8fafc,
+    'text-secondary': #cbd5e1,
+    'text-muted': #64748b,
+    'text-inverse': #0f172a,
+    // UI elements
+    'border-color': #334155,
+    'border-light': #1e293b,
+    'border-heavy': #475569,
+    // Shadows
+    'shadow-sm': 0 1px 3px rgba(0, 0, 0, 0.3),
+    'shadow-md': 0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    'shadow-lg': 0 10px 15px -3px rgba(0, 0, 0, 0.4),
+    'shadow-color': rgba(0, 0, 0, 0.4),
+    // Component overrides
+    'card-bg': #1e293b,
+    'input-bg': #0f172a
+  )
+);
+
+// Modern theme specific styles
+[data-theme='modern-light'] {
+  // Gradient overlays
+  .gradient-overlay {
+    background: linear-gradient(
+      135deg,
+      rgba(59, 130, 246, 0.05),
+      rgba(139, 92, 246, 0.05)
+    );
+  }
+
+  // Glass cards
+  .card-glass {
+    @include glassmorphism(0.8, 16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  // Buttons with gradient borders
+  .btn-gradient-border {
+    position: relative;
+    background: var(--bg-surface);
+    color: var(--text-on-surface, hsl(var(--primary-foreground)));
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-md);
+      padding: 2px;
+      background: var(--gradient-primary);
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    }
+  }
+
+  // Animated gradient text
+  .text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  // Smooth hover effects
+  .interactive {
+    transition: all var(--transition-base);
+
+    @include can-hover {
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+    }
+  }
+
+  // Mobile optimizations
+  @include max-width('md') {
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+
+    // Larger touch targets
+    .btn, .interactive {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+
+  // Chart customizations
+  .chart-container {
+    canvas {
+      filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.05));
+    }
+  }
+}
+
+// Dark mode specific enhancements
+[data-theme='modern-light'].dark {
+  .gradient-overlay {
+    background: linear-gradient(
+      135deg,
+      rgba(59, 130, 246, 0.1),
+      rgba(139, 92, 246, 0.1)
+    );
+  }
+
+  .card-glass {
+    @include glassmorphism(0.1, 24px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(30, 41, 59, 0.8);
+  }
+
+  // Glow effects for dark mode
+  .glow {
+    box-shadow:
+      0 0 20px rgba(59, 130, 246, 0.3),
+      0 0 40px rgba(139, 92, 246, 0.2);
+  }
+
+  .btn-primary {
+    &:hover {
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+  }
+}

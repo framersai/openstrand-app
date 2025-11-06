@@ -1,0 +1,304 @@
+// Functions - SCSS utility functions for calculations and transformations
+
+@import './variables';
+
+// ============================================
+// Color Functions
+// ============================================
+
+// Convert hex to RGB
+@function hex-to-rgb($hex) {
+  @return red($hex), green($hex), blue($hex);
+}
+
+// Create RGBA from hex and opacity
+@function rgba-from-hex($hex, $opacity) {
+  @return rgba(red($hex), green($hex), blue($hex), $opacity);
+}
+
+// Lighten a color using mix
+@function tint($color, $percentage) {
+  @return mix(white, $color, $percentage);
+}
+
+// Darken a color using mix
+@function shade($color, $percentage) {
+  @return mix(black, $color, $percentage);
+}
+
+// Get contrasting text color (black or white)
+@function contrast-color($color) {
+  $r: red($color);
+  $g: green($color);
+  $b: blue($color);
+
+  // Calculate luminance
+  $luminance: (0.299 * $r + 0.587 * $g + 0.114 * $b) / 255;
+
+  @if $luminance > 0.5 {
+    @return #000000;
+  } @else {
+    @return #ffffff;
+  }
+}
+
+// ============================================
+// Math Functions
+// ============================================
+
+// Convert px to rem
+@function px-to-rem($px, $base: $font-size-base) {
+  @if unitless($px) {
+    $px: $px * 1px;
+  }
+  @if unitless($base) {
+    $base: $base * 1px;
+  }
+  @return ($px / $base) * 1rem;
+}
+
+// Convert px to em
+@function px-to-em($px, $base: $font-size-base) {
+  @if unitless($px) {
+    $px: $px * 1px;
+  }
+  @if unitless($base) {
+    $base: $base * 1px;
+  }
+  @return ($px / $base) * 1em;
+}
+
+// Calculate modular scale
+@function modular-scale($exponent, $base: $font-size-base, $ratio: $font-scale-ratio) {
+  @return $base * pow($ratio, $exponent);
+}
+
+// Power function
+@function pow($base, $exponent) {
+  $result: 1;
+  @if $exponent > 0 {
+    @for $i from 1 through $exponent {
+      $result: $result * $base;
+    }
+  } @else if $exponent < 0 {
+    @for $i from 1 through -$exponent {
+      $result: $result / $base;
+    }
+  }
+  @return $result;
+}
+
+// Clamp value between min and max
+@function clamp-value($value, $min, $max) {
+  @return max($min, min($max, $value));
+}
+
+// Calculate percentage
+@function percentage-calc($partial, $total) {
+  @return ($partial / $total) * 100%;
+}
+
+// ============================================
+// String Functions
+// ============================================
+
+// Replace substring in string
+@function str-replace($string, $search, $replace: '') {
+  $index: str-index($string, $search);
+  @if $index {
+    @return str-slice($string, 1, $index - 1) + $replace +
+            str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+  }
+  @return $string;
+}
+
+// Convert to lowercase
+@function to-lower-case($string) {
+  $lower: 'abcdefghijklmnopqrstuvwxyz';
+  $upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  $result: '';
+
+  @for $i from 1 through str-length($string) {
+    $char: str-slice($string, $i, $i);
+    $index: str-index($upper, $char);
+
+    @if $index {
+      $result: $result + str-slice($lower, $index, $index);
+    } @else {
+      $result: $result + $char;
+    }
+  }
+
+  @return $result;
+}
+
+// ============================================
+// Map Functions
+// ============================================
+
+// Deep get function for nested maps
+@function map-deep-get($map, $keys...) {
+  @each $key in $keys {
+    @if type-of($map) != 'map' {
+      @return null;
+    }
+    $map: map-get($map, $key);
+  }
+  @return $map;
+}
+
+// Merge maps recursively
+@function map-deep-merge($map1, $map2) {
+  $result: $map1;
+
+  @each $key, $value in $map2 {
+    @if type-of(map-get($result, $key)) == 'map' and type-of($value) == 'map' {
+      $result: map-merge($result, ($key: map-deep-merge(map-get($result, $key), $value)));
+    } @else {
+      $result: map-merge($result, ($key: $value));
+    }
+  }
+
+  @return $result;
+}
+
+// Get value from map with fallback
+@function map-fetch($map, $key, $fallback: null) {
+  @if map-has-key($map, $key) {
+    @return map-get($map, $key);
+  }
+  @return $fallback;
+}
+
+// ============================================
+// Spacing Functions
+// ============================================
+
+// Get spacing value
+@function spacing($key) {
+  @if map-has-key($spacing, $key) {
+    @return map-get($spacing, $key);
+  }
+  @warn "Spacing key '#{$key}' not found in $spacing map.";
+  @return 0;
+}
+
+// Create spacing shorthand
+@function spacing-shorthand($top: 0, $right: $top, $bottom: $top, $left: $right) {
+  @return spacing($top) spacing($right) spacing($bottom) spacing($left);
+}
+
+// ============================================
+// Z-index Functions
+// ============================================
+
+// Get z-index value
+@function z($key) {
+  @if map-has-key($z-index, $key) {
+    @return map-get($z-index, $key);
+  }
+  @warn "Z-index key '#{$key}' not found in $z-index map.";
+  @return 0;
+}
+
+// ============================================
+// Font Functions
+// ============================================
+
+// Get font size
+@function font-size($key) {
+  @if map-has-key($font-sizes, $key) {
+    @return map-get($font-sizes, $key);
+  }
+  @warn "Font size key '#{$key}' not found in $font-sizes map.";
+  @return $font-size-base;
+}
+
+// Get font weight
+@function font-weight($key) {
+  @if map-has-key($font-weights, $key) {
+    @return map-get($font-weights, $key);
+  }
+  @warn "Font weight key '#{$key}' not found in $font-weights map.";
+  @return 400;
+}
+
+// Get line height
+@function line-height($key) {
+  @if map-has-key($line-heights, $key) {
+    @return map-get($line-heights, $key);
+  }
+  @warn "Line height key '#{$key}' not found in $line-heights map.";
+  @return 1.5;
+}
+
+// ============================================
+// Animation Functions
+// ============================================
+
+// Get transition duration
+@function transition-duration($key) {
+  @if map-has-key($transitions, $key) {
+    @return map-get($transitions, $key);
+  }
+  @return map-get($transitions, 'base');
+}
+
+// Get easing function
+@function easing($key) {
+  @if map-has-key($easings, $key) {
+    @return map-get($easings, $key);
+  }
+  @return map-get($easings, 'ease');
+}
+
+// Create transition shorthand
+@function transition($props: all, $duration: 'base', $easing: 'smooth') {
+  @return $props transition-duration($duration) easing($easing);
+}
+
+// ============================================
+// Utility Functions
+// ============================================
+
+// Check if value is a number
+@function is-number($value) {
+  @return type-of($value) == 'number';
+}
+
+// Check if value has a unit
+@function has-unit($value) {
+  @return is-number($value) and not unitless($value);
+}
+
+// Strip unit from value
+@function strip-unit($value) {
+  @if is-number($value) and not unitless($value) {
+    @return $value / ($value * 0 + 1);
+  }
+  @return $value;
+}
+
+// Add unit to value
+@function add-unit($value, $unit: px) {
+  @if unitless($value) {
+    @return $value * 1#{$unit};
+  }
+  @return $value;
+}
+
+// Get opposite direction
+@function opposite-direction($direction) {
+  $opposites: (
+    'top': 'bottom',
+    'bottom': 'top',
+    'left': 'right',
+    'right': 'left',
+    'center': 'center'
+  );
+
+  @if map-has-key($opposites, $direction) {
+    @return map-get($opposites, $direction);
+  }
+  @return $direction;
+}

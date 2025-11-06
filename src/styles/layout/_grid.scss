@@ -1,0 +1,39 @@
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+
+:root {
+  --grid-gap: 1.5rem;
+}
+
+.grid-auto-fit {
+  display: grid;
+  gap: var(--grid-gap);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.grid-responsive-two-column {
+  display: grid;
+  gap: var(--grid-gap);
+
+  @include min-width('lg') {
+    grid-template-columns: minmax(0, 2.5fr) minmax(0, 1.5fr);
+  }
+}
+
+.grid-stacked-panels {
+  display: grid;
+  gap: var(--grid-gap);
+  grid-auto-rows: minmax(0, auto);
+
+  @include min-width('xl') {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+
+    & > .panel-primary {
+      grid-column: span 8;
+    }
+
+    & > .panel-secondary {
+      grid-column: span 4;
+    }
+  }
+}

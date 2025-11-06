@@ -1,0 +1,137 @@
+// Mobile-First Responsive Breakpoints
+// Following industry-standard device sizes
+
+// Breakpoint Map
+$breakpoints: (
+  'xs': 320px,    // Small phones
+  'sm': 480px,    // Phones
+  'md': 768px,    // Tablets
+  'lg': 1024px,   // Desktop
+  'xl': 1280px,   // Large desktop
+  '2xl': 1536px,  // Extra large desktop
+  '3xl': 1920px   // Ultra wide
+);
+
+// Helper function to get breakpoint value
+@function breakpoint($name) {
+  @if map-has-key($breakpoints, $name) {
+    @return map-get($breakpoints, $name);
+  } @else {
+    @error "Breakpoint #{$name} not found in $breakpoints map.";
+  }
+}
+
+// Mobile-first media query mixins
+@mixin min-width($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    $value: map-get($breakpoints, $breakpoint);
+    @media screen and (min-width: $value) {
+      @content;
+    }
+  } @else if type-of($breakpoint) == number {
+    @media screen and (min-width: $breakpoint) {
+      @content;
+    }
+  } @else {
+    @error "Invalid breakpoint: #{$breakpoint}";
+  }
+}
+
+@mixin max-width($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    $value: map-get($breakpoints, $breakpoint) - 1px;
+    @media screen and (max-width: $value) {
+      @content;
+    }
+  } @else if type-of($breakpoint) == number {
+    @media screen and (max-width: $breakpoint) {
+      @content;
+    }
+  } @else {
+    @error "Invalid breakpoint: #{$breakpoint}";
+  }
+}
+
+@mixin between($min, $max) {
+  $min-value: if(map-has-key($breakpoints, $min), map-get($breakpoints, $min), $min);
+  $max-value: if(map-has-key($breakpoints, $max), map-get($breakpoints, $max) - 1px, $max);
+
+  @media screen and (min-width: $min-value) and (max-width: $max-value) {
+    @content;
+  }
+}
+
+// Orientation queries
+@mixin landscape {
+  @media screen and (orientation: landscape) {
+    @content;
+  }
+}
+
+@mixin portrait {
+  @media screen and (orientation: portrait) {
+    @content;
+  }
+}
+
+// High DPI screens
+@mixin retina {
+  @media
+    screen and (-webkit-min-device-pixel-ratio: 2),
+    screen and (min-resolution: 192dpi),
+    screen and (min-resolution: 2dppx) {
+    @content;
+  }
+}
+
+// Touch device detection
+@mixin touch-device {
+  @media (hover: none) and (pointer: coarse) {
+    @content;
+  }
+}
+
+// Hover capability
+@mixin can-hover {
+  @media (hover: hover) and (pointer: fine) {
+    @content;
+  }
+}
+
+// Print styles
+@mixin print {
+  @media print {
+    @content;
+  }
+}
+
+// Reduced motion
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
+
+// Dark mode preference
+@mixin dark-mode-preference {
+  @media (prefers-color-scheme: dark) {
+    @content;
+  }
+}
+
+// Container widths for each breakpoint
+$container-max-widths: (
+  'sm': 640px,
+  'md': 768px,
+  'lg': 1024px,
+  'xl': 1280px,
+  '2xl': 1536px,
+);
+
+// Safe area insets for mobile devices
+@mixin safe-area-insets {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}

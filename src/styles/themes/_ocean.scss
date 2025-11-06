@@ -1,0 +1,112 @@
+// Ocean Theme - Deep sea exploration with calm gradients
+
+@import '../abstracts/breakpoints';
+@import './theme-engine';
+
+@include define-theme(
+  'ocean-light',
+  $primary: #0ea5e9,
+  $primary-light: #38bdf8,
+  $primary-dark: #0284c7,
+  $secondary: #14b8a6,
+  $secondary-light: #2dd4bf,
+  $secondary-dark: #0f766e,
+  $tertiary: #164e63,
+  $accent: #f97316,
+  $accent-light: #fb923c,
+  $accent-dark: #ea580c,
+  $background: #f8fcff,
+  $background-secondary: #eef7fb,
+  $background-tertiary: #e0f2fe,
+  $surface: #ffffff,
+  $surface-hover: #f1f5f9,
+  $text-primary: #082f49,
+  $text-secondary: #0f4c64,
+  $text-muted: #2f6b7d,
+  $text-inverse: #ffffff,
+  $border-color: rgba(14, 165, 233, 0.2),
+  $border-light: rgba(14, 165, 233, 0.08),
+  $border-heavy: rgba(14, 165, 233, 0.35),
+  $success: #0f766e,
+  $warning: #f97316,
+  $error: #dc2626,
+  $info: #0ea5e9,
+  $shadow-small: 0 4px 12px rgba(15, 76, 100, 0.08),
+  $shadow-medium: 0 12px 24px rgba(14, 165, 233, 0.15),
+  $shadow-large: 0 20px 40px rgba(8, 47, 73, 0.15),
+  $shadow-color: rgba(8, 47, 73, 0.1),
+  $radius-small: 10px,
+  $radius-medium: 18px,
+  $radius-large: 28px,
+  $font-family-base: 'Inter',
+  $font-family-heading: 'DM Sans',
+  $blur-strength: 18px
+);
+
+@include define-dark-variant(
+  'ocean-light',
+  (
+    'bg-primary': #041f31,
+    'bg-secondary': #062a40,
+    'bg-tertiary': #0b3b55,
+    'bg-surface': #0f4c64,
+    'bg-surface-hover': #0b3b55,
+    'text-primary': #e0f2fe,
+    'text-secondary': #bae6fd,
+    'text-muted': #7dd3fc,
+    'border-color': rgba(14, 165, 233, 0.35),
+    'border-light': rgba(56, 189, 248, 0.2),
+    'border-heavy': rgba(14, 165, 233, 0.5),
+    'shadow-sm': 0 6px 16px rgba(8, 47, 73, 0.4),
+    'shadow-md': 0 16px 32px rgba(14, 165, 233, 0.35),
+    'shadow-lg': 0 32px 48px rgba(56, 189, 248, 0.25),
+    'shadow-color': rgba(14, 165, 233, 0.3)
+  )
+);
+
+[data-theme='ocean-light'] {
+  .wave-surface {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(20, 184, 166, 0.08));
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: -40%;
+      background: radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.25), transparent 55%),
+        radial-gradient(circle at 80% 30%, rgba(20, 184, 166, 0.2), transparent 55%),
+        radial-gradient(circle at 50% 80%, rgba(236, 254, 255, 0.3), transparent 60%);
+      animation: ocean-drift 18s ease-in-out infinite alternate;
+    }
+  }
+
+  .card-wave {
+    position: relative;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(14, 165, 233, 0.2);
+    box-shadow:
+      0 12px 24px rgba(14, 165, 233, 0.12),
+      0 4px 12px rgba(8, 47, 73, 0.08);
+    backdrop-filter: blur(12px);
+  }
+
+  .badge-crest {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    padding: 0.375rem 0.9rem;
+    background: rgba(14, 165, 233, 0.12);
+    color: #0369a1;
+  }
+}
+
+@keyframes ocean-drift {
+  from {
+    transform: rotate(-4deg) scale(1.05);
+  }
+  to {
+    transform: rotate(3deg) scale(1.1);
+  }
+}

@@ -1,0 +1,724 @@
+'use client';
+
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Menu, X, Plus, Settings, BookOpen, Code, GraduationCap, LifeBuoy } from 'lucide-react';
+import React from 'react';
+
+import {
+  FeedIcon,
+  VisualizationsIcon,
+  KnowledgeIcon,
+  DatasetsIcon,
+  FeaturesIcon,
+  PricingIcon,
+  DocsIcon,
+  PKMSIcon,
+} from '@/components/icons/NavigationIcons';
+
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { useSupabase } from '@/features/auth';
+import { OpenStrandLogo } from '@/components/icons/OpenStrandLogo';
+import { GitHubStats } from '@/components/github/GitHubStats';
+import { useAppMode } from '@/hooks/useAppMode';
+import { AuthButton } from '@/features/auth';
+import { GuestCreditIndicator } from '@/components/guest-credit-indicator';
+import { cn } from '@/lib/utils';
+import { useGuestSession } from '@/hooks/useGuestSession';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { ThemeSwitcher } from '@/components/theme-switcher';
+import { LanguageSwitcher } from '@/components/language-switcher';
+import { ThemeToggle } from '@/components/theme-toggle';
+import { openstrandAPI } from '@/services/openstrand.api';
+import { useProductTour } from '@/providers/ProductTourProvider';
+
+type NavItem = {
+  key: string;
+  href: string;
+  label: string;
+  icon?: React.ComponentType<{ className?: string; isActive?: boolean }>;
+  description?: string;
+};
+
+interface UnifiedHeaderProps {
+  onOpenSettings?: () => void;
+}
+
+const LandingIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 20 20" fill="none" {...props}>
+    <path
+      d="M6 12.5 10 9l4 3.5"
+      stroke="currentColor"
+      strokeWidth="1.3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M10 4v9"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+    />
+    <circle cx="10" cy="10" r="8.5" stroke="currentColor" strokeOpacity={0.25} />
+  </svg>
+);
+
+const AccountPortalIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg viewBox="0 0 24 24" fill="none" {...props}>
+    <circle cx="12" cy="9" r="4" stroke="currentColor" strokeWidth="1.4" />
+    <path
+      d="M5.5 19c1.4-2.7 4.3-4.5 6.5-4.5s5.1 1.8 6.5 4.5"
+      stroke="currentColor"
+      strokeWidth="1.4"
+      strokeLinecap="round"
+    />
+    <path
+      d="M17.5 4.5h3v3"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="M20.5 4.5 17 8"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+// Define navigation items for different contexts
+const landingNav: NavItem[] = [
+  { key: 'features', href: '#features', label: 'Features', icon: FeaturesIcon },
+  { key: 'pricing', href: '#pricing', label: 'Pricing', icon: PricingIcon },
+  { key: 'teams', href: '/teams', label: 'Teams & API', icon: DocsIcon },
+  { key: 'docs', href: '#', label: 'Docs', icon: DocsIcon },
+  { key: 'pkms', href: '/pkms', label: 'PKMS', icon: PKMSIcon },
+];
+
+const dashboardNav: NavItem[] = [
+  { key: 'feed', href: '/', label: 'Feed', icon: FeedIcon, description: 'Recent strands & updates' },
+  {
+    key: 'visualizations',
+    href: '/visualizations',
+    label: 'Visualizations',
+    icon: VisualizationsIcon,
+    description: 'Charts, explainers, AI artisan stories',
+  },
+  { key: 'knowledge', href: '/pkms', label: 'Knowledge', icon: KnowledgeIcon, description: 'PKMS hub & weaves' },
+  { key: 'datasets', href: '/catalogs', label: 'Datasets', icon: DatasetsIcon, description: 'Sources, imports, enrichments' },
+];
+const API_DOCS_URL =
+  (process.env.NEXT_PUBLIC_API_DOCS_URL ?? '') ||
+  (process.env.NEXT_PUBLIC_API_URL
+    ? `${process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, '')}/docs`
+    : '');
+
+const SDK_DOCS_URL =
+  process.env.NEXT_PUBLIC_SDK_DOCS_URL ??
+  'https://github.com/framersai/openstrand/tree/main/docs/generated';
+
+export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [docsExpanded, setDocsExpanded] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
+  const localizePath = useLocalizedPath();
+  const { isAuthenticated, authEnabled } = useSupabase();
+  const { isGuest } = useGuestSession();
+  const { mode } = useAppMode();
+  const { openTour } = useProductTour();
+
+  const closeMobileMenu = useCallback(() => {
+    setMobileMenuOpen(false);
+    setDocsExpanded(false);
+  }, []);
+
+  // Determine which nav to show based on auth and path
+  const isLandingPage = pathname === '/landing' || pathname.endsWith('/landing');
+  const showDashboardNav = !isLandingPage;
+  const navItems = showDashboardNav ? dashboardNav : landingNav;
+  const isCloudMode = mode === 'cloud';
+  const landingLink = localizePath('/landing');
+  const signInLink = localizePath('/auth?view=sign-in');
+  const signUpLink = localizePath('/auth?view=sign-up');
+  const openDashboardLink = localizePath('/');
+  const importLink = localizePath('/pkms/import');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const apiDocsUrl = API_DOCS_URL ? API_DOCS_URL : null;
+  const [adminAvailable, setAdminAvailable] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    const checkAdmin = async () => {
+      try {
+        if (!isAuthenticated || !showDashboardNav) return;
+        const res = await openstrandAPI.team.list().catch(() => null);
+        if (!mounted) return;
+        const hasTeams = Array.isArray(res?.teams) && res.teams.length > 0;
+        const hasTokens = Array.isArray(res?.tokens) && res.tokens.length > 0;
+        setAdminAvailable(Boolean(hasTeams || hasTokens));
+      } catch {
+        if (mounted) setAdminAvailable(false);
+      }
+    };
+    void checkAdmin();
+    return () => { mounted = false; };
+  }, [isAuthenticated, showDashboardNav]);
+
+  const docsLinks = useMemo(
+    () => [
+      {
+        label: 'Interactive tour',
+        description: 'Launch the in-app guide for onboarding, storage, and sync controls',
+        icon: <LifeBuoy className="h-4 w-4" aria-hidden />,
+        action: () => void openTour(),
+        external: false,
+        disabled: false,
+      },
+      {
+        label: 'Product docs',
+        description: 'Architecture, modelling strategies, release notes',
+        href: localizePath('/docs'),
+        icon: <BookOpen className="h-4 w-4" aria-hidden />,
+        external: false,
+        disabled: false,
+      },
+      {
+        label: 'Tutorials & guides',
+        description: 'Step-by-step strand hierarchies, approvals, migrations',
+        href: localizePath('/tutorials'),
+        icon: <GraduationCap className="h-4 w-4" aria-hidden />,
+        external: false,
+        disabled: false,
+      },
+      {
+        label: 'API reference (OpenAPI)',
+        description: apiDocsUrl ? 'Live Fastify schema with request/response samples' : 'Set NEXT_PUBLIC_API_URL to expose swagger docs',
+        href: apiDocsUrl ?? '#',
+        icon: <Code className="h-4 w-4" aria-hidden />,
+        external: true,
+        disabled: !apiDocsUrl,
+      },
+      {
+        label: 'SDK typings (TSDoc)',
+        description: 'Type-safe client & helper utilities for strands, weaves, approvals',
+        href: SDK_DOCS_URL,
+        icon: <DocsIcon className="h-4 w-4" aria-hidden />,
+        external: true,
+        disabled: false,
+      },
+    ],
+    [apiDocsUrl, localizePath, openTour],
+  );
+
+  const authControls = useMemo(() => {
+    if (isAuthenticated) {
+      return (
+        <>
+          <AuthButton suppressLocalBadge className="hidden md:inline-flex" />
+          <AuthButton suppressLocalBadge className="md:hidden w-full justify-center" />
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="w-full justify-center rounded-full border-border/70 bg-background/80 text-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-primary md:w-auto md:px-4"
+          >
+            <Link href={isLandingPage ? openDashboardLink : importLink}>
+              {isLandingPage ? 'Open Dashboard' : (
+                <>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Import
+                </>
+              )}
+            </Link>
+          </Button>
+        </>
+      );
+    }
+
+    if (authEnabled) {
+      return (
+        <div className="flex items-center gap-2">
+          <Button asChild variant="ghost" size="sm" className="font-semibold text-foreground/80 hover:text-primary">
+            <Link href={signInLink}>Log in</Link>
+          </Button>
+          {isCloudMode ? (
+            <Button asChild size="sm" className="px-5 font-semibold">
+              <Link href={signUpLink}>Start free</Link>
+            </Button>
+          ) : (
+            <Button asChild size="sm" variant="outline" className="rounded-full border-border/70">
+              <Link href={signInLink}>Open login</Link>
+            </Button>
+          )}
+        </div>
+      );
+    }
+
+    if (onOpenSettings) {
+      return (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onOpenSettings}
+          className="rounded-full border border-border/60 bg-card/80 text-foreground/80 hover:text-foreground"
+          aria-label="Workspace settings"
+        >
+          <Settings className="h-4 w-4" />
+        </Button>
+      );
+    }
+
+    return null;
+  }, [
+    authEnabled,
+    importLink,
+    isAuthenticated,
+    isCloudMode,
+    isLandingPage,
+    onOpenSettings,
+    openDashboardLink,
+    signInLink,
+    signUpLink,
+  ]);
+
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <header 
+      className={cn(
+        "sticky top-0 z-50 transition-all duration-300",
+        "border-b backdrop-blur-xl",
+        isScrolled 
+          ? "border-border/60 bg-background/90 shadow-sm" 
+          : "border-border/40 bg-background/95"
+      )}
+    >
+      <div className="container mx-auto px-4 py-3">
+        <div className="flex w-full items-center gap-4">
+          {/* Logo */}
+          <Link
+            href={localizePath('/')}
+            className="group flex items-center gap-3 rounded-full px-2 py-1 transition-transform hover:scale-105 hover:bg-primary/10"
+            onClick={closeMobileMenu}
+          >
+            <OpenStrandLogo 
+              size="sm" 
+              variant={isScrolled ? "mono" : "gradient"} 
+              className="transition-all duration-300"
+            />
+            <div className="flex flex-col">
+              <span className="text-base font-semibold tracking-tight">OpenStrand</span>
+              {showDashboardNav && (
+                <span className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
+                  Dashboard
+                </span>
+              )}
+            </div>
+          </Link>
+
+          <Separator orientation="vertical" className="hidden h-8 lg:block" />
+
+          {/* Navigation */}
+          <nav className="hidden flex-1 items-center gap-2 lg:flex">
+            {navItems.map((item) => {
+              const Icon = item.icon ?? null;
+              const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+              
+              if (item.key === 'docs') {
+                return (
+                  <DropdownMenu key={item.key}>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className={cn(
+                          'group relative flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition-all',
+                          'border-transparent text-foreground/75 hover:border-primary/30 hover:bg-primary/10 hover:text-foreground',
+                        )}
+                      >
+                        {Icon && (
+                          <Icon
+                            className="h-4 w-4 text-foreground/60 transition-colors group-hover:text-foreground"
+                            isActive={false}
+                          />
+                        )}
+                        <span className="whitespace-nowrap">Docs</span>
+                        <span className="text-xs text-muted-foreground group-hover:text-foreground/80">Ã¢â€“Â¾</span>
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-72">
+                      <DropdownMenuItem asChild disabled>
+                        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
+                          Knowledge Base
+                        </span>
+                      </DropdownMenuItem>
+                      {docsLinks.map((link) => {
+                        const body = (
+                          <div className="flex items-start gap-3">
+                            <span className="mt-1">{link.icon}</span>
+                            <span className="flex flex-1 flex-col text-left">
+                              <span className="text-sm font-medium text-foreground">{link.label}</span>
+                              <span className="text-xs text-muted-foreground">{link.description}</span>
+                            </span>
+                            {link.external ? (
+                              <span className="text-xs text-muted-foreground">↗</span>
+                            ) : null}
+                          </div>
+                        );
+
+                        if (link.disabled) {
+                          return (
+                            <DropdownMenuItem
+                              key={link.label}
+                              disabled
+                              className="flex cursor-not-allowed items-start gap-3 px-3 py-2.5 opacity-70"
+                            >
+                              {body}
+                            </DropdownMenuItem>
+                          );
+                        }
+
+                        if (link.action) {
+                          return (
+                            <DropdownMenuItem
+                              key={link.label}
+                              className="flex cursor-pointer items-start gap-3 px-3 py-2.5"
+                              onSelect={() => {
+                                link.action?.();
+                              }}
+                            >
+                              {body}
+                            </DropdownMenuItem>
+                          );
+                        }
+
+                        return (
+                          <DropdownMenuItem
+                            key={link.label}
+                            asChild
+                            className="flex cursor-pointer items-start gap-3 px-3 py-2.5"
+                          >
+                            <a
+                              href={link.href}
+                              target={link.external ? '_blank' : undefined}
+                              rel={link.external ? 'noreferrer' : undefined}
+                              className="flex items-start gap-3"
+                            >
+                              {body}
+                            </a>
+                          </DropdownMenuItem>
+                        );
+                      })}
+
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                );
+              }
+
+              return (
+                <Link
+                  key={item.key}
+                  href={item.href.startsWith('#') ? item.href : localizePath(item.href)}
+                  className={cn(
+                    'group relative flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition-all',
+                    isActive
+                      ? 'border-primary/40 bg-primary/15 text-primary dark:text-primary-foreground shadow-sm'
+                      : 'border-transparent text-foreground/75 hover:border-primary/30 hover:bg-primary/10 hover:text-foreground'
+                  )}
+                  title={item.description ?? item.label}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  {Icon && (
+                    <Icon
+                      className={cn(
+                        'h-4 w-4 transition-colors',
+                        isActive ? 'text-primary dark:text-primary-foreground' : 'text-foreground/60'
+                      )}
+                      isActive={isActive}
+                    />
+                  )}
+                  <span className="whitespace-nowrap">{item.label}</span>
+                  {isActive && (
+                    <div className="absolute inset-x-2 bottom-1 h-0.5 rounded-full bg-primary/70 dark:bg-primary/80" />
+                  )}
+                </Link>
+              );
+            })}
+
+            {!showDashboardNav && (
+              <>
+                <Separator orientation="vertical" className="mx-2 h-6" />
+                <GitHubStats variant="compact" />
+              </>
+            )}
+          </nav>
+
+          {/* Right side */}
+          <div className="flex items-center gap-3">
+            <div className="hidden items-center gap-3 md:flex">
+              {showDashboardNav && (
+                <div className="hidden items-center gap-1 rounded-full border border-border/60 bg-card/80 px-2 py-1 lg:flex">
+                  {/* Quick filter chips link into dashboard with query params; DashboardPage reads and applies */}
+                  <Link href={localizePath('/?difficulty=beginner')} className="text-xs text-muted-foreground hover:text-foreground">Beginner</Link>
+                  <span className="mx-1 h-4 w-px bg-border" />
+                  <Link href={localizePath('/?difficulty=intermediate')} className="text-xs text-muted-foreground hover:text-foreground">Intermediate</Link>
+                  <span className="mx-1 h-4 w-px bg-border" />
+                  <Link href={localizePath('/?difficulty=advanced')} className="text-xs text-muted-foreground hover:text-foreground">Advanced</Link>
+                  <span className="mx-1 h-4 w-px bg-border" />
+                  <Link href={localizePath('/?tags=ai')} className="text-xs text-muted-foreground hover:text-foreground">#ai</Link>
+                  <Link href={localizePath('/?tags=tutorial')} className="text-xs text-muted-foreground hover:text-foreground">#tutorial</Link>
+                  <Link href={localizePath('/?tags=research')} className="text-xs text-muted-foreground hover:text-foreground">#research</Link>
+                </div>
+              )}
+              {showDashboardNav && (
+                <Button
+                  asChild
+                  size="sm"
+                  className="group hidden items-center gap-2 rounded-full border border-border/60 bg-background/80 px-3 py-1.5 text-sm font-medium text-foreground shadow-none transition hover:border-foreground/30 hover:bg-foreground/5 hover:text-foreground dark:border-white/12 dark:bg-white/5 dark:text-white dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:text-white md:inline-flex"
+                >
+                  <Link href={landingLink} aria-label="Back to landing page">
+                    <LandingIcon className="h-[16px] w-[16px] text-foreground/75 transition-colors group-hover:text-foreground dark:text-white/80 dark:group-hover:text-white" />
+                    <span>Landing</span>
+                  </Link>
+                </Button>
+              )}
+
+              {showDashboardNav && adminAvailable && apiDocsUrl && (
+                <Button
+                  asChild
+                  size="sm"
+                  variant="outline"
+                  className="hidden items-center gap-2 rounded-full border-border/60 bg-background/80 md:inline-flex"
+                >
+                  <a href={apiDocsUrl} target="_blank" rel="noreferrer" aria-label="Open Admin (Swagger)">
+                    <Code className="h-4 w-4" />
+                    <span>Admin</span>
+                  </a>
+                </Button>
+              )}
+
+              {mounted && (
+                <div className="flex items-center gap-2 rounded-full border border-border/60 bg-card/80 px-2 py-1 shadow-sm">
+                  <ThemeToggle />
+                  <ThemeSwitcher buttonVariant="ghost" buttonSize="icon" tooltip="Select theme palette" />
+                  <LanguageSwitcher variant="compact" showName={false} />
+                </div>
+              )}
+
+              {isGuest && !isAuthenticated && (
+                <GuestCreditIndicator variant="minimal" />
+              )}
+              {mounted && authControls}
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              className="md:hidden rounded-full border border-border/60 text-foreground/80 transition hover:border-foreground/40 hover:bg-foreground/5 hover:text-foreground dark:border-white/12 dark:text-white/80 dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:text-white"
+              aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div className="mt-4 space-y-4 rounded-2xl border border-border/60 bg-background/95 p-4 shadow-xl backdrop-blur lg:hidden">
+            <nav className="flex flex-col gap-2">
+              {navItems.map((item) => {
+                const Icon = item.icon ?? null;
+                const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+
+                if (item.key === 'docs') {
+                  return (
+                    <div key={item.key} className="flex flex-col gap-2 rounded-xl border border-border/60 bg-background/90 p-3">
+                      <button
+                        type="button"
+                        onClick={() => setDocsExpanded((prev) => !prev)}
+                        className={cn(
+                          'flex items-center justify-between gap-3 rounded-lg px-2 py-2 text-sm font-semibold transition',
+                          'text-foreground',
+                        )}
+                        aria-expanded={docsExpanded}
+                      >
+                        <span className="flex items-center gap-2">
+                          {Icon && <Icon className="h-4 w-4 text-primary" />}
+                          <span>Docs</span>
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {docsExpanded ? 'Hide' : 'Show'}
+                        </span>
+                      </button>
+                      {docsExpanded && (
+                        <div className="space-y-2 pl-2">
+                          {docsLinks.map((link) => (
+                            <Link
+                              key={link.label}
+                              href={link.disabled ? '#' : link.href}
+                              onClick={() => {
+                                if (!link.disabled) {
+                                  closeMobileMenu();
+                                }
+                              }}
+                              target={link.external ? '_blank' : undefined}
+                              rel={link.external ? 'noreferrer' : undefined}
+                              className={cn(
+                                'flex items-start gap-3 rounded-lg border border-transparent px-2 py-2 text-sm transition',
+                                link.disabled
+                                  ? 'cursor-not-allowed opacity-60'
+                                  : 'hover:border-primary/40 hover:bg-primary/10',
+                              )}
+                            >
+                              <span className="mt-1">{link.icon}</span>
+                              <span className="flex flex-1 flex-col text-left">
+                                <span className="font-medium text-foreground">{link.label}</span>
+                                <span className="text-xs text-muted-foreground">{link.description}</span>
+                              </span>
+                              {link.external ? (
+                                <span className="text-xs text-muted-foreground">Ã¢â€ â€”</span>
+                              ) : null}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={item.key}
+                    href={item.href.startsWith('#') ? item.href : localizePath(item.href)}
+                    className={cn(
+                      'group flex items-center gap-3 rounded-xl border px-3 py-3 text-sm font-medium transition',
+                      isActive
+                        ? 'border-primary/40 bg-primary/15 text-primary dark:text-primary-foreground'
+                        : 'border-transparent text-foreground/75 hover:border-primary/30 hover:bg-primary/10 hover:text-foreground'
+                    )}
+                    onClick={closeMobileMenu}
+                    aria-current={isActive ? 'page' : undefined}
+                    title={item.description ?? item.label}
+                  >
+                    {Icon && (
+                      <Icon
+                        className={cn(
+                          'h-4 w-4 transition-colors',
+                          isActive ? 'text-primary dark:text-primary-foreground' : 'text-foreground/60'
+                        )}
+                        isActive={isActive}
+                      />
+                    )}
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {showDashboardNav && (
+              <Button
+                asChild
+                size="sm"
+                className="group flex items-center justify-center gap-2 rounded-full border border-border/60 bg-background/80 py-2 text-sm font-medium text-foreground shadow-none transition hover:border-foreground/30 hover:bg-foreground/5 hover:text-foreground dark:border-white/12 dark:bg-white/5 dark:text-white dark:hover:border-white/25 dark:hover:bg-white/12 dark:hover:text-white"
+              >
+                <Link href={landingLink} onClick={closeMobileMenu} aria-label="Back to landing">
+                  <LandingIcon className="h-[16px] w-[16px] text-foreground/75 transition-colors group-hover:text-foreground dark:text-white/80 dark:group-hover:text-white" />
+                  <span>Landing</span>
+                </Link>
+              </Button>
+            )}
+
+            <Separator />
+
+            {!showDashboardNav && <GitHubStats className="justify-center" />}
+
+            <div className="flex flex-col gap-3">
+              {mounted && (
+                <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-background/60 px-3 py-2">
+                  <ThemeToggle />
+                  <ThemeSwitcher buttonVariant="ghost" buttonSize="icon" tooltip="Select theme palette" />
+                  <LanguageSwitcher variant="compact" showName={false} />
+                </div>
+              )}
+
+              {isGuest && !isAuthenticated && <GuestCreditIndicator variant="minimal" />}
+
+              {mounted && (
+                <div className="flex flex-col gap-2 pt-1">
+                  {isAuthenticated ? (
+                    <>
+                      <AuthButton suppressLocalBadge className="w-full justify-center" />
+                      {isLandingPage ? (
+                        <Button asChild size="sm" className="px-5 font-semibold" onClick={closeMobileMenu}>
+                          <Link href={openDashboardLink}>Open Dashboard</Link>
+                        </Button>
+                      ) : (
+                        <Button asChild size="sm" variant="outline" onClick={closeMobileMenu}>
+                          <Link href={importLink}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Import
+                          </Link>
+                        </Button>
+                      )}
+                    </>
+                  ) : authEnabled ? (
+                    <>
+                      <Button asChild variant="secondary" size="sm">
+                        <Link href={signInLink} onClick={closeMobileMenu}>
+                          Log in
+                        </Link>
+                      </Button>
+                      {isCloudMode ? (
+                        <Button asChild size="sm" className="btn-gradient-border">
+                          <Link href={signUpLink} onClick={closeMobileMenu}>
+                            Sign up
+                          </Link>
+                        </Button>
+                      ) : null}
+                    </>
+                  ) : onOpenSettings ? (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => {
+                        closeMobileMenu();
+                        onOpenSettings();
+                      }}
+                    >
+                      Open setup
+                    </Button>
+                  ) : null}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </header>
+  );
+}
+
+

@@ -1,0 +1,22 @@
+@import '../abstracts/mixins';
+
+.app-sidebar {
+  background: color-mix(in srgb, var(--card-background, var(--background)) 96%, transparent);
+  border-right: 1px solid var(--border-color);
+  min-width: 280px;
+  padding: map-get($spacing, 5);
+  display: flex;
+  flex-direction: column;
+  gap: map-get($spacing, 4);
+
+  @include max-width('lg') {
+    position: fixed;
+    inset: 0 auto 0 0;
+    transform: translateX(-100%);
+    transition: transform var(--transition-base) var(--easing-smooth);
+
+    &.is-open {
+      transform: translateX(0);
+    }
+  }
+}

@@ -1,0 +1,169 @@
+/* Aurora Theme - The new default theme for OpenStrand */
+/* Inspired by northern lights with flowing gradients and subtle glows */
+
+:root[data-theme="aurora"] {
+  /* Base colors */
+  --background: 222 47% 11%;      /* Deep space background */
+  --foreground: 213 31% 91%;      /* Soft white text */
+  
+  /* Primary palette */
+  --primary: 217 91% 60%;         /* Electric blue */
+  --primary-foreground: 210 40% 98%;
+  
+  /* Secondary palette */
+  --secondary: 280 84% 65%;       /* Vibrant purple */
+  --secondary-foreground: 210 40% 98%;
+  
+  /* Accent colors */
+  --accent: 160 84% 55%;          /* Emerald glow */
+  --accent-foreground: 210 40% 98%;
+  
+  /* UI colors */
+  --muted: 215 25% 27%;           /* Muted backgrounds */
+  --muted-foreground: 213 31% 75%;
+  
+  /* Card and popover */
+  --card: 222 47% 13%;
+  --card-foreground: 213 31% 91%;
+  --popover: 222 47% 13%;
+  --popover-foreground: 213 31% 91%;
+  
+  /* Borders and inputs */
+  --border: 215 20% 25%;
+  --input: 215 20% 25%;
+  --ring: 217 91% 60%;
+  
+  /* Destructive states */
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 210 40% 98%;
+  
+  /* Special effects */
+  --glow-primary: 217 91% 60%;
+  --glow-secondary: 280 84% 65%;
+  --glow-accent: 160 84% 55%;
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+  --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--accent)));
+  --gradient-accent: linear-gradient(135deg, hsl(var(--accent)), hsl(var(--primary)));
+  --gradient-dark: linear-gradient(180deg, hsl(var(--background)), hsl(222 47% 8%));
+  --gradient-glow: radial-gradient(ellipse at top, hsl(var(--primary) / 0.15), transparent);
+  
+  /* Shadows with color */
+  --shadow-sm: 0 1px 2px 0 hsl(var(--primary) / 0.05);
+  --shadow-md: 0 4px 6px -1px hsl(var(--primary) / 0.1), 0 2px 4px -1px hsl(var(--primary) / 0.06);
+  --shadow-lg: 0 10px 15px -3px hsl(var(--primary) / 0.1), 0 4px 6px -2px hsl(var(--primary) / 0.05);
+  --shadow-xl: 0 20px 25px -5px hsl(var(--primary) / 0.1), 0 10px 10px -5px hsl(var(--primary) / 0.04);
+  
+  /* Chart colors */
+  --chart-1: 217 91% 60%;
+  --chart-2: 280 84% 65%;
+  --chart-3: 160 84% 55%;
+  --chart-4: 352 83% 60%;
+  --chart-5: 39 85% 55%;
+}
+
+/* Light mode variant */
+:root[data-theme="aurora-light"] {
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+  
+  --primary: 217 91% 50%;
+  --primary-foreground: 0 0% 100%;
+  
+  --secondary: 280 84% 55%;
+  --secondary-foreground: 0 0% 100%;
+  
+  --accent: 160 84% 45%;
+  --accent-foreground: 0 0% 100%;
+  
+  --muted: 210 40% 96%;
+  --muted-foreground: 215 20% 40%;
+  
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  
+  --border: 214 32% 91%;
+  --input: 214 32% 91%;
+  --ring: 217 91% 50%;
+  
+  --destructive: 0 84% 50%;
+  --destructive-foreground: 0 0% 100%;
+}
+
+/* Aurora-specific animations */
+@keyframes aurora-flow {
+  0%, 100% {
+    transform: translateX(0) translateY(0) scale(1);
+    filter: hue-rotate(0deg);
+  }
+  25% {
+    transform: translateX(-20px) translateY(-10px) scale(1.1);
+    filter: hue-rotate(20deg);
+  }
+  50% {
+    transform: translateX(20px) translateY(-20px) scale(1.05);
+    filter: hue-rotate(-20deg);
+  }
+  75% {
+    transform: translateX(-10px) translateY(10px) scale(0.95);
+    filter: hue-rotate(10deg);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.5;
+    filter: blur(40px);
+  }
+  50% {
+    opacity: 0.8;
+    filter: blur(60px);
+  }
+}
+
+/* Aurora background effect */
+[data-theme="aurora"] .aurora-bg::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    radial-gradient(ellipse at 20% 30%, hsl(var(--glow-primary) / 0.3) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 70%, hsl(var(--glow-secondary) / 0.3) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 50%, hsl(var(--glow-accent) / 0.2) 0%, transparent 60%);
+  animation: aurora-flow 30s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Glassmorphism effect */
+[data-theme="aurora"] .glass {
+  background: hsl(var(--card) / 0.7);
+  backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid hsl(var(--border) / 0.6);
+  box-shadow: 
+    0 8px 32px 0 hsl(var(--primary) / 0.15),
+    inset 0 0 0 1px hsl(var(--primary) / 0.05);
+}
+
+/* Neon glow effect */
+[data-theme="aurora"] .neon-glow {
+  box-shadow: 
+    0 0 20px hsl(var(--glow-primary) / 0.5),
+    0 0 40px hsl(var(--glow-primary) / 0.3),
+    inset 0 0 20px hsl(var(--glow-primary) / 0.1);
+  border: 1px solid hsl(var(--glow-primary) / 0.3);
+}
+
+/* Gradient text */
+[data-theme="aurora"] .gradient-text {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

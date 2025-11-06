@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+build/
+out/
+.next/
+.turbo/
+coverage/
+.cache/
+tmp/
+
+# databases & local data
+data/
+*.db*
+*.sqlite*
+
+# build outputs (static site dumps)
+html/
+
+# misc
+*.log
+.DS_Store
+Thumbs.db

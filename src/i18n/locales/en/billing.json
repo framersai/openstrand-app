@@ -1,0 +1,115 @@
+{
+  "title": "Pricing",
+  "heading": "Choose the plan that grows with you",
+  "description": "Pricing reflects real compute, LLM, and support costs with healthy margins so the product stays sustainable",
+  "summary": "We parse metadata, detect schema, and send only the essential context to the LLM. Upgrade for larger uploads, faster insight recipes, and priority schema intelligence",
+  "comparePlans": "Compare plans",
+  "plans": {
+    "free": {
+      "name": "Free",
+      "price": "$0",
+      "period": "/month",
+      "description": "Perfect for trying out the platform",
+      "features": {
+        "upload": "5MB max upload",
+        "models": "Basic LLM models",
+        "visualizations": "10 visualizations/day",
+        "support": "Community support",
+        "datasets": "Public datasets only"
+      },
+      "button": "Start for free"
+    },
+    "basic": {
+      "name": "Basic",
+      "price": "$19",
+      "period": "/month",
+      "description": "For individual users and small teams",
+      "features": {
+        "upload": "50MB max upload",
+        "models": "All LLM models",
+        "visualizations": "100 visualizations/day",
+        "support": "Email support",
+        "datasets": "Private datasets",
+        "export": "Export to CSV/JSON"
+      },
+      "button": "Upgrade"
+    },
+    "pro": {
+      "name": "Pro",
+      "price": "$99",
+      "period": "/month",
+      "description": "For growing teams and businesses",
+      "popular": true,
+      "features": {
+        "upload": "200MB max upload",
+        "models": "Priority LLM access",
+        "visualizations": "Unlimited visualizations",
+        "support": "Priority support",
+        "datasets": "Team collaboration",
+        "export": "All export formats",
+        "api": "API access",
+        "insights": "Advanced insights"
+      },
+      "button": "Upgrade"
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "price": "Custom",
+      "period": "",
+      "description": "For large organizations",
+      "features": {
+        "upload": "Unlimited (streamed)",
+        "models": "Custom LLM deployment",
+        "visualizations": "Unlimited visualizations",
+        "support": "24/7 dedicated support",
+        "datasets": "Advanced security",
+        "export": "Custom integrations",
+        "api": "Full API access",
+        "insights": "Custom analytics",
+        "sso": "SSO/SAML",
+        "sla": "99.9% SLA"
+      },
+      "button": "Contact sales"
+    }
+  },
+  "features": {
+    "included": "Included",
+    "notIncluded": "Not included",
+    "unlimited": "Unlimited",
+    "custom": "Custom",
+    "comingSoon": "Coming soon"
+  },
+  "upgrade": {
+    "title": "Upgrade your plan",
+    "button": "Upgrade",
+    "signInRequired": "Sign in to upgrade",
+    "success": "Successfully upgraded to {plan}",
+    "failed": "Upgrade failed. Please try again.",
+    "processing": "Processing upgrade..."
+  },
+  "usage": {
+    "title": "Usage",
+    "current": "Current usage",
+    "limit": "Monthly limit",
+    "remaining": "Remaining",
+    "resets": "Resets {date}",
+    "uploads": "Uploads",
+    "visualizations": "Visualizations",
+    "storage": "Storage",
+    "apiCalls": "API calls"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "startFailed": "Unable to start checkout",
+    "redirecting": "Redirecting to checkout..."
+  },
+  "invoice": {
+    "title": "Invoice",
+    "download": "Download invoice",
+    "date": "Invoice date",
+    "due": "Due date",
+    "paid": "Paid",
+    "pending": "Pending",
+    "overdue": "Overdue"
+  }
+}

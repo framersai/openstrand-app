@@ -1,0 +1,87 @@
+// Forest Theme - Organic textures with natural tones
+
+@import '../abstracts/breakpoints';
+@import './theme-engine';
+
+@include define-theme(
+  'forest-light',
+  $primary: #2f855a,
+  $primary-light: #48bb78,
+  $primary-dark: #276749,
+  $secondary: #a3e635,
+  $secondary-light: #bef264,
+  $secondary-dark: #65a30d,
+  $tertiary: #78350f,
+  $accent: #d97706,
+  $accent-light: #f59e0b,
+  $accent-dark: #b45309,
+  $background: #f8faf3,
+  $background-secondary: #eef5e4,
+  $background-tertiary: #e2eed5,
+  $surface: #ffffff,
+  $surface-hover: #f4f9ec,
+  $text-primary: #1f3d2b,
+  $text-secondary: #34513c,
+  $text-muted: #4c6b4f,
+  $text-inverse: #f8faf3,
+  $border-color: rgba(47, 133, 90, 0.25),
+  $border-light: rgba(47, 133, 90, 0.12),
+  $border-heavy: rgba(32, 77, 52, 0.35),
+  $success: #2f855a,
+  $warning: #b45309,
+  $error: #b91c1c,
+  $info: #2f855a,
+  $shadow-small: 0 4px 12px rgba(31, 61, 43, 0.08),
+  $shadow-medium: 0 15px 25px rgba(47, 133, 90, 0.12),
+  $shadow-large: 0 25px 40px rgba(31, 61, 43, 0.16),
+  $shadow-color: rgba(31, 61, 43, 0.12),
+  $radius-small: 8px,
+  $radius-medium: 16px,
+  $radius-large: 32px,
+  $font-family-base: 'Inter',
+  $font-family-heading: 'Merriweather',
+  $blur-strength: 14px
+);
+
+@include define-dark-variant(
+  'forest-light',
+  (
+    'bg-primary': #121f18,
+    'bg-secondary': #18291f,
+    'bg-tertiary': #1f3226,
+    'bg-surface': #23392c,
+    'bg-surface-hover': #1c2d22,
+    'text-primary': #e6ffe0,
+    'text-secondary': #c6f6d5,
+    'text-muted': #9ae6b4,
+    'border-color': rgba(72, 187, 120, 0.35),
+    'border-light': rgba(72, 187, 120, 0.2),
+    'border-heavy': rgba(34, 78, 52, 0.5),
+    'shadow-sm': 0 6px 16px rgba(23, 43, 31, 0.5),
+    'shadow-md': 0 18px 30px rgba(72, 187, 120, 0.3),
+    'shadow-lg': 0 30px 45px rgba(46, 125, 86, 0.26),
+    'shadow-color': rgba(24, 41, 31, 0.3)
+  )
+);
+
+[data-theme='forest-light'] {
+  .forest-surface {
+    background: radial-gradient(circle at 10% 10%, rgba(72, 187, 120, 0.18), transparent 45%),
+      radial-gradient(circle at 80% 20%, rgba(34, 197, 94, 0.15), transparent 50%),
+      linear-gradient(135deg, rgba(72, 187, 120, 0.12), rgba(163, 230, 53, 0.12));
+    border: 1px solid rgba(47, 133, 90, 0.16);
+  }
+
+  .card-canopy {
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow:
+      0 16px 30px rgba(31, 61, 43, 0.12),
+      0 6px 16px rgba(47, 133, 90, 0.15);
+  }
+
+  .list-trail {
+    border-left: 2px dashed rgba(47, 133, 90, 0.3);
+    padding-left: 1rem;
+  }
+}

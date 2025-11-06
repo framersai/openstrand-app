@@ -1,0 +1,362 @@
+// Minimal Theme - Ultra-clean, whitespace-focused design with subtle accents
+
+@import '../abstracts/breakpoints';
+@import './theme-engine';
+
+// Minimal Light Theme
+@include define-theme(
+  'minimal-light',
+  // Core colors
+  $primary: #000000,              // Pure black
+  $primary-light: #404040,
+  $primary-dark: #000000,
+  $secondary: #808080,            // Mid gray
+  $secondary-light: #a0a0a0,
+  $secondary-dark: #606060,
+  $tertiary: #c0c0c0,             // Light gray
+  $accent: #0000ff,               // Pure blue accent (sparingly used)
+  $accent-light: #4040ff,
+  $accent-dark: #0000cc,
+  // Backgrounds
+  $background: #ffffff,
+  $background-secondary: #fafafa,
+  $background-tertiary: #f5f5f5,
+  $surface: #ffffff,
+  $surface-hover: #fafafa,
+  // Text colors
+  $text-primary: #000000,
+  $text-secondary: #606060,
+  $text-muted: #a0a0a0,
+  $text-inverse: #ffffff,
+  // UI elements
+  $border-color: #f0f0f0,
+  $border-light: #fafafa,
+  $border-heavy: #e0e0e0,
+  // Semantic colors
+  $success: #000000,
+  $warning: #606060,
+  $error: #000000,
+  $info: #0000ff,
+  // Shadows (very subtle)
+  $shadow-small: none,
+  $shadow-medium: 0 2px 8px rgba(0, 0, 0, 0.04),
+  $shadow-large: 0 4px 16px rgba(0, 0, 0, 0.06),
+  $shadow-color: rgba(0, 0, 0, 0.04),
+  // Additional properties
+  $radius-small: 2px,
+  $radius-medium: 4px,
+  $radius-large: 8px,
+  $font-family-base: 'Helvetica Neue',
+  $font-family-heading: 'Helvetica Neue'
+);
+
+// Minimal Dark Theme
+@include define-dark-variant(
+  'minimal-light',
+  (
+    // Backgrounds
+    'bg-primary': #000000,
+    'bg-secondary': #0a0a0a,
+    'bg-tertiary': #141414,
+    'bg-surface': #0a0a0a,
+    'bg-surface-hover': #141414,
+    // Text colors
+    'text-primary': #ffffff,
+    'text-secondary': #a0a0a0,
+    'text-muted': #606060,
+    'text-inverse': #000000,
+    // UI elements
+    'border-color': #1a1a1a,
+    'border-light': #0a0a0a,
+    'border-heavy': #2a2a2a,
+    // Accent adjustments for dark
+    'color-accent': #4040ff,
+    // Shadows
+    'shadow-sm': none,
+    'shadow-md': 0 2px 8px rgba(0, 0, 0, 0.2),
+    'shadow-lg': 0 4px 16px rgba(0, 0, 0, 0.3),
+    'shadow-color': rgba(0, 0, 0, 0.2)
+  )
+);
+
+// Minimal theme specific styles
+[data-theme='minimal-light'] {
+  // Typography focus
+  * {
+    letter-spacing: -0.01em;
+  }
+
+  body {
+    font-weight: 300;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 400;
+    margin: 2.5em 0 0.5em;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    line-height: 1.2;
+
+    @include min-width('md') {
+      font-size: 3rem;
+    }
+  }
+
+  h2 {
+    font-size: 1.875rem;
+    line-height: 1.3;
+
+    @include min-width('md') {
+      font-size: 2.25rem;
+    }
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    line-height: 1.4;
+
+    @include min-width('md') {
+      font-size: 1.75rem;
+    }
+  }
+
+  p {
+    line-height: 1.75;
+    margin: 0 0 1.5em;
+  }
+
+  // Invisible buttons
+  .btn-minimal {
+    background: transparent;
+    color: var(--text-primary);
+    border: none;
+    padding: 0.5em 0;
+    position: relative;
+    transition: color 0.2s ease;
+    font-weight: 400;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--text-primary);
+      transition: width 0.3s ease;
+    }
+
+    &:hover {
+      &::after {
+        width: 100%;
+      }
+    }
+
+    &.primary {
+      color: var(--color-accent);
+
+      &::after {
+        background: var(--color-accent);
+      }
+    }
+  }
+
+  // Borderless cards
+  .card-minimal {
+    background: var(--bg-surface);
+    padding: 3rem 0;
+    border: none;
+    box-shadow: none;
+
+    &.bordered {
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    @include max-width('md') {
+      padding: 2rem 0;
+    }
+  }
+
+  // Clean forms
+  .input-minimal {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75em 0;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    width: 100%;
+
+    &:focus {
+      outline: none;
+      border-bottom-color: var(--text-primary);
+    }
+
+    &::placeholder {
+      color: var(--text-muted);
+    }
+  }
+
+  .select-minimal {
+    appearance: none;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75em 0;
+    cursor: pointer;
+
+    &::after {
+      content: '↓';
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+
+  // Subtle dividers
+  .divider {
+    border: none;
+    height: 1px;
+    background: var(--border-color);
+    margin: 3rem 0;
+
+    &.thick {
+      height: 2px;
+      background: var(--text-primary);
+    }
+
+    &.dotted {
+      background: none;
+      border-top: 1px dotted var(--border-color);
+    }
+  }
+
+  // Whitespace sections
+  .section-minimal {
+    padding: 6rem 0;
+
+    @include max-width('md') {
+      padding: 3rem 0;
+    }
+
+    &.compact {
+      padding: 3rem 0;
+
+      @include max-width('md') {
+        padding: 1.5rem 0;
+      }
+    }
+  }
+
+  // Minimal navigation
+  .nav-minimal {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--border-color);
+
+    a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      font-weight: 300;
+
+      &:hover,
+      &.active {
+        color: var(--text-primary);
+      }
+    }
+
+    @include max-width('md') {
+      gap: 1rem;
+      padding: 1rem 0;
+    }
+  }
+
+  // Focus on content
+  .content-focus {
+    max-width: 65ch;
+    margin: 0 auto;
+    padding: 4rem 1rem;
+
+    @include min-width('md') {
+      padding: 6rem 2rem;
+    }
+  }
+
+  // Minimal tables
+  .table-minimal {
+    width: 100%;
+    border-collapse: collapse;
+
+    thead {
+      border-bottom: 1px solid var(--border-color);
+
+      th {
+        padding: 1rem 0;
+        text-align: left;
+        font-weight: 400;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid var(--border-light);
+
+        &:last-child {
+          border-bottom: none;
+        }
+      }
+
+      td {
+        padding: 1rem 0;
+        font-weight: 300;
+      }
+    }
+  }
+
+  // Minimal charts
+  .chart-minimal {
+    filter: grayscale(0.5);
+    opacity: 0.9;
+
+    &:hover {
+      filter: grayscale(0);
+      opacity: 1;
+    }
+  }
+
+  // Mobile optimizations
+  @include max-width('md') {
+    // Increase touch targets while keeping visual minimalism
+    .btn-minimal {
+      padding: 0.75em 0.5em;
+      margin: -0.25em -0.5em;
+    }
+
+    // Optimize readability
+    body {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+  }
+
+  // Reduced motion
+  @include reduced-motion {
+    * {
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

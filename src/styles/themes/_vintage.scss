@@ -1,0 +1,259 @@
+// Vintage Theme - Retro design with warm colors and nostalgic elements
+
+@import '../abstracts/breakpoints';
+@import './theme-engine';
+
+// Vintage Light Theme
+@include define-theme(
+  'vintage-light',
+  // Core colors
+  $primary: #8b4513,              // Saddle brown
+  $primary-light: #a0522d,
+  $primary-dark: #654321,
+  $secondary: #cd853f,            // Peru
+  $secondary-light: #deb887,
+  $secondary-dark: #bc9a6a,
+  $tertiary: #556b2f,             // Olive drab
+  $accent: #b22222,               // Fire brick
+  $accent-light: #dc143c,
+  $accent-dark: #8b0000,
+  // Backgrounds
+  $background: #fdf5e6,           // Old lace
+  $background-secondary: #faebd7, // Antique white
+  $background-tertiary: #f5deb3,  // Wheat
+  $surface: #fff8dc,              // Cornsilk
+  $surface-hover: #faebd7,
+  // Text colors
+  $text-primary: #2f1b14,
+  $text-secondary: #5d4037,
+  $text-muted: #8d6e63,
+  $text-inverse: #fdf5e6,
+  // UI elements
+  $border-color: #d2b48c,         // Tan
+  $border-light: #deb887,
+  $border-heavy: #a0826d,
+  // Semantic colors
+  $success: #556b2f,
+  $warning: #ff8c00,
+  $error: #8b0000,
+  $info: #4682b4,
+  // Shadows
+  $shadow-small: 0 2px 4px rgba(101, 67, 33, 0.15),
+  $shadow-medium: 0 4px 8px rgba(101, 67, 33, 0.2),
+  $shadow-large: 0 8px 16px rgba(101, 67, 33, 0.25),
+  $shadow-color: rgba(101, 67, 33, 0.2),
+  // Additional properties
+  $radius-small: 2px,
+  $radius-medium: 4px,
+  $radius-large: 8px,
+  $font-family-base: 'Courier New',
+  $font-family-heading: 'Rockwell'
+);
+
+// Vintage Dark Theme
+@include define-dark-variant(
+  'vintage-light',
+  (
+    // Backgrounds
+    'bg-primary': #2f1b14,
+    'bg-secondary': #3e2723,
+    'bg-tertiary': #4e342e,
+    'bg-surface': #3e2723,
+    'bg-surface-hover': #4e342e,
+    // Text colors
+    'text-primary': #fdf5e6,
+    'text-secondary': #deb887,
+    'text-muted': #a0826d,
+    'text-inverse': #2f1b14,
+    // UI elements
+    'border-color': #5d4037,
+    'border-light': #4e342e,
+    'border-heavy': #6d4c41,
+    // Shadows
+    'shadow-sm': 0 2px 4px rgba(0, 0, 0, 0.4),
+    'shadow-md': 0 4px 8px rgba(0, 0, 0, 0.5),
+    'shadow-lg': 0 8px 16px rgba(0, 0, 0, 0.6),
+    'shadow-color': rgba(0, 0, 0, 0.5)
+  )
+);
+
+// Vintage theme specific styles
+[data-theme='vintage-light'] {
+  // Typewriter font effect
+  .typewriter {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.1em;
+
+    &::after {
+      content: '_';
+      animation: blink 1s infinite;
+    }
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  // Vintage photo frame
+  .photo-frame {
+    position: relative;
+    padding: 1rem;
+    background: linear-gradient(45deg, #f5deb3 25%, transparent 25%),
+                linear-gradient(-45deg, #f5deb3 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #f5deb3 75%),
+                linear-gradient(-45deg, transparent 75%, #f5deb3 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    box-shadow:
+      inset 0 0 0 3px #8b4513,
+      inset 0 0 0 6px #cd853f,
+      0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  // Retro button styles
+  .btn-retro {
+    position: relative;
+    padding: 0.625rem 1.25rem;
+    background: linear-gradient(180deg, #cd853f 0%, #8b4513 100%);
+    color: var(--text-inverse);
+    border: 2px solid #654321;
+    border-radius: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: bold;
+    box-shadow:
+      inset 0 -4px 0 rgba(0, 0, 0, 0.2),
+      0 4px 0 #654321;
+    transform: translateY(-2px);
+    transition: all 0.1s ease;
+
+    &:active {
+      transform: translateY(2px);
+      box-shadow:
+        inset 0 -2px 0 rgba(0, 0, 0, 0.2),
+        0 2px 0 #654321;
+    }
+  }
+
+  // Aged paper effect
+  .aged-paper {
+    position: relative;
+    background:
+      radial-gradient(ellipse at top left, rgba(139, 69, 19, 0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at bottom right, rgba(205, 133, 63, 0.1) 0%, transparent 50%),
+      linear-gradient(180deg, #fdf5e6 0%, #faebd7 100%);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(139, 69, 19, 0.03) 2px,
+          rgba(139, 69, 19, 0.03) 4px
+        );
+      pointer-events: none;
+    }
+  }
+
+  // Vintage stamp effect
+  .stamp {
+    position: relative;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    color: var(--accent);
+    border: 3px solid var(--accent);
+    border-radius: 4px;
+    transform: rotate(-2deg);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: var(--bg-primary);
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+    }
+
+    &::before {
+      top: -5px;
+      left: -5px;
+    }
+
+    &::after {
+      bottom: -5px;
+      right: -5px;
+    }
+  }
+
+  // Vintage card with torn edges
+  .card-vintage {
+    position: relative;
+    background: var(--bg-surface);
+    padding: 2rem;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 8px;
+      background:
+        linear-gradient(
+          45deg,
+          transparent 33.333%,
+          var(--bg-primary) 33.333%,
+          var(--bg-primary) 66.667%,
+          transparent 66.667%
+        );
+      background-size: 16px 100%;
+    }
+
+    &::before {
+      top: -8px;
+    }
+
+    &::after {
+      bottom: -8px;
+      transform: rotate(180deg);
+    }
+  }
+
+  // Vintage typography
+  h1, h2, h3 {
+    text-shadow:
+      2px 2px 0 var(--border-color),
+      3px 3px 0 var(--shadow-color);
+  }
+
+  // Mobile optimizations
+  @include max-width('md') {
+    .btn-retro {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+    }
+
+    .card-vintage {
+      padding: 1rem;
+    }
+
+    .stamp {
+      transform: rotate(0deg);
+    }
+  }
+
+  // Sepia filter for images
+  img.vintage {
+    filter: sepia(0.4) contrast(1.1) brightness(0.9);
+  }
+}

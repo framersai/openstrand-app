@@ -1,0 +1,110 @@
+// Space Theme - Cosmic exploration with luminous accents
+
+@import '../abstracts/breakpoints';
+@import './theme-engine';
+
+@include define-theme(
+  'space-light',
+  $primary: #6366f1,
+  $primary-light: #818cf8,
+  $primary-dark: #4f46e5,
+  $secondary: #f472b6,
+  $secondary-light: #f9a8d4,
+  $secondary-dark: #db2777,
+  $tertiary: #22d3ee,
+  $accent: #facc15,
+  $accent-light: #fde047,
+  $accent-dark: #ca8a04,
+  $background: #f8f7ff,
+  $background-secondary: #ede9fe,
+  $background-tertiary: #e0f2ff,
+  $surface: #ffffff,
+  $surface-hover: #f4f3ff,
+  $text-primary: #1f1b4b,
+  $text-secondary: #312e81,
+  $text-muted: #4338ca,
+  $text-inverse: #f8f7ff,
+  $border-color: rgba(99, 102, 241, 0.2),
+  $border-light: rgba(99, 102, 241, 0.1),
+  $border-heavy: rgba(79, 70, 229, 0.35),
+  $success: #0ea5e9,
+  $warning: #facc15,
+  $error: #ef4444,
+  $info: #6366f1,
+  $shadow-small: 0 6px 16px rgba(31, 27, 75, 0.1),
+  $shadow-medium: 0 18px 32px rgba(79, 70, 229, 0.18),
+  $shadow-large: 0 28px 48px rgba(31, 27, 75, 0.2),
+  $shadow-color: rgba(31, 27, 75, 0.15),
+  $radius-small: 12px,
+  $radius-medium: 22px,
+  $radius-large: 36px,
+  $font-family-base: 'Inter',
+  $font-family-heading: 'Poppins',
+  $blur-strength: 20px
+);
+
+@include define-dark-variant(
+  'space-light',
+  (
+    'bg-primary': #09091f,
+    'bg-secondary': #111133,
+    'bg-tertiary': #1f2046,
+    'bg-surface': #161632,
+    'bg-surface-hover': #1d1d3d,
+    'text-primary': #eef2ff,
+    'text-secondary': #c7d2fe,
+    'text-muted': #a5b4fc,
+    'border-color': rgba(99, 102, 241, 0.35),
+    'border-light': rgba(99, 102, 241, 0.2),
+    'border-heavy': rgba(76, 29, 149, 0.45),
+    'shadow-sm': 0 10px 20px rgba(12, 12, 30, 0.55),
+    'shadow-md': 0 24px 42px rgba(99, 102, 241, 0.35),
+    'shadow-lg': 0 36px 60px rgba(9, 9, 31, 0.4),
+    'shadow-color': rgba(12, 12, 30, 0.32)
+  )
+);
+
+[data-theme='space-light'] {
+  .space-field {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(34, 211, 238, 0.12));
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(2px 2px at 10% 20%, rgba(99, 102, 241, 0.7), transparent),
+        radial-gradient(2px 2px at 30% 40%, rgba(250, 204, 21, 0.6), transparent),
+        radial-gradient(3px 3px at 70% 30%, rgba(34, 211, 238, 0.5), transparent),
+        radial-gradient(2px 2px at 80% 70%, rgba(244, 114, 182, 0.6), transparent);
+      animation: stars-twinkle 12s linear infinite;
+      opacity: 0.8;
+    }
+  }
+
+  .card-nebula {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(99, 102, 241, 0.22);
+    box-shadow:
+      0 20px 45px rgba(99, 102, 241, 0.2),
+      0 8px 20px rgba(31, 27, 75, 0.14);
+    backdrop-filter: blur(16px);
+  }
+}
+
+@keyframes stars-twinkle {
+  0% {
+    transform: translateY(0);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 0.8;
+  }
+}

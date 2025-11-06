@@ -1,0 +1,75 @@
+{
+  "general": {
+    "title": "Error",
+    "unknown": "An unknown error occurred",
+    "tryAgain": "Please try again",
+    "goBack": "Go back",
+    "goHome": "Go to home",
+    "refresh": "Refresh page",
+    "contactSupport": "Contact support"
+  },
+  "network": {
+    "title": "Network Error",
+    "offline": "You appear to be offline",
+    "slow": "The connection is slow",
+    "timeout": "Request timed out",
+    "serverError": "Server error occurred",
+    "unavailable": "Service unavailable"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email",
+    "password": "Password must be at least 8 characters",
+    "passwordMatch": "Passwords do not match",
+    "number": "Please enter a valid number",
+    "date": "Please enter a valid date",
+    "url": "Please enter a valid URL",
+    "min": "Minimum value is {min}",
+    "max": "Maximum value is {max}",
+    "minLength": "Minimum length is {min} characters",
+    "maxLength": "Maximum length is {max} characters"
+  },
+  "file": {
+    "tooLarge": "File size exceeds {size}MB limit",
+    "invalidType": "Invalid file type",
+    "uploadFailed": "File upload failed",
+    "processingFailed": "File processing failed",
+    "readFailed": "Failed to read file",
+    "corrupt": "File appears to be corrupt"
+  },
+  "data": {
+    "loadFailed": "Failed to load data",
+    "saveFailed": "Failed to save data",
+    "deleteFailed": "Failed to delete data",
+    "updateFailed": "Failed to update data",
+    "notFound": "Data not found",
+    "invalidFormat": "Invalid data format"
+  },
+  "auth": {
+    "unauthorized": "Unauthorized access",
+    "forbidden": "Access forbidden",
+    "sessionExpired": "Session expired",
+    "invalidToken": "Invalid authentication token"
+  },
+  "api": {
+    "limitExceeded": "API rate limit exceeded",
+    "quotaExceeded": "API quota exceeded",
+    "invalidKey": "Invalid API key",
+    "keyExpired": "API key expired",
+    "providerError": "Provider error occurred"
+  },
+  "pages": {
+    "404": {
+      "title": "Page Not Found",
+      "description": "The page you're looking for doesn't exist"
+    },
+    "500": {
+      "title": "Server Error",
+      "description": "Something went wrong on our end"
+    },
+    "503": {
+      "title": "Service Unavailable",
+      "description": "We're temporarily offline for maintenance"
+    }
+  }
+}

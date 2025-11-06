@@ -1,0 +1,320 @@
+// Paper Theme - Clean, minimalist design inspired by paper documents and print
+
+@import '../abstracts/breakpoints';
+@import './theme-engine';
+
+// Paper Light Theme
+@include define-theme(
+  'paper-light',
+  // Core colors
+  $primary: #000000,              // Pure black (ink)
+  $primary-light: #333333,
+  $primary-dark: #000000,
+  $secondary: #666666,            // Gray
+  $secondary-light: #999999,
+  $secondary-dark: #333333,
+  $tertiary: #0066cc,             // Blue ink
+  $accent: #cc0000,               // Red ink
+  $accent-light: #ff3333,
+  $accent-dark: #990000,
+  // Backgrounds
+  $background: #ffffff,
+  $background-secondary: #fafafa,
+  $background-tertiary: #f5f5f5,
+  $surface: #ffffff,
+  $surface-hover: #fafafa,
+  // Text colors
+  $text-primary: #000000,
+  $text-secondary: #333333,
+  $text-muted: #666666,
+  $text-inverse: #ffffff,
+  // UI elements
+  $border-color: #e0e0e0,
+  $border-light: #f0f0f0,
+  $border-heavy: #cccccc,
+  // Semantic colors
+  $success: #008000,
+  $warning: #ff6600,
+  $error: #cc0000,
+  $info: #0066cc,
+  // Shadows
+  $shadow-small: 0 1px 1px rgba(0, 0, 0, 0.06),
+  $shadow-medium: 0 2px 4px rgba(0, 0, 0, 0.08),
+  $shadow-large: 0 4px 8px rgba(0, 0, 0, 0.1),
+  $shadow-color: rgba(0, 0, 0, 0.08),
+  // Additional properties
+  $radius-small: 0px,
+  $radius-medium: 0px,
+  $radius-large: 0px,
+  $font-family-base: 'Times New Roman',
+  $font-family-heading: 'Georgia',
+  $font-family-mono: 'Courier New'
+);
+
+// Paper Dark Theme (Inverted for night reading)
+@include define-dark-variant(
+  'paper-light',
+  (
+    // Backgrounds
+    'bg-primary': #1a1a1a,
+    'bg-secondary': #262626,
+    'bg-tertiary': #333333,
+    'bg-surface': #262626,
+    'bg-surface-hover': #333333,
+    // Text colors
+    'text-primary': #e0e0e0,
+    'text-secondary': #cccccc,
+    'text-muted': #999999,
+    'text-inverse': #1a1a1a,
+    // UI elements
+    'border-color': #404040,
+    'border-light': #333333,
+    'border-heavy': #666666,
+    // Keep colors muted in dark mode
+    'color-primary': #e0e0e0,
+    'color-accent': #ff6666,
+    'color-tertiary': '#66a3ff'
+  )
+);
+
+// Paper theme specific styles
+[data-theme='paper-light'] {
+  // Document-like layout
+  .document {
+    max-width: 816px; // US Letter width at 96 DPI
+    margin: 0 auto;
+    padding: 96px 72px; // 1 inch margins
+    background: var(--bg-surface);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+    @include max-width('md') {
+      padding: 24px 16px;
+    }
+  }
+
+  // Print-like typography
+  body {
+    font-size: 12pt;
+    line-height: 1.8;
+  }
+
+  h1 {
+    font-size: 24pt;
+    font-weight: normal;
+    margin: 2em 0 1em;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.25em;
+  }
+
+  h2 {
+    font-size: 18pt;
+    font-weight: normal;
+    margin: 1.5em 0 0.75em;
+  }
+
+  h3 {
+    font-size: 14pt;
+    font-weight: bold;
+    margin: 1.2em 0 0.6em;
+  }
+
+  p {
+    text-align: justify;
+    text-indent: 2em;
+    margin: 0 0 1em;
+
+    &.no-indent {
+      text-indent: 0;
+    }
+  }
+
+  // Minimalist buttons
+  .btn-paper {
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-heavy);
+    padding: 0.5em 1em;
+    font-family: inherit;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: var(--bg-secondary);
+    }
+
+    &:active {
+      background: var(--bg-tertiary);
+    }
+
+    &.primary {
+      background: var(--text-primary);
+      color: var(--bg-surface);
+      border-color: var(--text-primary);
+
+      &:hover {
+        background: var(--text-secondary);
+        border-color: var(--text-secondary);
+      }
+    }
+  }
+
+  // Table styling like academic papers
+  .table-paper {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2em 0;
+    font-size: 0.9em;
+
+    caption {
+      margin-bottom: 1em;
+      font-style: italic;
+      text-align: left;
+    }
+
+    thead {
+      border-top: 2px solid var(--text-primary);
+      border-bottom: 1px solid var(--text-primary);
+
+      th {
+        padding: 0.5em 0;
+        text-align: left;
+        font-weight: normal;
+      }
+    }
+
+    tbody {
+      tr:last-child {
+        border-bottom: 2px solid var(--text-primary);
+      }
+
+      td {
+        padding: 0.5em 0;
+      }
+    }
+
+    // Footnotes
+    tfoot {
+      font-size: 0.85em;
+      font-style: italic;
+
+      td {
+        padding-top: 0.5em;
+      }
+    }
+  }
+
+  // Quotation blocks
+  blockquote {
+    margin: 2em 3em;
+    font-style: italic;
+    border-left: 3px solid var(--border-heavy);
+    padding-left: 1em;
+  }
+
+  // Code blocks like typewriter
+  pre, code {
+    font-family: var(--font-mono);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+  }
+
+  code {
+    padding: 0.1em 0.3em;
+    font-size: 0.9em;
+  }
+
+  pre {
+    padding: 1em;
+    overflow-x: auto;
+    line-height: 1.4;
+  }
+
+  // Form elements
+  .input-paper {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-heavy);
+    padding: 0.25em 0;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-bottom-color: var(--text-primary);
+    }
+  }
+
+  // Page numbers
+  .page-number {
+    position: fixed;
+    bottom: 48px;
+    right: 72px;
+    font-size: 10pt;
+    color: var(--text-muted);
+
+    @include max-width('md') {
+      bottom: 16px;
+      right: 16px;
+    }
+  }
+
+  // Footnotes
+  .footnote {
+    vertical-align: super;
+    font-size: 0.75em;
+    line-height: 0;
+
+    &:before {
+      content: '[';
+    }
+
+    &:after {
+      content: ']';
+    }
+  }
+
+  // Mobile adjustments
+  @include max-width('md') {
+    body {
+      font-size: 10pt;
+    }
+
+    h1 {
+      font-size: 18pt;
+    }
+
+    h2 {
+      font-size: 14pt;
+    }
+
+    h3 {
+      font-size: 12pt;
+    }
+
+    p {
+      text-align: left;
+      text-indent: 0;
+    }
+  }
+
+  // Print optimization
+  @include print {
+    .document {
+      box-shadow: none;
+      padding: 0;
+    }
+
+    .no-print {
+      display: none !important;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+    }
+
+    a[href]:after {
+      content: " (" attr(href) ")";
+      font-size: 0.8em;
+    }
+  }
+}

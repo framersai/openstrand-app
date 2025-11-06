@@ -1,0 +1,79 @@
+{
+  "title": "Visualizations",
+  "create": {
+    "title": "Create visualization",
+    "description": "Describe what you want to visualize using natural language",
+    "placeholder": "Describe what you want to visualize...",
+    "modifyPlaceholder": "Describe how to modify this visualization...",
+    "button": "Generate",
+    "processing": "Processing",
+    "suggestions": "Suggestions",
+    "history": "History",
+    "tryPrompts": "Try these prompts:",
+    "recentPrompts": "Recent prompts:"
+  },
+  "display": {
+    "empty": "No Visualizations Yet",
+    "emptyDescription": "Upload a dataset and describe what you want to visualize using natural language",
+    "count": "Visualizations ({count})",
+    "updated": "Visualization updated",
+    "created": "Visualization created successfully",
+    "exported": "Visualization exported"
+  },
+  "metadata": {
+    "dataset": "Dataset",
+    "prompt": "Prompt",
+    "cost": "Cost",
+    "generated": "Generated",
+    "provider": "Provider",
+    "heuristic": "Heuristic",
+    "llm": "LLM",
+    "debug": {
+      "columns": "Columns",
+      "rows": "Rows"
+    }
+  },
+  "actions": {
+    "maximize": "Maximize",
+    "minimize": "Minimize",
+    "edit": "Edit",
+    "download": "Download",
+    "copy": "Copy",
+    "delete": "Delete",
+    "duplicate": "Duplicate",
+    "share": "Share",
+    "export": "Export"
+  },
+  "feedback": {
+    "thumbsUp": "Thumbs up",
+    "thumbsDown": "Thumbs down",
+    "favorite": "Favorite",
+    "submitFailed": "Unable to submit visualization feedback",
+    "favoriteFailed": "Unable to update visualization favorite"
+  },
+  "leaderboard": {
+    "title": "Visualizations",
+    "score": "Score {score}"
+  },
+  "chartTypes": {
+    "bar": "Bar Chart",
+    "line": "Line Chart",
+    "pie": "Pie Chart",
+    "scatter": "Scatter Plot",
+    "area": "Area Chart",
+    "donut": "Donut Chart",
+    "radar": "Radar Chart",
+    "bubble": "Bubble Chart",
+    "heatmap": "Heatmap",
+    "treemap": "Treemap",
+    "table": "Table",
+    "pivot": "Pivot Table"
+  },
+  "errors": {
+    "generationFailed": "Failed to generate visualization",
+    "invalidPrompt": "Please provide a valid prompt",
+    "noData": "No data available for visualization",
+    "renderFailed": "Failed to render visualization",
+    "exportFailed": "Failed to export visualization"
+  }
+}

@@ -1,0 +1,19 @@
+@import '../abstracts/variables';
+
+.stack-sm {
+  display: flex;
+  flex-direction: column;
+  gap: map-get($spacing, 4);
+}
+
+.stack-md {
+  display: flex;
+  flex-direction: column;
+  gap: map-get($spacing, 6);
+}
+
+.stack-lg {
+  display: flex;
+  flex-direction: column;
+  gap: map-get($spacing, 8);
+}

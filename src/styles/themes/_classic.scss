@@ -1,0 +1,227 @@
+// Classic Theme - Professional, traditional design with navy and gold accents
+
+@import '../abstracts/breakpoints';
+@import './theme-engine';
+
+// Classic Light Theme
+@include define-theme(
+  'classic-light',
+  // Core colors
+  $primary: #1e3a8a,              // Navy blue
+  $primary-light: #3b5998,
+  $primary-dark: #0f172a,
+  $secondary: #b8860b,            // Gold
+  $secondary-light: #daa520,
+  $secondary-dark: #996515,
+  $tertiary: #2f4f4f,             // Dark slate gray
+  $accent: #8b4513,               // Saddle brown
+  $accent-light: #a0522d,
+  $accent-dark: #654321,
+  // Backgrounds
+  $background: #fafaf9,
+  $background-secondary: #f5f5f4,
+  $background-tertiary: #e7e5e4,
+  $surface: #ffffff,
+  $surface-hover: #f5f5f4,
+  // Text colors
+  $text-primary: #1c1917,
+  $text-secondary: #44403c,
+  $text-muted: #78716c,
+  $text-inverse: #ffffff,
+  // UI elements
+  $border-color: #d6d3d1,
+  $border-light: #e7e5e4,
+  $border-heavy: #a8a29e,
+  // Semantic colors
+  $success: #065f46,
+  $warning: #b45309,
+  $error: #991b1b,
+  $info: #1e3a8a,
+  // Shadows
+  $shadow-small: 0 1px 2px rgba(0, 0, 0, 0.08),
+  $shadow-medium: 0 2px 4px rgba(0, 0, 0, 0.12),
+  $shadow-large: 0 4px 8px rgba(0, 0, 0, 0.16),
+  $shadow-color: rgba(0, 0, 0, 0.1),
+  // Additional properties
+  $radius-small: 3px,
+  $radius-medium: 6px,
+  $radius-large: 10px,
+  $font-family-base: 'Georgia',
+  $font-family-heading: 'Playfair Display'
+);
+
+// Classic Dark Theme
+@include define-dark-variant(
+  'classic-light',
+  (
+    // Backgrounds
+    'bg-primary': #1c1917,
+    'bg-secondary': #292524,
+    'bg-tertiary': #44403c,
+    'bg-surface': #292524,
+    'bg-surface-hover': #44403c,
+    // Text colors
+    'text-primary': #fafaf9,
+    'text-secondary': #d6d3d1,
+    'text-muted': #a8a29e,
+    'text-inverse': #1c1917,
+    // UI elements
+    'border-color': #44403c,
+    'border-light': #292524,
+    'border-heavy': #57534e,
+    // Shadows
+    'shadow-sm': 0 1px 2px rgba(0, 0, 0, 0.4),
+    'shadow-md': 0 2px 4px rgba(0, 0, 0, 0.5),
+    'shadow-lg': 0 4px 8px rgba(0, 0, 0, 0.6),
+    'shadow-color': rgba(0, 0, 0, 0.5)
+  )
+);
+
+// Classic theme specific styles
+[data-theme='classic-light'] {
+  // Typography emphasis
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.02em;
+
+    // Gold accent underline for headings
+    &.accent {
+      position: relative;
+      display: inline-block;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 40%;
+        height: 3px;
+        background: var(--color-secondary);
+        border-radius: 2px;
+      }
+    }
+  }
+
+  // Classic button styles
+  .btn-classic {
+    background: linear-gradient(180deg, #ffffff 0%, #f5f5f4 100%);
+    border: 1px solid var(--border-heavy);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+
+    &:hover {
+      background: linear-gradient(180deg, #f5f5f4 0%, #e7e5e4 100%);
+    }
+
+    &.primary {
+      background: var(--color-primary);
+      color: var(--text-inverse);
+      border-color: var(--color-primary-dark);
+      text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  // Paper texture effect
+  .paper-texture {
+    position: relative;
+    background-color: var(--bg-surface);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      background-image:
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 0, 0, 0.1) 2px,
+          rgba(0, 0, 0, 0.1) 4px
+        );
+      pointer-events: none;
+    }
+  }
+
+  // Classic card with drop shadow
+  .card-classic {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.12),
+      0 1px 2px rgba(0, 0, 0, 0.24);
+
+    // Header with divider
+    .card-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 2px solid var(--color-secondary);
+      background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-secondary) 100%);
+    }
+  }
+
+  // Classic table styling
+  .table-classic {
+    border-collapse: separate;
+    border-spacing: 0;
+
+    thead {
+      background: var(--color-primary);
+      color: var(--text-inverse);
+
+      th {
+        padding: 0.75rem 1rem;
+        font-weight: 600;
+        letter-spacing: 0.025em;
+        text-transform: uppercase;
+        font-size: 0.875rem;
+      }
+    }
+
+    tbody {
+      tr {
+        &:nth-child(even) {
+          background: var(--bg-secondary);
+        }
+
+        &:hover {
+          background: var(--bg-tertiary);
+        }
+      }
+
+      td {
+        padding: 0.75rem 1rem;
+        border-top: 1px solid var(--border-light);
+      }
+    }
+  }
+
+  // Gold trim accent
+  .gold-trim {
+    border: 2px solid var(--color-secondary);
+    box-shadow:
+      inset 0 0 0 1px var(--color-secondary-light),
+      0 2px 4px rgba(184, 134, 11, 0.2);
+  }
+
+  // Mobile adjustments
+  @include max-width('md') {
+    // Simplified styles for mobile
+    .card-classic {
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-classic {
+      padding: 0.75rem 1rem;
+      font-size: 0.9375rem;
+    }
+  }
+
+  // Print styles
+  @include print {
+    * {
+      background: white !important;
+      color: black !important;
+      box-shadow: none !important;
+    }
+  }
+}
