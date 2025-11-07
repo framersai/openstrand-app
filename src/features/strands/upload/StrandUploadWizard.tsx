@@ -285,16 +285,18 @@ export function StrandUploadWizard(): JSX.Element {
             {STEPS.map((step, index) => {
               const isActive = index === stepIndex;
               const isDone = index < stepIndex;
+              let stepClassName = 'border-border/60 text-muted-foreground';
+              if (isActive) {
+                stepClassName = 'border-primary/50 bg-primary/10 text-primary';
+              } else if (isDone) {
+                stepClassName = 'border-emerald-300/60 bg-emerald-50 text-emerald-600';
+              }
               return (
                 <div
                   key={step.id}
                   className={cn(
                     'flex flex-col items-center rounded-xl border px-3 py-2 text-xs transition',
-                    isActive
-                      ? 'border-primary/50 bg-primary/10 text-primary'
-                      : isDone
-                        ? 'border-emerald-300/60 bg-emerald-50 text-emerald-600'
-                        : 'border-border/60 text-muted-foreground'
+                    stepClassName
                   )}
                 >
                   <span className="font-semibold">{index + 1}</span>
