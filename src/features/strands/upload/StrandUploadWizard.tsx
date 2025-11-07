@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useCallback, useReducer, useState } from 'react';
+import { useCallback, useMemo, useReducer, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, Sparkles, UploadCloud } from 'lucide-react';
@@ -261,16 +261,15 @@ export function StrandUploadWizard(): JSX.Element {
     }
   }, [router, state.acknowledged, state.draft.allowStructureRequests, state.draft.content, state.draft.datasetId, state.draft.license, state.draft.noteType, state.draft.references, state.draft.scopeId, state.draft.strandType, state.draft.summary, state.draft.tags, state.draft.title, state.forceDuplicate, state.verification]);
 
-  let policyNote: string;
-  if (mode === 'cloud') {
-    policyNote =
-      'Cloud review enforces duplicate detection by default, with per-strand overrides logged for audit.';
-  } else if (mode === 'team') {
-    policyNote =
-      'Team spaces can toggle moderation, enforce duplicate removal, or allow trusted overrides in settings.';
-  } else {
-    policyNote = 'Offline mode keeps hashes locally. Enforce authorship policies manually.';
-  }
+  const policyNote = useMemo(() => {
+    if (mode === 'cloud') {
+      return 'Cloud review enforces duplicate detection by default, with per-strand overrides logged for audit.';
+    } else if (mode === 'team') {
+      return 'Team spaces can toggle moderation, enforce duplicate removal, or allow trusted overrides in settings.';
+    } else {
+      return 'Offline mode keeps hashes locally. Enforce authorship policies manually.';
+    }
+  }, [mode]);
 
   const datasetHint = state.draft.strandType === 'dataset';
 
