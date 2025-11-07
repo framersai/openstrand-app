@@ -261,13 +261,6 @@ export function StrandUploadWizard(): JSX.Element {
     }
   }, [router, state.acknowledged, state.draft.allowStructureRequests, state.draft.content, state.draft.datasetId, state.draft.license, state.draft.noteType, state.draft.references, state.draft.scopeId, state.draft.strandType, state.draft.summary, state.draft.tags, state.draft.title, state.forceDuplicate, state.verification]);
 
-  let policyNote = 'Offline mode keeps hashes locally. Enforce authorship policies manually.';
-  if (mode === 'cloud') {
-    policyNote = 'Cloud review enforces duplicate detection by default, with per-strand overrides logged for audit.';
-  } else if (mode === 'team') {
-    policyNote = 'Team spaces can toggle moderation, enforce duplicate removal, or allow trusted overrides in settings.';
-  }
-
   const datasetHint = state.draft.strandType === 'dataset';
 
   return (
@@ -276,7 +269,13 @@ export function StrandUploadWizard(): JSX.Element {
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-3xl font-semibold tracking-tight">Create a strand</h1>
-            <p className="text-sm text-muted-foreground">{policyNote}</p>
+            <p className="text-sm text-muted-foreground">
+              {mode === 'cloud'
+                ? 'Cloud review enforces duplicate detection by default, with per-strand overrides logged for audit.'
+                : mode === 'team'
+                ? 'Team spaces can toggle moderation, enforce duplicate removal, or allow trusted overrides in settings.'
+                : 'Offline mode keeps hashes locally. Enforce authorship policies manually.'}
+            </p>
           </div>
           <div className="flex items-center gap-2">
             {STEPS.map((step, index) => {
