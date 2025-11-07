@@ -330,8 +330,8 @@ export function DatasetSubmissionWizard(): JSX.Element {
     mode === 'cloud'
       ? 'Cloud moderation blocks accidental duplicates by default, while editors can override per upload with audit markers.'
       : mode === 'team'
-        ? 'Team administrators can enforce duplicate removal from workspace settings and allow trusted overrides.'
-        : 'Offline mode uses local hashing only. Review uploads manually for distribution rights.';
+      ? 'Team administrators can enforce duplicate removal from workspace settings and allow trusted overrides.'
+      : 'Offline mode uses local hashing only. Review uploads manually for distribution rights.';
 
   return (
     <div className="space-y-10">

@@ -1,0 +1,12 @@
+
+# Build artifacts
+.next/
+.next/**
+node_modules/
+out/
+
+# Build artifacts
+.next/
+.next/**
+node_modules/
+out/

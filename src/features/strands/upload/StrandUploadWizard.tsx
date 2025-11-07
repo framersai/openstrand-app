@@ -264,8 +264,8 @@ export function StrandUploadWizard(): JSX.Element {
     mode === 'cloud'
       ? 'Cloud review enforces duplicate detection by default, with per-strand overrides logged for audit.'
       : mode === 'team'
-        ? 'Team spaces can toggle moderation, enforce duplicate removal, or allow trusted overrides in settings.'
-        : 'Offline mode keeps hashes locally. Enforce authorship policies manually.';
+      ? 'Team spaces can toggle moderation, enforce duplicate removal, or allow trusted overrides in settings.'
+      : 'Offline mode keeps hashes locally. Enforce authorship policies manually.';
 
   const datasetHint = state.draft.strandType === 'dataset';
 

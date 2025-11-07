@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ExternalLink, Shield, Terminal, Link as LinkIcon, ArrowRight } from 'lucide-react';
