@@ -327,17 +327,14 @@ export function DatasetSubmissionWizard(): JSX.Element {
     setStepIndex((value) => Math.max(0, value - 1));
   }, [canBack]);
 
-  const policyNote = useMemo(() => {
-    if (mode === 'cloud') {
-      return 'Cloud moderation blocks accidental duplicates by default, while editors can override per upload with audit markers.';
-    } else if (mode === 'team') {
-      return 'Team administrators can enforce duplicate removal from workspace settings and allow trusted overrides.';
-    } else {
-      return 'Offline mode uses local hashing only. Review uploads manually for distribution rights.';
-    }
-  }, [mode]);
+  let policyNote = 'Offline mode uses local hashing only. Review uploads manually for distribution rights.';
+  if (mode === 'cloud') {
+    policyNote = 'Cloud moderation blocks accidental duplicates by default, while editors can override per upload with audit markers.';
+  } else if (mode === 'team') {
+    policyNote = 'Team administrators can enforce duplicate removal from workspace settings and allow trusted overrides.';
+  }
 
-  return <>
+  return (
     <div className="space-y-10">
       <header className="rounded-3xl border border-border/70 bg-card/80 p-6 shadow-sm">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -801,7 +798,7 @@ export function DatasetSubmissionWizard(): JSX.Element {
         </footer>
       </Card>
     </div>
-  </>;
+  );
 }
 
 
