@@ -291,7 +291,7 @@ export function KnowledgeGraphInspector({ className }: KnowledgeGraphInspectorPr
       return;
     }
     openComposerForNode(selectedNode.id);
-  }, [openComposerForNode, selectedNode?.id]);
+  }, [openComposerForNode, selectedNode]);
 
   if (!selectedNode && !selectedEdge) {
     return (

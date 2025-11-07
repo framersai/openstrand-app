@@ -296,7 +296,7 @@ export function KnowledgeGraphScene({
 
   const showLabelsComputed = showLabels && !readOnly;
 
-  useFrame((state, delta) => {
+  useFrame((state, _delta) => {
     if (readOnly || !controlsRef.current) {
       return;
     }

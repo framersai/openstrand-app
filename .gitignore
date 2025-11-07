@@ -10,3 +10,18 @@ out/
 .next/**
 node_modules/
 out/
+
+# Build artifacts
+.next/
+node_modules/
+out/
+
+# Build artifacts
+.next/
+node_modules/
+out/
+
+# Build artifacts
+.next/
+node_modules/
+out/

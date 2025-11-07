@@ -23,7 +23,6 @@ export function KnowledgeGraphPanel({ className, weaveId = null, autoLoad = true
     loading,
     error,
     initialize,
-    selection,
     selectNodes,
     clearError,
   } = useKnowledgeGraphStore((state) => ({
@@ -31,7 +30,6 @@ export function KnowledgeGraphPanel({ className, weaveId = null, autoLoad = true
     loading: state.loading,
     error: state.error,
     initialize: state.initialize,
-    selection: state.selection,
     selectNodes: state.selectNodes,
     clearError: state.clearError,
   }));

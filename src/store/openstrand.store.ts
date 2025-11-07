@@ -187,11 +187,12 @@ export const useOpenStrandStore = create<OpenStrandStore>()(
           try {
             await openstrandAPI.strands.delete(id);
             set((state) => {
-              const { [id]: _removed, ...rest } = state.structureRequests;
+              const rest = { ...state.structureRequests } as Record<string, unknown>;
+              delete (rest as any)[id];
               return {
                 strands: state.strands.filter((s) => s.id !== id),
                 currentStrand: state.currentStrand?.id === id ? null : state.currentStrand,
-                structureRequests: rest,
+                structureRequests: rest as any,
                 loading: false,
               };
             });
