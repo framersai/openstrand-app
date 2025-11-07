@@ -260,12 +260,16 @@ export function StrandUploadWizard(): JSX.Element {
     }
   }, [router, state.acknowledged, state.draft.allowStructureRequests, state.draft.content, state.draft.datasetId, state.draft.license, state.draft.noteType, state.draft.references, state.draft.scopeId, state.draft.strandType, state.draft.summary, state.draft.tags, state.draft.title, state.forceDuplicate, state.verification]);
 
-  const policyNote =
-    mode === 'cloud'
-      ? 'Cloud review enforces duplicate detection by default, with per-strand overrides logged for audit.'
-      : mode === 'team'
-      ? 'Team spaces can toggle moderation, enforce duplicate removal, or allow trusted overrides in settings.'
-      : 'Offline mode keeps hashes locally. Enforce authorship policies manually.';
+  let policyNote: string;
+  if (mode === 'cloud') {
+    policyNote =
+      'Cloud review enforces duplicate detection by default, with per-strand overrides logged for audit.';
+  } else if (mode === 'team') {
+    policyNote =
+      'Team spaces can toggle moderation, enforce duplicate removal, or allow trusted overrides in settings.';
+  } else {
+    policyNote = 'Offline mode keeps hashes locally. Enforce authorship policies manually.';
+  }
 
   const datasetHint = state.draft.strandType === 'dataset';
 
