@@ -327,19 +327,25 @@ export function DatasetSubmissionWizard(): JSX.Element {
     setStepIndex((value) => Math.max(0, value - 1));
   }, [canBack]);
 
+  let policyNote: string;
+  if (mode === 'cloud') {
+    policyNote =
+      'Cloud moderation blocks accidental duplicates by default, while editors can override per upload with audit markers.';
+  } else if (mode === 'team') {
+    policyNote =
+      'Team administrators can enforce duplicate removal from workspace settings and allow trusted overrides.';
+  } else {
+    policyNote = 'Offline mode uses local hashing only. Review uploads manually for distribution rights.';
+  }
+
+  // Render wizard UI
   return (
     <div className="space-y-10">
       <header className="rounded-3xl border border-border/70 bg-card/80 p-6 shadow-sm">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-3xl font-semibold tracking-tight">Submit a dataset</h1>
-            <p className="text-sm text-muted-foreground">
-              {mode === 'cloud' 
-                ? 'Cloud moderation blocks accidental duplicates by default, while editors can override per upload with audit markers.'
-                : mode === 'team'
-                ? 'Team administrators can enforce duplicate removal from workspace settings and allow trusted overrides.'
-                : 'Offline mode uses local hashing only. Review uploads manually for distribution rights.'}
-            </p>
+            <p className="text-sm text-muted-foreground">{policyNote}</p>
           </div>
           <div className="flex items-center gap-2">
             {STEPS.map((step, index) => {
