@@ -318,6 +318,7 @@ export function DatasetSubmissionWizard(): JSX.Element {
         return;
       }
       setStepIndex(3);
+      return;
     }
   }, [currentStep.id, handleUpload, runVerification, state.metadata.name, state.verification]);
 

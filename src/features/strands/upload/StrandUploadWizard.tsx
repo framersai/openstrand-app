@@ -186,6 +186,7 @@ export function StrandUploadWizard(): JSX.Element {
         return;
       }
       setStepIndex(4);
+      return;
     }
   }, [currentStep.id, state.draft.content, state.draft.title, state.verification]);
 
