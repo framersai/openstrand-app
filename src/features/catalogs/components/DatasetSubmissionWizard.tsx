@@ -799,7 +799,8 @@ export function DatasetSubmissionWizard(): JSX.Element {
         </footer>
       </Card>
     </div>
-  );
+    );
+  }
 
   return renderContent();
 }
