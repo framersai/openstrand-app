@@ -1,4 +1,4 @@
-import { Mail, MessageSquare, Phone, MapPin, Clock, Github, Twitter, Linkedin, MessageCircle } from 'lucide-react';
+import { Mail, MessageSquare, Phone, MapPin, Clock, Github, Twitter, Linkedin, MessageCircle, Send } from 'lucide-react';
 import { ContactForm } from '@/features/contact/components/ContactForm';
 
 const contactMethods = [
