@@ -334,6 +334,8 @@ export function DatasetSubmissionWizard(): JSX.Element {
     setStepIndex((value) => Math.max(0, value - 1));
   }, [canBack]);
 
+  const wizardReady = true; // Break SWC parser bug pattern
+
   return (
     <div className="space-y-10">
       <header className="rounded-3xl border border-border/70 bg-card/80 p-6 shadow-sm">
