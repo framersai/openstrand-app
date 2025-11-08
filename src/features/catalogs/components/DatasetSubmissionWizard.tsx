@@ -146,6 +146,198 @@ function reducer(state: WizardState, action: WizardAction): WizardState {
   }
 }
 
+// Separate render component to avoid SWC parser bug
+function DatasetSubmissionWizardContent(props: {
+  state: WizardState;
+  dispatch: React.Dispatch<WizardAction>;
+  stepIndex: number;
+  currentStep: typeof STEPS[number];
+  canBack: boolean;
+  policyNote: string;
+  handleNext: () => Promise<void>;
+  handleBack: () => void;
+  handleUpload: () => Promise<void>;
+  runVerification: () => Promise<void>;
+  setStepIndex: React.Dispatch<React.SetStateAction<number>>;
+}) {
+  const {
+    state,
+    dispatch,
+    stepIndex,
+    currentStep,
+    canBack,
+    policyNote,
+    handleNext,
+    handleBack,
+    handleUpload,
+    runVerification,
+    setStepIndex,
+  } = props;
+
+  return (
+    <div className="space-y-10">
+      <header className="rounded-3xl border border-border/70 bg-card/80 p-6 shadow-sm">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-3xl font-semibold tracking-tight">Submit a dataset</h1>
+            <p className="text-sm text-muted-foreground">{policyNote}</p>
+          </div>
+          <div className="flex items-center gap-2">
+            {STEPS.map((step, index) => {
+              const isActive = index === stepIndex;
+              const isDone = index < stepIndex;
+              let stepClassName = 'border-border/60 text-muted-foreground';
+              if (isActive) {
+                stepClassName = 'border-primary/50 bg-primary/10 text-primary';
+              } else if (isDone) {
+                stepClassName = 'border-emerald-300/60 bg-emerald-50 text-emerald-600';
+              }
+              return (
+                <div
+                  key={step.id}
+                  className={cn(
+                    'flex flex-col items-center rounded-xl border px-3 py-2 text-xs transition',
+                    stepClassName
+                  )}
+                >
+                  <span className="font-semibold">{index + 1}</span>
+                  <span className="hidden text-[11px] font-medium md:block">{step.title}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </header>
+
+      <Card className="border-border/60">
+        <CardHeader>
+          <CardTitle>{currentStep.title}</CardTitle>
+          <CardDescription>{currentStep.description}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {currentStep.id === 'source' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-center rounded-xl border-2 border-dashed border-border/60 p-12">
+                <div className="space-y-2 text-center">
+                  <UploadCloud className="mx-auto h-12 w-12 text-muted-foreground" />
+                  <h3 className="font-medium">Upload dataset</h3>
+                  <p className="text-xs text-muted-foreground">CSV, JSON, or Parquet files supported</p>
+                  <Input
+                    type="file"
+                    accept=".csv,.json,.parquet"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        dispatch({ type: 'SET_FILE', value: file });
+                      }
+                    }}
+                    className="mx-auto max-w-xs"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {currentStep.id === 'metadata' && (
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Name</label>
+                <Input
+                  value={state.metadata.name}
+                  onChange={(e) => dispatch({ type: 'UPDATE_METADATA', metadata: { name: e.target.value } })}
+                  placeholder="My Dataset"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Description</label>
+                <Textarea
+                  value={state.metadata.description}
+                  onChange={(e) => dispatch({ type: 'UPDATE_METADATA', metadata: { description: e.target.value } })}
+                  placeholder="Describe your dataset..."
+                  rows={4}
+                />
+              </div>
+            </div>
+          )}
+
+          {currentStep.id === 'verification' && (
+            <div className="space-y-4">
+              {state.verification ? (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    {state.verification.duplicates.length === 0 ? (
+                      <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    ) : (
+                      <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                    )}
+                    <span className="text-sm font-medium">
+                      {state.verification.duplicates.length === 0
+                        ? 'No duplicates found'
+                        : `${state.verification.duplicates.length} potential duplicates`}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {state.verification.compliance ? (
+                      <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    ) : (
+                      <AlertTriangle className="h-5 w-5 text-yellow-600" />
+                    )}
+                    <span className="text-sm font-medium">
+                      {state.verification.compliance ? 'Compliance check passed' : 'Compliance issues detected'}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Running verification checks...</p>
+              )}
+            </div>
+          )}
+
+          {currentStep.id === 'publish' && (
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">Visibility</label>
+                <Select
+                  value={state.metadata.visibility}
+                  onValueChange={(value) => dispatch({ type: 'UPDATE_METADATA', metadata: { visibility: value as CatalogVisibility } })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="public">Public</SelectItem>
+                    <SelectItem value="private">Private</SelectItem>
+                    <SelectItem value="organization">Organization</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-medium">License</label>
+                <Input
+                  value={state.metadata.license}
+                  onChange={(e) => dispatch({ type: 'UPDATE_METADATA', metadata: { license: e.target.value } })}
+                  placeholder="MIT, Apache 2.0, etc."
+                />
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <footer className="flex items-center justify-between">
+        <Button variant="outline" onClick={handleBack} disabled={!canBack}>
+          <ChevronLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
+        <Button onClick={handleNext}>
+          {currentStep.id === 'publish' ? 'Submit' : 'Next'}
+          <ChevronRight className="ml-2 h-4 w-4" />
+        </Button>
+      </footer>
+    </div>
+  );
+}
+
 export function DatasetSubmissionWizard(): JSX.Element {
   const router = useRouter();
   const { mode } = useAppMode();
@@ -334,478 +526,20 @@ export function DatasetSubmissionWizard(): JSX.Element {
     setStepIndex((value) => Math.max(0, value - 1));
   }, [canBack]);
 
-  // Workaround for SWC parser bug - need multiple statements to break the pattern
-  const wizardInitialized = true;
-  const isReadyToRender = wizardInitialized;
-  if (!isReadyToRender) return null;
-
+  // Use separate component to avoid SWC parser bug
   return (
-    <div className="space-y-10">
-      <header className="rounded-3xl border border-border/70 bg-card/80 p-6 shadow-sm">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-3xl font-semibold tracking-tight">Submit a dataset</h1>
-            <p className="text-sm text-muted-foreground">{policyNote}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            {STEPS.map((step, index) => {
-              const isActive = index === stepIndex;
-              const isDone = index < stepIndex;
-              let stepClassName = 'border-border/60 text-muted-foreground';
-              if (isActive) {
-                stepClassName = 'border-primary/50 bg-primary/10 text-primary';
-              } else if (isDone) {
-                stepClassName = 'border-emerald-300/60 bg-emerald-50 text-emerald-600';
-              }
-              return (
-                <div
-                  key={step.id}
-                  className={cn(
-                    'flex flex-col items-center rounded-xl border px-3 py-2 text-xs transition',
-                    stepClassName
-                  )}
-                >
-                  <span className="font-semibold">{index + 1}</span>
-                  <span className="hidden text-[11px] font-medium md:block">{step.title}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </header>
-
-      <Card className="border-border/60">
-        <CardHeader>
-          <CardTitle>{currentStep.title}</CardTitle>
-          <CardDescription>{currentStep.description}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {currentStep.id === 'source' && (
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Upload CSV, TSV, JSON, or Parquet up to 2GB. We create fingerprints to keep the catalog clean.
-              </p>
-              <Input
-                type="file"
-                accept=".csv,.tsv,.txt,.json,.parquet"
-                disabled={state.uploading}
-                onChange={(event) =>
-                  dispatch({
-                    type: 'SET_FILE',
-                    file: event.target.files?.[0] ?? null,
-                  })
-                }
-              />
-              {state.file ? (
-                <p className="text-xs text-muted-foreground">
-                  Selected <strong>{state.file.name}</strong> · {Math.round(state.file.size / 1024)} KB
-                </p>
-              ) : (
-                <p className="text-xs text-muted-foreground">
-                  Need an external connector? Link your data warehouse from the Strands & Integrations settings.
-                </p>
-              )}
-            </div>
-          )}
-
-          {currentStep.id === 'metadata' && (
-            <div className="grid gap-6 md:grid-cols-[1.6fr_1fr]">
-              <div className="space-y-4">
-                <Input
-                  placeholder="Dataset name"
-                  value={state.metadata.name}
-                  onChange={(event) =>
-                    dispatch({ type: 'UPDATE_METADATA', metadata: { name: event.target.value } })
-                  }
-                />
-                <Textarea
-                  placeholder="Describe the dataset, provenance, and intended use..."
-                  className="min-h-[120px]"
-                  value={state.metadata.description}
-                  onChange={(event) =>
-                    dispatch({
-                      type: 'UPDATE_METADATA',
-                      metadata: { description: event.target.value },
-                    })
-                  }
-                />
-                <Input
-                  placeholder="Comma separated tags (finance, ai, serverless...)"
-                  value={state.metadata.tags.join(', ')}
-                  onChange={(event) =>
-                    dispatch({
-                      type: 'UPDATE_METADATA',
-                      metadata: {
-                        tags: event.target.value
-                          .split(',')
-                          .map((tag) => tag.trim())
-                          .filter(Boolean),
-                      },
-                    })
-                  }
-                />
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <label className="text-xs font-semibold uppercase text-muted-foreground">
-                      Visibility
-                    </label>
-                    <Select
-                      value={state.metadata.visibility}
-                      onValueChange={(value: CatalogVisibility) =>
-                        dispatch({ type: 'UPDATE_METADATA', metadata: { visibility: value } })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="public">Public</SelectItem>
-                        <SelectItem value="private">Private</SelectItem>
-                        <SelectItem value="premium">Premium</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-semibold uppercase text-muted-foreground">
-                      Plan requirement
-                    </label>
-                    <Select
-                      value={state.metadata.planRequired}
-                      onValueChange={(value: PlanTier) =>
-                        dispatch({ type: 'UPDATE_METADATA', metadata: { planRequired: value } })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="free">Free</SelectItem>
-                        <SelectItem value="basic">Basic</SelectItem>
-                        <SelectItem value="pro">Pro</SelectItem>
-                        <SelectItem value="org">Organization</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <label className="text-xs font-semibold uppercase text-muted-foreground">
-                      License
-                    </label>
-                    <Select
-                      value={state.metadata.license}
-                      onValueChange={(value) =>
-                        dispatch({ type: 'UPDATE_METADATA', metadata: { license: value } })
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="CC-BY-4.0">CC-BY 4.0</SelectItem>
-                        <SelectItem value="CC0-1.0">CC0 1.0</SelectItem>
-                        <SelectItem value="ODC-BY-1.0">ODC-By 1.0</SelectItem>
-                        <SelectItem value="MIT">MIT</SelectItem>
-                        <SelectItem value="custom">Custom / proprietary</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <label className="flex items-start gap-3 rounded-xl border border-border/70 bg-muted/10 p-3 text-sm">
-                    <input
-                      type="checkbox"
-                      className="mt-1 h-4 w-4 rounded border-border/70"
-                      checked={state.metadata.allowStrandUsage}
-                      onChange={(event) =>
-                        dispatch({
-                          type: 'UPDATE_METADATA',
-                          metadata: { allowStrandUsage: event.target.checked },
-                        })
-                      }
-                    />
-                    <span>
-                      Allow this dataset to be transformed into a Strand so teams can attach approvals,
-                      structure requests, and visibility cascades.
-                    </span>
-                  </label>
-                </div>
-              </div>
-
-              <div className="space-y-4 rounded-2xl border border-border/60 bg-muted/20 p-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-semibold uppercase text-muted-foreground">
-                    Schema preview
-                  </h3>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => state.datasetId && fetchSummary(state.datasetId)}
-                    disabled={!state.datasetId || state.loadingSummary}
-                  >
-                    Refresh
-                  </Button>
-                </div>
-                {state.loadingSummary ? (
-                  <p className="text-xs text-muted-foreground">Profiling dataset...</p>
-                ) : state.summary ? (
-                  <div className="space-y-2 text-sm">
-                    <p className="font-medium">
-                      {state.summary.rowCount.toLocaleString()} rows · {state.summary.columnCount} columns
-                    </p>
-                    <div className="grid gap-2">
-                      {state.summary.columns.slice(0, 8).map((column) => (
-                        <div
-                          key={column.name}
-                          className="flex items-center justify-between rounded-lg border border-border/60 bg-background/70 px-3 py-2"
-                        >
-                          <span>{column.name}</span>
-                          <Badge variant="outline">{column.type}</Badge>
-                        </div>
-                      ))}
-                      {state.summary.columns.length > 8 && (
-                        <p className="text-xs text-muted-foreground">
-                          {state.summary.columns.length - 8} more columns hidden.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-xs text-muted-foreground">
-                    Upload a dataset to view schema and profiling metrics.
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-
-          {currentStep.id === 'verification' && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs font-semibold uppercase text-muted-foreground">
-                  Deduplication & compliance
-                </h3>
-                <Button size="sm" variant="outline" onClick={runVerification} disabled={state.verifying}>
-                  Run verification
-                </Button>
-              </div>
-
-              {state.verifying && (
-                <div className="rounded-xl border border-border/60 bg-muted/20 p-4 text-sm text-muted-foreground">
-                  Checking for duplicates and policy issues...
-                </div>
-              )}
-
-              {!state.verifying && state.verification && (
-                <Card
-                  className={cn(
-                    'border',
-                    state.verification.status === 'ok' && 'border-emerald-300/60 bg-emerald-50/80',
-                    state.verification.status === 'duplicate' && 'border-amber-300/60 bg-amber-50/80',
-                    state.verification.status === 'flagged' && 'border-red-300/60 bg-red-50/80'
-                  )}
-                >
-                  <CardHeader>
-                    <CardTitle className="text-base">
-                      {state.verification.status === 'ok' && 'No issues detected'}
-                      {state.verification.status === 'duplicate' && 'Potential duplicates found'}
-                      {state.verification.status === 'flagged' && 'Policy issues detected'}
-                    </CardTitle>
-                    {state.verification.message && (
-                      <CardDescription>{state.verification.message}</CardDescription>
-                    )}
-                  </CardHeader>
-                  <CardContent className="space-y-3 text-sm">
-                    {state.verification.warnings.length > 0 && (
-                      <div className="space-y-2">
-                        {state.verification.warnings.map((warning, index) => (
-                          <div
-                            key={index}
-                            className="flex items-start gap-2 rounded-lg border border-border/50 bg-background/70 p-3"
-                          >
-                            <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-500" />
-                            <p>{warning}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {state.verification.duplicates.length > 0 && (
-                      <div className="space-y-2">
-                        <h4 className="text-xs font-semibold uppercase text-muted-foreground">
-                          Possible duplicates
-                        </h4>
-                        <div className="grid gap-2">
-                          {state.verification.duplicates.map((dup) => (
-                            <div
-                              key={dup.id}
-                              className="flex items-center justify-between rounded-lg border border-border/60 bg-background/80 px-3 py-2"
-                            >
-                              <div>
-                                <p className="font-medium">{dup.name}</p>
-                                <p className="text-xs text-muted-foreground">
-                                  Similarity {Math.round(dup.similarity * 100)}%
-                                </p>
-                              </div>
-                              <Badge variant="outline">View</Badge>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
-
-              {state.verification && state.verification.status !== 'ok' && (
-              <label className="flex items-start gap-3 rounded-xl border border-border/70 bg-muted/10 p-3 text-sm">
-                <input
-                  type="checkbox"
-                  className="mt-1 h-4 w-4 rounded border-border/70"
-                  checked={state.acknowledged}
-                  onChange={(event) =>
-                    dispatch({ type: 'SET_ACKNOWLEDGED', value: event.target.checked })
-                  }
-                />
-                <span>
-                  I confirm that I hold the rights to distribute this dataset and understand that
-                  non-compliant uploads may be removed.
-                </span>
-              </label>
-              {state.verification?.status === 'duplicate' && (
-                <label className="flex items-start gap-3 rounded-xl border border-border/70 bg-muted/10 p-3 text-sm">
-                  <input
-                    type="checkbox"
-                    className="mt-1 h-4 w-4 rounded border-border/70"
-                    checked={state.forceClone}
-                    onChange={(event) =>
-                      dispatch({ type: 'SET_FORCE_CLONE', value: event.target.checked })
-                    }
-                  />
-                  <span>
-                    Create a duplicate copy anyway. We will assign a new ID, keep the existing hash for audit logs,
-                    and mark this upload as an intentional clone.
-                  </span>
-                </label>
-              )}
-            )}
-
-              {!state.verification && !state.verifying && (
-                <div className="rounded-xl border border-dashed border-border/60 bg-muted/10 p-4 text-sm text-muted-foreground">
-                  Run verification to fingerprint the dataset, compare against existing catalog entries, and validate licensing.
-                </div>
-              )}
-            </div>
-          )}
-
-          {currentStep.id === 'publish' && (
-            <div className="space-y-4">
-              <Card className="border-border/60">
-                <CardHeader>
-                  <CardTitle className="text-base">Review summary</CardTitle>
-                  <CardDescription>Double-check visibility, license, and metadata.</CardDescription>
-                </CardHeader>
-                <CardContent className="grid gap-4 text-sm md:grid-cols-2">
-                  <div>
-                    <p className="text-muted-foreground">Dataset name</p>
-                    <p className="font-medium">{state.metadata.name}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Visibility</p>
-                    <p className="font-medium text-primary">{state.metadata.visibility}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">License</p>
-                    <p className="font-medium">{state.metadata.license}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Plan requirement</p>
-                    <p className="font-medium">{state.metadata.planRequired}</p>
-                  </div>
-                  <div className="md:col-span-2">
-                    <p className="text-muted-foreground">Tags</p>
-                    <div className="mt-1 flex flex-wrap gap-2">
-                      {state.metadata.tags.length > 0 ? (
-                        state.metadata.tags.map((tag) => <Badge key={tag}>{tag}</Badge>)
-                      ) : (
-                        <span className="text-muted-foreground/70">No tags provided</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="md:col-span-2">
-                    <p className="text-muted-foreground">Description</p>
-                    <p className="whitespace-pre-line">{state.metadata.description || '—'}</p>
-                  </div>
-                  {state.uploadMeta && (
-                  <div className="md:col-span-2 rounded-xl border border-border/50 bg-muted/10 p-3 text-xs text-muted-foreground">
-                    Fingerprint: {state.uploadMeta.id} - File type {state.uploadMeta.fileType ?? 'n/a'}
-                  </div>
-                )}
-                {state.forceClone && (
-                  <div className="md:col-span-2 rounded-xl border border-amber-400/60 bg-amber-50/80 p-3 text-xs text-amber-700">
-                    Intentional clone enabled. A new catalog entry will be created and linked to the original hash for audit tracking.
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-              <div className="rounded-xl border border-dashed border-border/60 bg-muted/10 p-4 text-xs text-muted-foreground">
-                By publishing you agree to the OpenStrand Terms of Service. Datasets are versioned and moderation
-                notices may be issued if licensing or authorship is disputed.
-              </div>
-            </div>
-          )}
-        </CardContent>
-
-        <footer className="flex flex-col gap-3 border-t border-border/60 bg-muted/30 px-6 py-4 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-primary" />
-            <span>
-              Hashes and provenance markers are stored with every upload. <Link href="/compliance" className="font-semibold text-primary underline-offset-4 hover:underline">Learn more</Link>
-            </span>
-          </div>
-          <div className="flex items-center justify-end gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleBack}
-              disabled={!canBack || state.uploading || state.verifying || state.publishing}
-            >
-              <ChevronLeft className="mr-1 h-4 w-4" />
-              Back
-            </Button>
-            {currentStep.id !== 'publish' ? (
-              <Button
-                size="sm"
-                onClick={handleNext}
-                disabled={
-                  state.uploading ||
-                  state.verifying ||
-                  (currentStep.id === 'source' && !state.file) ||
-                  (currentStep.id === 'metadata' && !state.metadata.name.trim())
-                }
-              >
-                Continue
-                <ChevronRight className="ml-1 h-4 w-4" />
-              </Button>
-            ) : (
-              <Button size="sm" onClick={publish} disabled={state.publishing}>
-                {state.publishing ? (
-                  <>
-                    <UploadCloud className="mr-2 h-4 w-4 animate-spin" />
-                    Publishing...
-                  </>
-                ) : (
-                  <>
-                    Publish dataset
-                    <ChevronRight className="ml-1 h-4 w-4" />
-                  </>
-                )}
-              </Button>
-            )}
-          </div>
-        </footer>
-      </Card>
-    </div>
+    <DatasetSubmissionWizardContent
+      state={state}
+      dispatch={dispatch}
+      stepIndex={stepIndex}
+      currentStep={currentStep}
+      canBack={canBack}
+      policyNote={policyNote}
+      handleNext={handleNext}
+      handleBack={handleBack}
+      handleUpload={handleUpload}
+      runVerification={runVerification}
+      setStepIndex={setStepIndex}
+    />
   );
 }
-
-
-
-
