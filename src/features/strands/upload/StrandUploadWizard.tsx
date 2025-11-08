@@ -270,7 +270,10 @@ export function StrandUploadWizard(): JSX.Element {
 
   const datasetHint = state.draft.strandType === 'dataset';
 
-  const content = useMemo(() => (
+  // Memoize step configuration to break SWC parser pattern
+  const stepConfig = useMemo(() => ({ currentStep, canBack }), [currentStep, canBack]);
+
+  return (
     <div className="space-y-10">
       <header className="rounded-3xl border border-border/70 bg-card/80 p-6 shadow-sm">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
