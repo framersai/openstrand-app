@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useReducer, useState } from 'react';
+import React, { useCallback, useMemo, useReducer, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, Sparkles, UploadCloud } from 'lucide-react';
@@ -270,7 +270,10 @@ export function StrandUploadWizard(): JSX.Element {
 
   const datasetHint = state.draft.strandType === 'dataset';
 
-  const wizardReady = true; // Break SWC parser bug pattern
+  // Workaround for SWC parser bug - need multiple statements to break the pattern
+  const wizardInitialized = true;
+  const isReadyToRender = wizardInitialized;
+  if (!isReadyToRender) return null;
 
   return (
     <div className="space-y-10">
