@@ -20,8 +20,11 @@ COPY . .
 # Production build
 FROM base AS builder
 WORKDIR /app
+USER root
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Ensure public directory exists and has write permissions for sitemap generation
+RUN mkdir -p public && chmod 755 public
 RUN npm run build
 
 # Production image
