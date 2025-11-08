@@ -736,9 +736,7 @@ export function StrandUploadWizard(): JSX.Element {
         </footer>
       </Card>
     </div>
-  ), [policyNote, currentStep, stepIndex, canBack, state, datasetHint, handleNext, handleBack, runVerification, publish]);
-
-  return content;
+  );
 }
 
 

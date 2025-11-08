@@ -801,9 +801,7 @@ export function DatasetSubmissionWizard(): JSX.Element {
         </footer>
       </Card>
     </div>
-  ), [policyNote, currentStep, stepIndex, canBack, state, handleUpload, handleNext, handleBack, runVerification, publish]);
-
-  return content;
+  );
 }
 
 
