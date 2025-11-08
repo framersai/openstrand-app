@@ -270,7 +270,7 @@ export function StrandUploadWizard(): JSX.Element {
 
   const datasetHint = state.draft.strandType === 'dataset';
 
-  function renderContent() {
+  function renderContent(): JSX.Element {
     return (
       <div className="space-y-10">
       <header className="rounded-3xl border border-border/70 bg-card/80 p-6 shadow-sm">
