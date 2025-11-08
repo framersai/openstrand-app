@@ -4,6 +4,11 @@ const withNextIntl = require('next-intl/plugin')('./src/i18n/request.ts');
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  // Disable SWC compiler due to parser bug in Next.js 14.2.33
+  // Use Babel instead for more reliable JSX parsing
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
   
   // Environment variables
   env: {
@@ -50,6 +55,16 @@ const nextConfig = {
         permanent: false,
       },
     ];
+  },
+  
+  // Use Babel instead of SWC for compilation
+  experimental: {
+    forceSwcTransforms: false,
+  },
+  
+  // Babel config
+  babel: {
+    presets: ['next/babel'],
   },
 };
 
