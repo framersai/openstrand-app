@@ -333,8 +333,7 @@ export function DatasetSubmissionWizard(): JSX.Element {
     if (!canBack) return;
     setStepIndex((value) => Math.max(0, value - 1));
   }, [canBack]);
-  // Break SWC parser pattern with simple boolean useMemo
-  const isReady = useMemo(() => true, []);
+
   return (
     <div className="space-y-10">
       <header className="rounded-3xl border border-border/70 bg-card/80 p-6 shadow-sm">
