@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Loader2, Send, Sparkles } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { Button } from '@/components/ui/button';
 
 const FORMSPREE_FORM_ID = process.env.NEXT_PUBLIC_FORMSPREE_FORM_ID ?? '';
 
