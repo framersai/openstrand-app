@@ -269,10 +269,8 @@ export function StrandUploadWizard(): JSX.Element {
   }, [router, state.acknowledged, state.draft.allowStructureRequests, state.draft.content, state.draft.datasetId, state.draft.license, state.draft.noteType, state.draft.references, state.draft.scopeId, state.draft.strandType, state.draft.summary, state.draft.tags, state.draft.title, state.forceDuplicate, state.verification]);
 
   const datasetHint = state.draft.strandType === 'dataset';
-
   // Memoize step configuration to break SWC parser pattern
   const stepConfig = useMemo(() => ({ currentStep, canBack }), [currentStep, canBack]);
-
   return (
     <div className="space-y-10">
       <header className="rounded-3xl border border-border/70 bg-card/80 p-6 shadow-sm">
