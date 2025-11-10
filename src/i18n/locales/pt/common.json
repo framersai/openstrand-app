@@ -1,0 +1,55 @@
+{
+  "navigation": {
+    "teamsApi": "Times e API",
+    "pkms": "PKMS",
+    "landing": "Landing",
+    "feed": "Feed",
+    "knowledge": "Conhecimento"
+  },
+  "navigationDescriptions": {
+    "feed": "Últimas tramas e atualizações",
+    "visualizations": "Gráficos, explicações e histórias geradas por IA",
+    "knowledge": "Hub PKMS e teias colaborativas",
+    "datasets": "Fontes, importações e enriquecimentos"
+  },
+  "actions": {
+    "openDashboard": "Abrir painel",
+    "startFree": "Começar grátis",
+    "openLogin": "Abrir login",
+    "show": "Mostrar",
+    "hide": "Ocultar",
+    "autoInsights": "Insights automáticos",
+    "commandPalette": "Paleta de comandos",
+    "changeLayout": "Alterar layout"
+  },
+  "docs": {
+    "product": {
+      "label": "Documentação do produto",
+      "description": "Arquitetura, estratégias de modelagem e notas de versão"
+    },
+    "tutorials": {
+      "label": "Tutoriais e guias",
+      "description": "Hierarquias, aprovações e migrações passo a passo"
+    },
+    "api": {
+      "label": "Referência da API (OpenAPI)",
+      "description": "Esquema Fastify em tempo real com exemplos",
+      "unavailable": "Defina NEXT_PUBLIC_API_URL para expor a documentação"
+    },
+    "sdk": {
+      "label": "Tipagens do SDK (TSDoc)",
+      "description": "Cliente tipado e utilidades para tramas, teias e aprovações"
+    }
+  },
+  "tooltips": {
+    "openSettings": "Abrir configurações",
+    "toggleNavigation": "Alternar menu de navegação",
+    "closeNavigation": "Fechar navegação",
+    "themeSwitch": "Tema: {theme} (clique para mudar para {nextTheme})",
+    "backToLanding": "Voltar para a página inicial"
+  },
+  "labels": {
+    "workspace": "Espaço de trabalho"
+  }
+}
+

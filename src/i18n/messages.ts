@@ -7,6 +7,7 @@ const namespaces = [
   'common',
   'datasets',
   'visualizations',
+  'dashboard',
   'settings',
   'auth',
   'billing',
@@ -45,6 +46,8 @@ async function importNamespace(locale: Locale, namespace: Namespace) {
       return (await import(`@/i18n/locales/${locale}/datasets.json`)).default;
     case 'visualizations':
       return (await import(`@/i18n/locales/${locale}/visualizations.json`)).default;
+    case 'dashboard':
+      return (await import(`@/i18n/locales/${locale}/dashboard.json`)).default;
     case 'settings':
       return (await import(`@/i18n/locales/${locale}/settings.json`)).default;
     case 'auth':

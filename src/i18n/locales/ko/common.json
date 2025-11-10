@@ -1,4 +1,58 @@
 {
+  "navigation": {
+    "teamsApi": "팀 및 API",
+    "pkms": "PKMS",
+    "landing": "랜딩",
+    "feed": "피드",
+    "knowledge": "지식"
+  },
+  "navigationDescriptions": {
+    "feed": "최근 스트랜드와 업데이트",
+    "visualizations": "차트, 설명, AI 스토리",
+    "knowledge": "PKMS 허브와 공유 위브",
+    "datasets": "소스, 가져오기 및 확장"
+  },
+  "actions": {
+    "openDashboard": "대시보드 열기",
+    "startFree": "무료로 시작",
+    "openLogin": "로그인 열기",
+    "show": "표시",
+    "hide": "숨기기",
+    "autoInsights": "자동 인사이트",
+    "commandPalette": "명령 팔레트",
+    "changeLayout": "레이아웃 변경"
+  },
+  "docs": {
+    "product": {
+      "label": "제품 문서",
+      "description": "아키텍처, 모델링 전략, 릴리스 노트"
+    },
+    "tutorials": {
+      "label": "튜토리얼 및 가이드",
+      "description": "계층 구조, 승인, 마이그레이션 단계별 안내"
+    },
+    "api": {
+      "label": "API 참고서 (OpenAPI)",
+      "description": "실시간 Fastify 스키마와 요청/응답 예시",
+      "unavailable": "NEXT_PUBLIC_API_URL을 설정하여 문서를 노출하세요"
+    },
+    "sdk": {
+      "label": "SDK 타입 (TSDoc)",
+      "description": "스트랜드와 위브, 승인용 타입 안전 클라이언트 및 유틸리티"
+    }
+  },
+  "tooltips": {
+    "openSettings": "설정 열기",
+    "toggleNavigation": "내비게이션 메뉴 전환",
+    "closeNavigation": "내비게이션 닫기",
+    "themeSwitch": "테마: {theme} (클릭 시 {nextTheme}로 변경)",
+    "backToLanding": "랜딩 페이지로 돌아가기"
+  },
+  "labels": {
+    "workspace": "작업 공간"
+  }
+}
+{
   "app": {
     "name": "OpenStrand",
     "tagline": "데이터 스토리, 더 빠르게",

@@ -21,6 +21,21 @@ COPY . .
 FROM base AS builder
 WORKDIR /app
 USER root
+
+# Accept build args for environment variables
+ARG NEXT_PUBLIC_API_URL=https://api.openstrand.ai/api/v1
+ARG NEXT_PUBLIC_APP_VARIANT=teams
+ARG NEXT_PUBLIC_OFFLINE_MODE=false
+ARG NEXT_PUBLIC_API_DOCS_URL
+ARG NEXT_PUBLIC_SDK_DOCS_URL
+
+# Set environment variables for the build
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_APP_VARIANT=$NEXT_PUBLIC_APP_VARIANT
+ENV NEXT_PUBLIC_OFFLINE_MODE=$NEXT_PUBLIC_OFFLINE_MODE
+ENV NEXT_PUBLIC_API_DOCS_URL=$NEXT_PUBLIC_API_DOCS_URL
+ENV NEXT_PUBLIC_SDK_DOCS_URL=$NEXT_PUBLIC_SDK_DOCS_URL
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 # Ensure public directory exists and has write permissions for sitemap generation

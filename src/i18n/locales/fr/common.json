@@ -1,0 +1,55 @@
+{
+  "navigation": {
+    "teamsApi": "Équipes et API",
+    "pkms": "PKMS",
+    "landing": "Accueil",
+    "feed": "Flux",
+    "knowledge": "Connaissance"
+  },
+  "navigationDescriptions": {
+    "feed": "Dernières hebras et mises à jour",
+    "visualizations": "Graphiques, explications et créations IA",
+    "knowledge": "Hub PKMS et trames partagées",
+    "datasets": "Sources, importations et enrichissements"
+  },
+  "actions": {
+    "openDashboard": "Ouvrir le tableau de bord",
+    "startFree": "Commencer gratuitement",
+    "openLogin": "Ouvrir la connexion",
+    "show": "Afficher",
+    "hide": "Masquer",
+    "autoInsights": "Aperçus automatiques",
+    "commandPalette": "Palette de commandes",
+    "changeLayout": "Modifier la disposition"
+  },
+  "docs": {
+    "product": {
+      "label": "Documentation produit",
+      "description": "Architecture, stratégies de modélisation et notes de version"
+    },
+    "tutorials": {
+      "label": "Tutoriels et guides",
+      "description": "Hiérarchies, approbations et migrations étape par étape"
+    },
+    "api": {
+      "label": "Référence API (OpenAPI)",
+      "description": "Schéma Fastify en direct avec exemples",
+      "unavailable": "Définissez NEXT_PUBLIC_API_URL pour afficher la documentation"
+    },
+    "sdk": {
+      "label": "Typages SDK (TSDoc)",
+      "description": "Client typé et utilitaires pour hebras, trames et approbations"
+    }
+  },
+  "tooltips": {
+    "openSettings": "Ouvrir les paramètres",
+    "toggleNavigation": "Afficher le menu de navigation",
+    "closeNavigation": "Fermer la navigation",
+    "themeSwitch": "Thème : {theme} (cliquer pour passer à {nextTheme})",
+    "backToLanding": "Retour à la page d’accueil"
+  },
+  "labels": {
+    "workspace": "Espace de travail"
+  }
+}
+

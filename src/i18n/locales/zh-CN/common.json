@@ -15,7 +15,18 @@
     "roadmap": "路线图",
     "support": "支持",
     "about": "关于",
-    "product": "产品"
+    "product": "产品",
+    "teamsApi": "团队与 API",
+    "pkms": "PKMS",
+    "landing": "登录页",
+    "feed": "动态",
+    "knowledge": "知识"
+  },
+  "navigationDescriptions": {
+    "feed": "最新的主题与更新",
+    "visualizations": "图表、讲解与 AI 作品",
+    "knowledge": "PKMS 中心与知识编织",
+    "datasets": "数据来源、导入与丰富"
   },
   "actions": {
     "upload": "上传",
@@ -49,7 +60,34 @@
     "import": "导入",
     "share": "分享",
     "duplicate": "复制",
-    "archive": "归档"
+    "archive": "归档",
+    "openDashboard": "打开仪表盘",
+    "startFree": "免费开始",
+    "openLogin": "打开登录页",
+    "show": "显示",
+    "hide": "隐藏",
+    "autoInsights": "自动洞察",
+    "commandPalette": "命令面板",
+    "changeLayout": "更改布局"
+  },
+  "docs": {
+    "product": {
+      "label": "产品文档",
+      "description": "架构、建模策略与更新日志"
+    },
+    "tutorials": {
+      "label": "教程与指南",
+      "description": "分层结构、审批与迁移的逐步说明"
+    },
+    "api": {
+      "label": "API 参考 (OpenAPI)",
+      "description": "实时 Fastify 架构及请求/响应示例",
+      "unavailable": "设置 NEXT_PUBLIC_API_URL 以启用 API 文档"
+    },
+    "sdk": {
+      "label": "SDK 类型 (TSDoc)",
+      "description": "针对主题、编织和审批的类型安全客户端与工具"
+    }
   },
   "tabs": {
     "data": "数据",
@@ -107,11 +145,13 @@
   "tooltips": {
     "openSettings": "打开设置",
     "toggleNavigation": "切换导航菜单",
+    "closeNavigation": "关闭导航",
     "toggleHeuristic": "切换启发式辅助",
     "toggleDebug": "切换调试详情",
     "realTimeSpend": "本次会话的实时令牌消耗",
     "providerSettings": "提供商设置和启发式辅助切换",
-    "themeSwitch": "主题：{theme}（点击切换到{nextTheme}）"
+    "themeSwitch": "主题：{theme}（点击切换到{nextTheme}）",
+    "backToLanding": "返回登录页"
   },
   "empty": {
     "noData": "无可用数据",
@@ -150,6 +190,7 @@
     "provider": "提供商",
     "cost": "成本",
     "samples": "样本",
-    "metadata": "元数据"
+    "metadata": "元数据",
+    "workspace": "工作区"
   }
 }

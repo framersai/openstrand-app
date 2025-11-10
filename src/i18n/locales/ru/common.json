@@ -1,0 +1,55 @@
+{
+  "navigation": {
+    "teamsApi": "Команды и API",
+    "pkms": "PKMS",
+    "landing": "Лендинг",
+    "feed": "Лента",
+    "knowledge": "Знания"
+  },
+  "navigationDescriptions": {
+    "feed": "Последние связи и обновления",
+    "visualizations": "Графики, пояснения и истории от ИИ",
+    "knowledge": "Центр PKMS и совместные плетения",
+    "datasets": "Источники, импорт и обогащение"
+  },
+  "actions": {
+    "openDashboard": "Открыть дашборд",
+    "startFree": "Начать бесплатно",
+    "openLogin": "Открыть вход",
+    "show": "Показать",
+    "hide": "Скрыть",
+    "autoInsights": "Автоинсайты",
+    "commandPalette": "Командная палитра",
+    "changeLayout": "Изменить макет"
+  },
+  "docs": {
+    "product": {
+      "label": "Документация продукта",
+      "description": "Архитектура, стратегии моделирования и заметки о релизах"
+    },
+    "tutorials": {
+      "label": "Учебники и руководства",
+      "description": "Иерархии, согласования и миграции шаг за шагом"
+    },
+    "api": {
+      "label": "Справочник API (OpenAPI)",
+      "description": "Live-схема Fastify с примерами запросов и ответов",
+      "unavailable": "Установите NEXT_PUBLIC_API_URL, чтобы показать документацию"
+    },
+    "sdk": {
+      "label": "Типы SDK (TSDoc)",
+      "description": "Типобезопасный клиент и утилиты для связей, плетений и согласований"
+    }
+  },
+  "tooltips": {
+    "openSettings": "Открыть настройки",
+    "toggleNavigation": "Переключить меню навигации",
+    "closeNavigation": "Закрыть навигацию",
+    "themeSwitch": "Тема: {theme} (нажмите, чтобы переключить на {nextTheme})",
+    "backToLanding": "Вернуться на лендинг"
+  },
+  "labels": {
+    "workspace": "Рабочее пространство"
+  }
+}
+

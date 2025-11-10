@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, Plus, Settings, BookOpen, Code, GraduationCap } from 'lucide-react';
 import React from 'react';
+import { useTranslations } from 'next-intl';
 
 import {
   FeedIcon,
@@ -94,27 +95,6 @@ const AccountPortalIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-// Define navigation items for different contexts
-const landingNav: NavItem[] = [
-  { key: 'features', href: '#features', label: 'Features', icon: FeaturesIcon },
-  { key: 'pricing', href: '#pricing', label: 'Pricing', icon: PricingIcon },
-  { key: 'teams', href: '/teams', label: 'Teams & API', icon: DocsIcon },
-  { key: 'docs', href: '#', label: 'Docs', icon: DocsIcon },
-  { key: 'pkms', href: '/pkms', label: 'PKMS', icon: PKMSIcon },
-];
-
-const dashboardNav: NavItem[] = [
-  { key: 'feed', href: '/', label: 'Feed', icon: FeedIcon, description: 'Recent strands & updates' },
-  {
-    key: 'visualizations',
-    href: '/visualizations',
-    label: 'Visualizations',
-    icon: VisualizationsIcon,
-    description: 'Charts, explainers, AI artisan stories',
-  },
-  { key: 'knowledge', href: '/pkms', label: 'Knowledge', icon: KnowledgeIcon, description: 'PKMS hub & weaves' },
-  { key: 'datasets', href: '/catalogs', label: 'Datasets', icon: DatasetsIcon, description: 'Sources, imports, enrichments' },
-];
 const API_DOCS_URL =
   (process.env.NEXT_PUBLIC_API_DOCS_URL ?? '') ||
   (process.env.NEXT_PUBLIC_API_URL
@@ -135,6 +115,7 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
   const { isAuthenticated, authEnabled } = useSupabase();
   const { isGuest } = useGuestSession();
   const { mode } = useAppMode();
+  const tCommon = useTranslations('common');
 
   const closeMobileMenu = useCallback(() => {
     setMobileMenuOpen(false);
@@ -144,7 +125,53 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
   // Determine which nav to show based on auth and path
   const isLandingPage = pathname === '/landing' || pathname.endsWith('/landing');
   const showDashboardNav = !isLandingPage;
-  const navItems = showDashboardNav ? dashboardNav : landingNav;
+
+  const landingNavItems: NavItem[] = useMemo(
+    () => [
+      { key: 'features', href: '#features', label: tCommon('navigation.features'), icon: FeaturesIcon },
+      { key: 'pricing', href: '#pricing', label: tCommon('navigation.pricing'), icon: PricingIcon },
+      { key: 'teams', href: '/teams', label: tCommon('navigation.teamsApi'), icon: DocsIcon },
+      { key: 'docs', href: '#', label: tCommon('navigation.docs'), icon: DocsIcon },
+      { key: 'pkms', href: '/pkms', label: tCommon('navigation.pkms'), icon: PKMSIcon },
+    ],
+    [tCommon],
+  );
+
+  const dashboardNavItems: NavItem[] = useMemo(
+    () => [
+      {
+        key: 'feed',
+        href: '/',
+        label: tCommon('navigation.feed'),
+        icon: FeedIcon,
+        description: tCommon('navigationDescriptions.feed'),
+      },
+      {
+        key: 'visualizations',
+        href: '/', // TODO: Create visualizations page
+        label: tCommon('navigation.visualizations'),
+        icon: VisualizationsIcon,
+        description: tCommon('navigationDescriptions.visualizations'),
+      },
+      {
+        key: 'knowledge',
+        href: '/pkms',
+        label: tCommon('navigation.knowledge'),
+        icon: KnowledgeIcon,
+        description: tCommon('navigationDescriptions.knowledge'),
+      },
+      {
+        key: 'datasets',
+        href: '/', // TODO: Create catalogs page
+        label: tCommon('navigation.datasets'),
+        icon: DatasetsIcon,
+        description: tCommon('navigationDescriptions.datasets'),
+      },
+    ],
+    [tCommon],
+  );
+
+  const navItems = showDashboardNav ? dashboardNavItems : landingNavItems;
   const isCloudMode = mode === 'cloud';
   const landingLink = localizePath('/landing');
   const signInLink = localizePath('/auth?view=sign-in');
@@ -161,39 +188,41 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
   const docsLinks = useMemo(
     () => [
       {
-        label: 'Product docs',
-        description: 'Architecture, modelling strategies, release notes',
+        label: tCommon('docs.product.label'),
+        description: tCommon('docs.product.description'),
         href: localizePath('/docs'),
         icon: <BookOpen className="h-4 w-4" aria-hidden />,
         external: false,
         disabled: false,
       },
       {
-        label: 'Tutorials & guides',
-        description: 'Step-by-step strand hierarchies, approvals, migrations',
+        label: tCommon('docs.tutorials.label'),
+        description: tCommon('docs.tutorials.description'),
         href: localizePath('/tutorials'),
         icon: <GraduationCap className="h-4 w-4" aria-hidden />,
         external: false,
         disabled: false,
       },
       {
-        label: 'API reference (OpenAPI)',
-        description: apiDocsUrl ? 'Live Fastify schema with request/response samples' : 'Set NEXT_PUBLIC_API_URL to expose swagger docs',
+        label: tCommon('docs.api.label'),
+        description: apiDocsUrl
+          ? tCommon('docs.api.description')
+          : tCommon('docs.api.unavailable'),
         href: apiDocsUrl ?? '#',
         icon: <Code className="h-4 w-4" aria-hidden />,
         external: true,
         disabled: !apiDocsUrl,
       },
       {
-        label: 'SDK typings (TSDoc)',
-        description: 'Type-safe client & helper utilities for strands, weaves, approvals',
+        label: tCommon('docs.sdk.label'),
+        description: tCommon('docs.sdk.description'),
         href: SDK_DOCS_URL,
         icon: <DocsIcon className="h-4 w-4" aria-hidden />,
         external: true,
         disabled: false,
       },
     ],
-    [apiDocsUrl, localizePath],
+    [apiDocsUrl, localizePath, tCommon],
   );
 
   const authControls = useMemo(() => {
@@ -209,10 +238,10 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
             className="w-full justify-center rounded-full border-border/70 bg-background/80 text-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-primary md:w-auto md:px-4"
           >
             <Link href={isLandingPage ? openDashboardLink : importLink}>
-              {isLandingPage ? 'Open Dashboard' : (
+              {isLandingPage ? tCommon('actions.openDashboard') : (
                 <>
                   <Plus className="mr-2 h-4 w-4" />
-                  Import
+                  {tCommon('actions.import')}
                 </>
               )}
             </Link>
@@ -225,15 +254,15 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
       return (
         <div className="flex items-center gap-2">
           <Button asChild variant="ghost" size="sm" className="font-semibold text-foreground/80 hover:text-primary">
-            <Link href={signInLink}>Log in</Link>
+            <Link href={signInLink}>{tCommon('actions.login')}</Link>
           </Button>
           {isCloudMode ? (
             <Button asChild size="sm" className="px-5 font-semibold">
-              <Link href={signUpLink}>Start free</Link>
+              <Link href={signUpLink}>{tCommon('actions.startFree')}</Link>
             </Button>
           ) : (
             <Button asChild size="sm" variant="outline" className="rounded-full border-border/70">
-              <Link href={signInLink}>Open login</Link>
+              <Link href={signInLink}>{tCommon('actions.openLogin')}</Link>
             </Button>
           )}
         </div>
@@ -247,7 +276,7 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
           size="icon"
           onClick={onOpenSettings}
           className="rounded-full border border-border/60 bg-card/80 text-foreground/80 hover:text-foreground"
-          aria-label="Workspace settings"
+          aria-label={tCommon('tooltips.openSettings')}
         >
           <Settings className="h-4 w-4" />
         </Button>
@@ -430,9 +459,9 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
                   size="sm"
                   className="group hidden items-center gap-2 rounded-full border border-border/60 bg-background/80 px-3 py-1.5 text-sm font-medium text-foreground shadow-none transition hover:border-foreground/30 hover:bg-foreground/5 hover:text-foreground dark:border-white/12 dark:bg-white/5 dark:text-white dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:text-white md:inline-flex"
                 >
-                  <Link href={landingLink} aria-label="Back to landing page">
+                  <Link href={landingLink} aria-label={tCommon('tooltips.backToLanding')}>
                     <LandingIcon className="h-[16px] w-[16px] text-foreground/75 transition-colors group-hover:text-foreground dark:text-white/80 dark:group-hover:text-white" />
-                    <span>Landing</span>
+                    <span>{tCommon('navigation.landing')}</span>
                   </Link>
                 </Button>
               )}
@@ -452,14 +481,17 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
             </div>
             <div className="flex items-center gap-2 md:hidden">
               {mounted && (
-                <ThemeToggle />
+                <>
+                  <LanguageSwitcher variant="compact" showName={false} />
+                  <ThemeToggle />
+                </>
               )}
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setMobileMenuOpen((prev) => !prev)}
                 className="rounded-full border border-border/60 text-foreground/80 transition hover:border-foreground/40 hover:bg-foreground/5 hover:text-foreground dark:border-white/12 dark:text-white/80 dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:text-white md:hidden"
-                aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
+                aria-label={mobileMenuOpen ? tCommon('tooltips.closeNavigation') : tCommon('tooltips.toggleNavigation')}
                 aria-expanded={mobileMenuOpen}
               >
                 {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -490,10 +522,10 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
                       >
                         <span className="flex items-center gap-2">
                           {Icon && <Icon className="h-4 w-4 text-primary" />}
-                          <span>Docs</span>
+                          <span>{tCommon('navigation.docs')}</span>
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          {docsExpanded ? 'Hide' : 'Show'}
+                          {docsExpanded ? tCommon('actions.hide') : tCommon('actions.show')}
                         </span>
                       </button>
                       {docsExpanded && (
@@ -567,9 +599,9 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
                 size="sm"
                 className="group flex items-center justify-center gap-2 rounded-full border border-border/60 bg-background/80 py-2 text-sm font-medium text-foreground shadow-none transition hover:border-foreground/30 hover:bg-foreground/5 hover:text-foreground dark:border-white/12 dark:bg-white/5 dark:text-white dark:hover:border-white/25 dark:hover:bg-white/12 dark:hover:text-white"
               >
-                <Link href={landingLink} onClick={closeMobileMenu} aria-label="Back to landing">
+                <Link href={landingLink} onClick={closeMobileMenu} aria-label={tCommon('tooltips.backToLanding')}>
                   <LandingIcon className="h-[16px] w-[16px] text-foreground/75 transition-colors group-hover:text-foreground dark:text-white/80 dark:group-hover:text-white" />
-                  <span>Landing</span>
+                  <span>{tCommon('navigation.landing')}</span>
                 </Link>
               </Button>
             )}

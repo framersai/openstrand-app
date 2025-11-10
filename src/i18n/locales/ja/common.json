@@ -1,4 +1,58 @@
 {
+  "navigation": {
+    "teamsApi": "チームとAPI",
+    "pkms": "PKMS",
+    "landing": "ランディング",
+    "feed": "フィード",
+    "knowledge": "ナレッジ"
+  },
+  "navigationDescriptions": {
+    "feed": "最新のストランドと更新",
+    "visualizations": "グラフ・解説・AIストーリー",
+    "knowledge": "PKMSハブと共有ウィーブ",
+    "datasets": "ソース・インポート・拡張"
+  },
+  "actions": {
+    "openDashboard": "ダッシュボードを開く",
+    "startFree": "無料で開始",
+    "openLogin": "ログインを開く",
+    "show": "表示",
+    "hide": "非表示",
+    "autoInsights": "自動インサイト",
+    "commandPalette": "コマンドパレット",
+    "changeLayout": "レイアウトを変更"
+  },
+  "docs": {
+    "product": {
+      "label": "製品ドキュメント",
+      "description": "アーキテクチャ、モデル戦略、リリースノート"
+    },
+    "tutorials": {
+      "label": "チュートリアルとガイド",
+      "description": "階層構造、承認、移行を段階的に説明"
+    },
+    "api": {
+      "label": "APIリファレンス (OpenAPI)",
+      "description": "Fastifyスキーマとリクエスト/レスポンス例",
+      "unavailable": "NEXT_PUBLIC_API_URL を設定してAPIドキュメントを公開"
+    },
+    "sdk": {
+      "label": "SDK型定義 (TSDoc)",
+      "description": "ストランド、ウィーブ、承認向けの型安全クライアントとユーティリティ"
+    }
+  },
+  "tooltips": {
+    "openSettings": "設定を開く",
+    "toggleNavigation": "ナビゲーションメニューを切り替え",
+    "closeNavigation": "ナビゲーションを閉じる",
+    "themeSwitch": "テーマ: {theme}（クリックで {nextTheme} に切り替え）",
+    "backToLanding": "ランディングページへ戻る"
+  },
+  "labels": {
+    "workspace": "ワークスペース"
+  }
+}
+{
   "app": {
     "name": "OpenStrand",
     "tagline": "データストーリー、より速く",

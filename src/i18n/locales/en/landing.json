@@ -1,255 +1,165 @@
 {
-    "hero":  {
-                 "tagline":  "AI-enhanced personal knowledge management",
-                 "headline":  "Weave \u003chighlight\u003ecaptivating visual stories\u003c/highlight\u003e from your knowledge graph.",
-                 "descriptionOnline":  "OpenStrand connects your datasets, documents, and insights across the cloud so you can explore, visualize, and share in minutes. Generative AI is optional - our manual and statistical tools remain first-class.",
-                 "descriptionOffline":  "Run OpenStrand entirely offline with local SQLite storage, statistical analysis, and manual insight tooling. Add generative AI later when you are ready - your workflows keep running without it.",
-                 "primaryCta":  {
-                                    "label":  "Start in the browser",
-                                    "href":  "/docs/QUICK_START.md"
-                                },
-                 "secondaryCta":  {
-                                      "label":  "View design system",
-                                      "href":  "/docs/DESIGN_SYSTEM.md"
-                                  },
-                 "highlights":  {
-                                    "privacy":  "Zero trust by design. Your data never leaves your workspace.",
-                                    "analysis":  "Statistical exploration \u0026 storytelling in a single view.",
-                                    "generativeOptional":  "Generative AI is additive - not a requirement.",
-                                    "offline":  "Offline-first architecture with seamless sync later."
-                                },
-                 "callout":  {
-                                 "label":  "Offline ready",
-                                 "title":  "Manual \u0026 statistical analysis suite",
-                                 "offlineTitle":  "Insight without the internet",
-                                 "offlineDescription":  "Clean data, compute descriptive stats, and assemble compelling dashboards even when fully disconnected.",
-                                 "aiTitle":  "AI overlays when you need them",
-                                 "aiDescription":  "Bring your own model keys to unlock narration, code generation, and tiered visualizations - without losing control."
-                             }
-             },
-    "features":  {
-                     "eyebrow":  "Built for modern knowledge teams",
-                     "title":  "Everything you need to explore, learn, and share knowledge",
-                     "subtitle":  "Transform fragmented datasets into clear visual narratives with accessibility, privacy, and multilingual support baked in.",
-                     "badges":  {
-                                    "core":  "Core",
-                                    "pro":  "Pro \u0026 Enterprise",
-                                    "labs":  "Labs",
-                                    "offline":  "Offline"
-                                },
-                     "items":  {
-                                   "analytics":  {
-                                                     "title":  "Guided visual analytics",
-                                                     "description":  "Leverage auto-insights, reusable recipes, and rich storytelling canvases to surface the signal."
-                                                 },
-                                   "importers":  {
-                                                     "title":  "Universal ingest",
-                                                     "description":  "Markdown, CSV, JSON, PDF, media, quizzes, and more - strain everything into the same weave."
-                                                 },
-                                   "pipeline":  {
-                                                    "title":  "Adaptive pipelines",
-                                                    "description":  "A schema-aware engine adapts to new datasets, languages, and locales without painful rework."
-                                                },
-                                   "tiers":  {
-                                                 "title":  "Three-tier visuals",
-                                                 "description":  "Static charts, dynamic exploratory canvases, and AI Artisan code all coexist gracefully."
-                                             },
-                                   "spiral":  {
-                                                  "title":  "Spiral learning",
-                                                  "description":  "Plan spaced repetition, scaffolding, and adaptive study schedules from a single knowledge graph."
-                                              },
-                                   "multilingual":  {
-                                                        "title":  "Global by default",
-                                                        "description":  "Ship localized experiences across 10+ languages with RTL support and locale-aware content."
-                                                    },
-                                   "privacy":  {
-                                                   "title":  "Privacy that travels",
-                                                   "description":  "Granular permissions, BYOK integrations, and compliance tooling keep sensitive data on lock."
-                                               },
-                                   "manualTools":  {
-                                                       "title":  "Manual \u0026 statistical tools",
-                                                       "description":  "Descriptive stats, transformation wizards, and custom editors give you control before AI steps in.",
-                                                       "descriptionOffline":  "Every insight workflow is available offline: descriptive stats, transformation wizards, manual editors, and storytelling templates."
-                                                   }
-                               }
-                 },
-    "showcase":  {
-                     "eyebrow":  "Theme library",
-                     "title":  "Tailor the experience to every audience",
-                     "subtitle":  "Nine distinctive themes ship today with more on deck. Color systems, typography, and micro-interactions adapt on the fly.",
-                     "advantages":  {
-                                        "design":  {
-                                                       "title":  "Design precision",
-                                                       "description":  "Curated palettes and motion-driven accents keep every dataset presentation on brand."
-                                                   },
-                                        "accessibility":  {
-                                                              "title":  "Accessible by default",
-                                                              "description":  "WCAG AA contrast, high-contrast overrides, and reduced-motion respect user preferences per theme."
-                                                          },
-                                        "ai":  {
-                                                   "title":  "AI optional",
-                                                   "description":  "Showcase AI Artisan results alongside handcrafted visuals to highlight both paths."
-                                               }
-                                    },
-                     "themeSelector":  {
-                                           "label":  "Preview each theme"
-                                       },
-                     "themes":  {
-                                    "modern":  {
-                                                   "title":  "Modern",
-                                                   "description":  "Glassmorphism, gradient textures, and gentle motion."
-                                               },
-                                    "classic":  {
-                                                    "title":  "Classic",
-                                                    "description":  "Serif elegance with gold accents and editorial structure."
-                                                },
-                                    "paper":  {
-                                                  "title":  "Paper",
-                                                  "description":  "Print-inspired layouts, perfect for documentation mode."
-                                              },
-                                    "aurora":  {
-                                                   "title":  "Aurora",
-                                                   "description":  "Nebulous gradients and atmospheric glow for storytelling."
-                                               },
-                                    "ocean":  {
-                                                  "title":  "Ocean",
-                                                  "description":  "Deep blues, wave motion, and coral accents for calm focus."
-                                              },
-                                    "forest":  {
-                                                   "title":  "Forest",
-                                                   "description":  "Organic textures with growth animations and earthy hues."
-                                               },
-                                    "space":  {
-                                                  "title":  "Space",
-                                                  "description":  "Cosmic palettes, parallax stars, and orbit-inspired motion."
-                                              },
-                                    "cyberpunk":  {
-                                                      "title":  "Cyberpunk",
-                                                      "description":  "Neon glows and glitch textures with high-contrast callouts."
-                                                  },
-                                    "minimal":  {
-                                                    "title":  "Minimal",
-                                                    "description":  "Whitespace-first, typography-driven experience with a single accent."
-                                                }
-                                },
-                     "themePreview":  {
-                                          "title":  "Live preview",
-                                          "alt":  "Theme preview"
-                                      }
-                 },
-    "pricing":  {
-                    "eyebrow":  "Flexible pricing",
-                    "title":  "Start free, scale as your weave grows",
-                    "subtitle":  "Offline-ready core features keep you productive without AI. Upgrade when you are ready to automate storytelling.",
-                    "offlineBadge":  "Offline-ready workflows included",
-                    "tiers":  {
-                                  "free":  {
-                                               "name":  "Local Studio",
-                                               "price":  "$0",
-                                               "cadence":  "Bring your own data",
-                                               "description":  "Ideal for solo researchers validating ideas offline.",
-                                               "features":  [
-                                                                "Offline workspace with SQLite storage",
-                                                                "CSV, JSON, Markdown, PDF, and media ingestion",
-                                                                "Manual editing and statistical tooling",
-                                                                "Theme switcher and localized UI"
-                                                            ],
-                                               "cta":  {
-                                                           "label":  "Download offline app",
-                                                           "href":  "/docs/LOCAL_CLIENT_MODE.md"
-                                                       }
-                                           },
-                                  "pro":  {
-                                              "badge":  "Most popular",
-                                              "name":  "Professional",
-                                              "price":  "$19",
-                                              "cadence":  "per seat / month",
-                                              "description":  "Unlock tiered visualizations, AI Artisan overlays, and cloud sync.",
-                                              "features":  [
-                                                               "Tier 2 dynamic visualizations",
-                                                               "BYOK generative overlays with cost tracking",
-                                                               "Real-time collaboration and dataset catalog",
-                                                               "Priority support with guided onboarding",
-                                                               "Google Analytics \u0026 Clarity integrations"
-                                                           ],
-                                              "cta":  {
-                                                          "label":  "Activate Pro",
-                                                          "href":  "/billing"
-                                                      }
-                                          },
-                                  "enterprise":  {
-                                                     "badge":  "Custom success",
-                                                     "name":  "Enterprise",
-                                                     "price":  "Talk to us",
-                                                     "cadence":  "Annual agreements",
-                                                     "description":  "Compliance, governance, and tailored AI pipelines for data-heavy teams.",
-                                                     "features":  [
-                                                                      "Dedicated weave infrastructure \u0026 SSO/SAML",
-                                                                      "Advanced RBAC, audit trails, and GDPR tooling",
-                                                                      "Managed AI connections with guardrails",
-                                                                      "Premium theme customization and branding",
-                                                                      "Success engineering \u0026 SLA-backed support"
-                                                                  ],
-                                                     "cta":  {
-                                                                 "label":  "Book a demo",
-                                                                 "href":  "/contact"
-                                                             }
-                                                 }
-                              },
-                    "stats":  {
-                                  "lowLatency":  {
-                                                     "title":  "Low-latency insights",
-                                                     "description":  "Fast heuristics keep chart generation under two seconds on typical datasets."
-                                                 },
-                                  "scalable":  {
-                                                   "title":  "Scales with you",
-                                                   "description":  "Sync to Supabase or Postgres when you are ready for collaboration.",
-                                                   "descriptionOffline":  "Stay disconnected as long as you need - sync later without rework."
-                                               },
-                                  "ai":  {
-                                             "title":  "AI is additive",
-                                             "description":  "Bring your own keys to extend workflows without locking yourself in.",
-                                             "descriptionOffline":  "No keys? No problem - offline workflows keep shipping value."
-                                         }
-                              }
-                },
-    "testimonials":  {
-                         "eyebrow":  "Loved by analysts \u0026 educators",
-                         "title":  "Teams trust OpenStrand for narrative clarity",
-                         "subtitle":  "From data storytelling to curriculum design, OpenStrand adapts to each audience.",
-                         "items":  [
-                                       {
-                                           "quote":  "\"The offline toolkit let us deploy in classrooms without Wi-Fi. Students build narratives with or without AI augmentation.\"",
-                                           "name":  "Amina Rahman",
-                                           "role":  "Curriculum Designer",
-                                           "company":  "Global Learning Labs"
-                                       },
-                                       {
-                                           "quote":  "\"We migrated from siloed dashboards to strands that explain themselves. The Classic theme sold the story to execs instantly.\"",
-                                           "name":  "Leo Carter",
-                                           "role":  "Head of Insights",
-                                           "company":  "SynthOps"
-                                       },
-                                       {
-                                           "quote":  "\"BYOK controls let us enable generative overlays gradually. Compliance teams loved the governance audit trail.\"",
-                                           "name":  "Priya Chen",
-                                           "role":  "Data Governance Lead",
-                                           "company":  "Northwind Ventures"
-                                       }
-                                   ]
-                     },
-    "cta":  {
-                "tagline":  "Ready when you are",
-                "title":  "Own your knowledge weave from anywhere",
-                "subtitle":  "Spin up the offline client, connect to Supabase, or extend with generative AI - OpenStrand adapts to your workflow.",
-                "primaryCta":  {
-                                   "label":  "Launch OpenStrand Studio",
-                                   "href":  "/docs/QUICK_START.md"
-                               },
-                "secondaryCta":  {
-                                     "label":  "Read implementation guide",
-                                     "href":  "/docs/IMPLEMENTATION_PHASE_1.md"
-                                 },
-                "offlineBadge":  "Analytics paused in offline mode - privacy guaranteed."
-            }
+  "hero": {
+    "badge": {
+      "community": "Free Forever • Community Edition"
+    },
+    "headline": "Transform Data into <highlight>Living Knowledge</highlight> That Connects & Grows",
+    "subheadline": "Model recursive hierarchies, route structural requests through approvals, and let visibility cascades keep every scope aligned. <strong>Free forever. Works offline. No credit card.</strong>",
+    "cta": {
+      "primary": "Create Free Workspace",
+      "secondary": "View Pricing",
+      "manage": "Sign in & manage",
+      "launchDemo": "Launch Recursive Strands"
+    },
+    "explore": "Prefer exploring first? <repo>Star the repo</repo> or browse the <docs>docs</docs>.",
+    "highlightsTitle": "Why teams choose OpenStrand",
+    "highlights": {
+      "hierarchies": {
+        "title": "Recursive strand hierarchies",
+        "description": "Scope-safe DAGs with reusable parents per collection."
+      },
+      "approvals": {
+        "title": "Auditable approvals",
+        "description": "Request, review, and log every structural change."
+      },
+      "ai": {
+        "title": "AI-suggested placements",
+        "description": "Pipelines propose structure requests automatically."
+      },
+      "offline": {
+        "title": "Self-host & offline ready",
+        "description": "Run in the cloud or fully offline in minutes."
+      }
+    },
+    "journey": {
+      "title": "Data Journey",
+      "items": {
+        "map": "Map structure",
+        "approve": "Request approval",
+        "cascade": "Cascade visibility",
+        "placeholder": "Placeholder preview"
+      }
+    },
+    "metrics": {
+      "approvals": {
+        "title": "Approvals this week",
+        "detail": "97% resolved inside your SLA windows"
+      },
+      "placeholders": {
+        "title": "Placeholder coverage",
+        "detail": "Cascades keep every scope audience-safe"
+      }
+    },
+    "trust": {
+      "gdpr": "GDPR Ready",
+      "selfHosted": "Self-Hosted",
+      "mit": "MIT License",
+      "badge": "FREE FOREVER"
+    },
+    "card": {
+      "title": "Community Edition",
+      "subtitle": "Always Free • Works Offline"
+    }
+  },
+  "features": {
+    "eyebrow": "Built for modern knowledge teams",
+    "title": "Everything You Need to <highlight>Weave Knowledge</highlight>",
+    "subtitle": "Transform fragmented datasets into clear visual narratives with accessibility, privacy, and multilingual support baked in.",
+    "main": {
+      "hierarchies": {
+        "badge": "Core engine",
+        "title": "Recursive strand hierarchies",
+        "description": "Model multi-scope DAGs with single parents per scope and reusable descendants across programs.",
+        "highlights": [
+          "Per-scope single parent",
+          "Cycle detection",
+          "Cross-scope reuse"
+        ]
+      },
+      "approvals": {
+        "badge": "Governance",
+        "title": "Approval workbench",
+        "description": "Queue, review, and resolve structure requests with full audit trails and webhook hooks.",
+        "highlights": [
+          "Scoped approval queues",
+          "SLA tracking",
+          "Webhook + Slack hooks"
+        ]
+      },
+      "ai": {
+        "badge": "AI-powered",
+        "title": "AI-assisted modelling",
+        "description": "Intelligence proposes placements, placeholder copy, and conflict prevention before teams review.",
+        "highlights": [
+          "Suggested placements",
+          "Placeholder drafts",
+          "Conflict avoidance"
+        ]
+      },
+      "learnMore": "Learn more"
+    },
+    "technical": {
+      "title": "Built for Scale & Reliability",
+      "typescript": {
+        "title": "End-to-end TypeScript",
+        "description": "Shared schema types across Prisma, Fastify, Next.js, and the SDK keep approvals type-safe.",
+        "metric": "Zero drift between layers"
+      },
+      "dedupe": {
+        "title": "Smart dedupe overrides",
+        "description": "Content hashes block accidental duplicates while editors intentionally clone with audit logs.",
+        "metric": "Enforce or override per upload"
+      },
+      "offline": {
+        "title": "Offline-first + cloud ready",
+        "description": "PGlite locally, PostgreSQL in production. Cascades behave identically in both.",
+        "metric": "One migration path"
+      },
+      "placeholders": {
+        "title": "Placeholder policy engine",
+        "description": "Visibility caches compute who sees real content vs placeholders per scope and audience.",
+        "metric": "Milliseconds to evaluate"
+      },
+      "api": {
+        "title": "Structure request APIs",
+        "description": "Submit, list, and resolve structure requests from the app, SDK, or automation workflows.",
+        "metric": "REST + SDK parity"
+      },
+      "pipeline": {
+        "title": "AI suggestion pipeline",
+        "description": "Heuristics and models propose new parents, replacements, and placeholder copy.",
+        "metric": "Configurable providers"
+      },
+      "telemetry": {
+        "title": "Audit-ready telemetry",
+        "description": "Visibility cascades emit metrics and logs for dashboards, alerts, and compliance exports.",
+        "metric": "Prometheus-friendly"
+      }
+    },
+    "comparison": {
+      "title": "How OpenStrand Compares",
+      "featureColumn": "Feature",
+      "products": {
+        "openstrand": "OpenStrand",
+        "notion": "Notion",
+        "obsidian": "Obsidian",
+        "tableau": "Tableau"
+      },
+      "rows": [
+        { "feature": "Recursive strands", "openstrand": true, "notion": false, "obsidian": true, "tableau": false },
+        { "feature": "Structure approvals", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "Visibility cascades", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "Placeholder policies", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "SDK parity", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "Self-host & offline", "openstrand": true, "notion": false, "obsidian": true, "tableau": false },
+        { "feature": "Audit trails", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "AI suggestions", "openstrand": true, "notion": false, "obsidian": false, "tableau": false }
+      ],
+      "notAvailable": "—"
+    },
+    "cta": {
+      "note": "Community Edition • Free Forever • No Credit Card • Works Offline",
+      "button": "Download Free Forever"
+    }
+  }
 }

@@ -20,7 +20,7 @@ interface GitHubData {
   forks: number;
 }
 
-const GITHUB_REPO = 'openstrand/openstrand';
+const GITHUB_REPO = 'framersai/openstrand-monorepo';
 const CACHE_KEY = 'openstrand-github-stats';
 const CACHE_DURATION = 1000 * 60 * 60; // 1 hour
 const OFFLINE_MODE = typeof process !== 'undefined'

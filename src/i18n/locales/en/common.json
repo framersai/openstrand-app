@@ -15,7 +15,18 @@
     "roadmap": "Roadmap",
     "support": "Support",
     "about": "About",
-    "product": "Product"
+    "product": "Product",
+    "teamsApi": "Teams & API",
+    "pkms": "PKMS",
+    "landing": "Landing",
+    "feed": "Feed",
+    "knowledge": "Knowledge"
+  },
+  "navigationDescriptions": {
+    "feed": "Recent strands & updates",
+    "visualizations": "Charts, explainers, AI artisan stories",
+    "knowledge": "PKMS hub & weaves",
+    "datasets": "Sources, imports, enrichments"
   },
   "actions": {
     "upload": "Upload",
@@ -49,7 +60,34 @@
     "import": "Import",
     "share": "Share",
     "duplicate": "Duplicate",
-    "archive": "Archive"
+    "archive": "Archive",
+    "openDashboard": "Open dashboard",
+    "startFree": "Start free",
+    "openLogin": "Open login",
+    "show": "Show",
+    "hide": "Hide",
+    "autoInsights": "Auto insights",
+    "commandPalette": "Command palette",
+    "changeLayout": "Change layout"
+  },
+  "docs": {
+    "product": {
+      "label": "Product docs",
+      "description": "Architecture, modelling strategies, release notes"
+    },
+    "tutorials": {
+      "label": "Tutorials & guides",
+      "description": "Step-by-step strand hierarchies, approvals, migrations"
+    },
+    "api": {
+      "label": "API reference (OpenAPI)",
+      "description": "Live Fastify schema with request/response samples",
+      "unavailable": "Set NEXT_PUBLIC_API_URL to expose swagger docs"
+    },
+    "sdk": {
+      "label": "SDK typings (TSDoc)",
+      "description": "Type-safe client & helper utilities for strands, weaves, approvals"
+    }
   },
   "tabs": {
     "data": "Data",
@@ -107,11 +145,13 @@
   "tooltips": {
     "openSettings": "Open settings",
     "toggleNavigation": "Toggle navigation menu",
+    "closeNavigation": "Close navigation",
     "toggleHeuristic": "Toggle heuristic assist",
     "toggleDebug": "Toggle debug details",
     "realTimeSpend": "Real-time token spend for this session",
     "providerSettings": "Provider settings & Heuristic Assist toggle",
-    "themeSwitch": "Theme: {theme} (click to switch to {nextTheme})"
+    "themeSwitch": "Theme: {theme} (click to switch to {nextTheme})",
+    "backToLanding": "Back to landing page"
   },
   "empty": {
     "noData": "No data available",
@@ -150,7 +190,8 @@
     "provider": "Provider",
     "cost": "Cost",
     "samples": "Samples",
-    "metadata": "Metadata"
+    "metadata": "Metadata",
+    "workspace": "Workspace"
   },
   "gdpr": {
     "title": "We use analytics to improve OpenStrand",
