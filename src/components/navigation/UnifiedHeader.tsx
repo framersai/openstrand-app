@@ -422,7 +422,7 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
           </nav>
 
           {/* Right side */}
-          <div className="flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-3">
             <div className="hidden items-center gap-3 md:flex">
               {showDashboardNav && (
                 <Button
@@ -450,16 +450,21 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
               )}
               {mounted && authControls}
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setMobileMenuOpen((prev) => !prev)}
-              className="md:hidden rounded-full border border-border/60 text-foreground/80 transition hover:border-foreground/40 hover:bg-foreground/5 hover:text-foreground dark:border-white/12 dark:text-white/80 dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:text-white"
-              aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
+            <div className="flex items-center gap-2 md:hidden">
+              {mounted && (
+                <ThemeToggle />
+              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setMobileMenuOpen((prev) => !prev)}
+                className="rounded-full border border-border/60 text-foreground/80 transition hover:border-foreground/40 hover:bg-foreground/5 hover:text-foreground dark:border-white/12 dark:text-white/80 dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:text-white md:hidden"
+                aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
+                aria-expanded={mobileMenuOpen}
+              >
+                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
           </div>
         </div>
 
