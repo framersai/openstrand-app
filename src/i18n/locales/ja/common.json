@@ -1,5 +1,21 @@
 {
+  "app": {
+    "name": "OpenStrand",
+    "tagline": "データストーリー、より速く",
+    "description": "純粋なLLMインテリジェンスを使用して、生データから魅力的なビジュアルナラティブを生成"
+  },
   "navigation": {
+    "home": "ホーム",
+    "datasets": "データセット",
+    "visualizations": "ビジュアライゼーション",
+    "pricing": "料金",
+    "docs": "ドキュメント",
+    "overview": "概要",
+    "useCases": "ユースケース",
+    "roadmap": "ロードマップ",
+    "support": "サポート",
+    "about": "について",
+    "product": "製品",
     "teamsApi": "チームとAPI",
     "pkms": "PKMS",
     "landing": "ランディング",
@@ -13,6 +29,24 @@
     "datasets": "ソース・インポート・拡張"
   },
   "actions": {
+    "upload": "アップロード",
+    "download": "ダウンロード",
+    "generate": "生成",
+    "processing": "処理中",
+    "clear": "クリア",
+    "clearAll": "すべてクリア",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "apply": "適用",
+    "refresh": "更新",
+    "load": "読み込み",
+    "use": "使用",
+    "submit": "送信",
+    "submitting": "送信中...",
+    "create": "作成",
+    "copy": "コピー",
     "openDashboard": "ダッシュボードを開く",
     "startFree": "無料で開始",
     "openLogin": "ログインを開く",
@@ -50,45 +84,5 @@
   },
   "labels": {
     "workspace": "ワークスペース"
-  }
-}
-{
-  "app": {
-    "name": "OpenStrand",
-    "tagline": "データストーリー、より速く",
-    "description": "純粋なLLMインテリジェンスを使用して、生データから魅力的なビジュアルナラティブを生成"
-  },
-  "navigation": {
-    "home": "ホーム",
-    "datasets": "データセット",
-    "visualizations": "ビジュアライゼーション",
-    "pricing": "料金",
-    "docs": "ドキュメント",
-    "overview": "概要",
-    "useCases": "ユースケース",
-    "roadmap": "ロードマップ",
-    "support": "サポート",
-    "about": "について",
-    "product": "製品"
-  },
-  "actions": {
-    "upload": "アップロード",
-    "download": "ダウンロード",
-    "generate": "生成",
-    "processing": "処理中",
-    "clear": "クリア",
-    "clearAll": "すべてクリア",
-    "save": "保存",
-    "cancel": "キャンセル",
-    "delete": "削除",
-    "edit": "編集",
-    "apply": "適用",
-    "refresh": "更新",
-    "load": "読み込み",
-    "use": "使用",
-    "submit": "送信",
-    "submitting": "送信中...",
-    "create": "作成",
-    "copy": "コピー"
   }
 }

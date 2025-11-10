@@ -1,5 +1,21 @@
 {
+  "app": {
+    "name": "OpenStrand",
+    "tagline": "데이터 스토리, 더 빠르게",
+    "description": "순수 LLM 인텔리전스를 사용하여 원시 데이터에서 매력적인 시각적 내러티브 생성"
+  },
   "navigation": {
+    "home": "홈",
+    "datasets": "데이터셋",
+    "visualizations": "시각화",
+    "pricing": "가격",
+    "docs": "문서",
+    "overview": "개요",
+    "useCases": "사용 사례",
+    "roadmap": "로드맵",
+    "support": "지원",
+    "about": "정보",
+    "product": "제품",
     "teamsApi": "팀 및 API",
     "pkms": "PKMS",
     "landing": "랜딩",
@@ -13,6 +29,24 @@
     "datasets": "소스, 가져오기 및 확장"
   },
   "actions": {
+    "upload": "업로드",
+    "download": "다운로드",
+    "generate": "생성",
+    "processing": "처리 중",
+    "clear": "지우기",
+    "clearAll": "모두 지우기",
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "edit": "편집",
+    "apply": "적용",
+    "refresh": "새로고침",
+    "load": "로드",
+    "use": "사용",
+    "submit": "제출",
+    "submitting": "제출 중...",
+    "create": "생성",
+    "copy": "복사",
     "openDashboard": "대시보드 열기",
     "startFree": "무료로 시작",
     "openLogin": "로그인 열기",
@@ -50,45 +84,5 @@
   },
   "labels": {
     "workspace": "작업 공간"
-  }
-}
-{
-  "app": {
-    "name": "OpenStrand",
-    "tagline": "데이터 스토리, 더 빠르게",
-    "description": "순수 LLM 인텔리전스를 사용하여 원시 데이터에서 매력적인 시각적 내러티브 생성"
-  },
-  "navigation": {
-    "home": "홈",
-    "datasets": "데이터셋",
-    "visualizations": "시각화",
-    "pricing": "가격",
-    "docs": "문서",
-    "overview": "개요",
-    "useCases": "사용 사례",
-    "roadmap": "로드맵",
-    "support": "지원",
-    "about": "정보",
-    "product": "제품"
-  },
-  "actions": {
-    "upload": "업로드",
-    "download": "다운로드",
-    "generate": "생성",
-    "processing": "처리 중",
-    "clear": "지우기",
-    "clearAll": "모두 지우기",
-    "save": "저장",
-    "cancel": "취소",
-    "delete": "삭제",
-    "edit": "편집",
-    "apply": "적용",
-    "refresh": "새로고침",
-    "load": "로드",
-    "use": "사용",
-    "submit": "제출",
-    "submitting": "제출 중...",
-    "create": "생성",
-    "copy": "복사"
   }
 }
