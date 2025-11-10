@@ -341,8 +341,8 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
 
           <Separator orientation="vertical" className="hidden h-8 lg:block" />
 
-          {/* Navigation */}
-          <nav className="hidden flex-1 items-center gap-2 lg:flex">
+          {/* Desktop Navigation */}
+          <nav className="hidden flex-1 items-center gap-2 md:flex">
             {navItems.map((item) => {
               const Icon = item.icon ?? null;
               const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
@@ -479,25 +479,26 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
               )}
               {mounted && authControls}
             </div>
-            {/* Mobile controls - aligned to right */}
-            <div className="flex items-center gap-2 md:hidden">
-              {mounted && (
-                <>
-                  <LanguageSwitcher variant="compact" showName={false} />
-                  <ThemeToggle />
-                </>
+            {/* Mobile controls - always show hamburger when nav is hidden */}
+            {mounted && (
+              <div className="flex items-center gap-2 md:hidden">
+                <LanguageSwitcher variant="compact" showName={false} />
+                <ThemeToggle />
+              </div>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              className={cn(
+                "rounded-full border border-border/60 text-foreground/80 transition hover:border-foreground/40 hover:bg-foreground/5 hover:text-foreground dark:border-white/12 dark:text-white/80 dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:text-white",
+                "md:hidden" // Only show on mobile
               )}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setMobileMenuOpen((prev) => !prev)}
-                className="rounded-full border border-border/60 text-foreground/80 transition hover:border-foreground/40 hover:bg-foreground/5 hover:text-foreground dark:border-white/12 dark:text-white/80 dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:text-white"
-                aria-label={mobileMenuOpen ? tCommon('tooltips.closeNavigation') : tCommon('tooltips.toggleNavigation')}
-                aria-expanded={mobileMenuOpen}
-              >
-                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </Button>
-            </div>
+              aria-label={mobileMenuOpen ? tCommon('tooltips.closeNavigation') : tCommon('tooltips.toggleNavigation')}
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
           </div>
         </div>
 

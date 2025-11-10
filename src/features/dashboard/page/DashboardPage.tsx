@@ -12,6 +12,7 @@ import {
   MessageSquare,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
 } from 'lucide-react';
 
 import { CommandPalette, type CommandAction } from '@/components/command-palette';
@@ -53,6 +54,7 @@ import { useFeatureFlags } from '@/lib/feature-flags';
 import { useAppMode } from '@/hooks/useAppMode';
 import { useOpenStrandStore } from '@/store/openstrand.store';
 import { useTranslations } from 'next-intl';
+import { Footer } from '@/components/footer/Footer';
 
 export default function DashboardPage() {
   const {
@@ -122,6 +124,7 @@ export default function DashboardPage() {
   const environmentMode = capabilities?.environment?.mode ?? mode;
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [footerCollapsed, setFooterCollapsed] = useState(true); // Start collapsed in dashboard
   const t = useTranslations('dashboard');
 
   const shouldShowLocalOnboarding = environmentMode === 'offline';
@@ -374,13 +377,17 @@ export default function DashboardPage() {
       <UnifiedHeader onOpenSettings={openSettings} />
 
       {/* Main content area */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar (if enabled) - More compact design */}
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+        {/* Sidebar (if enabled) - Responsive design */}
         {currentLayout.showSidebar && (
           <aside className={cn(
-            "dashboard-sidebar border-r border-border/50 bg-background/95 backdrop-blur overflow-hidden flex flex-col transition-[width] duration-300",
-            isSidebarCollapsed ? "w-20" : "w-80",
-            currentLayout.sidebarPosition === 'right' && 'order-2 border-l border-r-0'
+            "dashboard-sidebar border-b lg:border-b-0 lg:border-r border-border/50 bg-background/95 backdrop-blur overflow-hidden flex flex-col transition-all duration-300",
+            // Mobile: full width, fixed height
+            "w-full h-64 lg:h-auto",
+            // Desktop: variable width
+            "lg:w-80",
+            isSidebarCollapsed && "lg:w-20 h-auto",
+            currentLayout.sidebarPosition === 'right' && 'lg:order-2 lg:border-l lg:border-r-0'
           )}>
             <div className="flex items-center justify-between border-b border-border/40 px-3 py-2">
               <span
@@ -395,7 +402,10 @@ export default function DashboardPage() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsSidebarCollapsed((prev) => !prev)}
-                className="h-7 w-7 rounded-full border border-border/50 bg-background/70 text-muted-foreground hover:border-primary/40 hover:text-primary"
+                className={cn(
+                  "h-7 w-7 rounded-full border border-border/50 bg-background/70 text-muted-foreground hover:border-primary/40 hover:text-primary",
+                  "hidden lg:flex" // Only show on desktop
+                )}
                 aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
               >
                 {isSidebarCollapsed ? (
@@ -528,13 +538,14 @@ export default function DashboardPage() {
           currentLayout.showStatusBar && "pb-8"
         )}>
           <div className="container mx-auto p-6">
-            {/* Layout preset selector */}
-            <div className="mb-6 flex items-center justify-between">
-              <div className="flex items-center gap-2">
+            {/* Layout preset selector - responsive */}
+            <div className="mb-6 flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
+              <div className="flex flex-wrap items-center gap-2">
                 <Button
                   size="sm"
                   variant={currentLayout.preset === 'focused' ? 'default' : 'outline'}
                   onClick={() => applyPreset('focused')}
+                  className="text-xs sm:text-sm"
                 >
                   Focused
                 </Button>
@@ -542,6 +553,7 @@ export default function DashboardPage() {
                   size="sm"
                   variant={currentLayout.preset === 'balanced' ? 'default' : 'outline'}
                   onClick={() => applyPreset('balanced')}
+                  className="text-xs sm:text-sm"
                 >
                   Balanced
                 </Button>
@@ -549,6 +561,7 @@ export default function DashboardPage() {
                   size="sm"
                   variant={currentLayout.preset === 'overview' ? 'default' : 'outline'}
                   onClick={() => applyPreset('overview')}
+                  className="text-xs sm:text-sm"
                 >
                   {t('sidebar.overview')}
                 </Button>
@@ -556,17 +569,19 @@ export default function DashboardPage() {
                   size="sm"
                   variant={currentLayout.preset === 'zen' ? 'default' : 'outline'}
                   onClick={() => applyPreset('zen')}
+                  className="text-xs sm:text-sm"
                 >
                   Zen
                 </Button>
               </div>
 
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                 <TourControlPanel />
-                <div className="h-4 w-px bg-border" />
-                <span>Columns: {currentLayout.gridColumns}</span>
-                <Button size="sm" variant="ghost" onClick={cycleGridColumns}>
-                  Change
+                <div className="hidden sm:block h-4 w-px bg-border" />
+                <span className="hidden sm:inline">Columns: {currentLayout.gridColumns}</span>
+                <Button size="sm" variant="ghost" onClick={cycleGridColumns} className="text-xs sm:text-sm">
+                  <span className="sm:hidden">Cols</span>
+                  <span className="hidden sm:inline">Change</span>
                 </Button>
               </div>
             </div>
@@ -722,6 +737,50 @@ export default function DashboardPage() {
         onClose={() => setIsPaletteOpen(false)}
         actions={commandActions}
       />
+      
+      {/* Collapsible Footer */}
+      <div className={cn(
+        "relative transition-all duration-300 ease-out border-t border-border/50",
+        footerCollapsed ? "h-12" : "h-auto"
+      )}>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setFooterCollapsed(!footerCollapsed)}
+          className={cn(
+            "absolute -top-10 left-1/2 -translate-x-1/2 z-10",
+            "flex items-center gap-2 rounded-full px-3 py-1",
+            "bg-background/80 backdrop-blur-sm border border-border/50",
+            "hover:bg-background/90 hover:border-border",
+            "transition-all duration-300"
+          )}
+        >
+          <span className="text-xs text-muted-foreground">
+            {footerCollapsed ? 'Show' : 'Hide'} Footer
+          </span>
+          <ChevronUp 
+            className={cn(
+              "h-3 w-3 transition-transform duration-300",
+              footerCollapsed ? "rotate-180" : ""
+            )}
+          />
+        </Button>
+        
+        <div className={cn(
+          "overflow-hidden transition-all duration-300 ease-out",
+          footerCollapsed ? "opacity-0 invisible h-0" : "opacity-100 visible"
+        )}>
+          <Footer />
+        </div>
+        
+        {footerCollapsed && (
+          <div className="h-12 bg-background/50 backdrop-blur-sm flex items-center justify-center">
+            <p className="text-xs text-muted-foreground">
+              © 2024 OpenStrand. All rights reserved.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
