@@ -52,6 +52,7 @@ import { cn } from '@/lib/utils';
 import { useFeatureFlags } from '@/lib/feature-flags';
 import { useAppMode } from '@/hooks/useAppMode';
 import { useOpenStrandStore } from '@/store/openstrand.store';
+import { useTranslations } from 'next-intl';
 
 export default function DashboardPage() {
   const {
@@ -121,6 +122,7 @@ export default function DashboardPage() {
   const environmentMode = capabilities?.environment?.mode ?? mode;
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const t = useTranslations('dashboard');
 
   const shouldShowLocalOnboarding = environmentMode === 'offline';
   const shouldShowTeamOnboarding =
@@ -223,39 +225,39 @@ export default function DashboardPage() {
     () => [
       {
         id: 'upload',
-        label: 'Upload dataset',
+        label: t('actions.uploadDataset'),
         hint: 'Switch to the Data tab',
         shortcut: 'Shift+U',
         onSelect: openUpload,
       },
       {
         id: 'auto-insights',
-        label: 'Run Auto Insights',
+        label: t('actions.runAutoInsights'),
         hint: 'Analyse the active dataset',
         shortcut: 'Shift+A',
         onSelect: runAutoInsights,
       },
       {
         id: 'new-visualization',
-        label: 'New visualization',
+        label: t('actions.newVisualization'),
         hint: 'Jump to the Visualize tab',
         shortcut: 'Shift+V',
         onSelect: openVisualize,
       },
       {
         id: 'clear-visualizations',
-        label: 'Clear visualizations',
+        label: t('actions.clearVisualizations'),
         shortcut: 'Shift+C',
         onSelect: handleClearAllVisualizations,
       },
       {
         id: 'open-settings',
-        label: 'Open settings',
+        label: t('actions.openSettings'),
         shortcut: 'Shift+S',
         onSelect: openSettings,
       },
     ],
-    [openUpload, runAutoInsights, openVisualize, handleClearAllVisualizations, openSettings]
+    [openUpload, runAutoInsights, openVisualize, handleClearAllVisualizations, openSettings, t]
   );
 
   // Keyboard navigation
@@ -387,7 +389,7 @@ export default function DashboardPage() {
                   isSidebarCollapsed && "sr-only"
                 )}
               >
-                Workspace
+                {t('sidebar.workspace')}
               </span>
               <Button
                 variant="ghost"
@@ -426,7 +428,7 @@ export default function DashboardPage() {
                         isSidebarCollapsed && "h-4 w-4"
                       )}
                     />
-                    <span className={cn(isSidebarCollapsed && "sr-only")}>Data</span>
+                    <span className={cn(isSidebarCollapsed && "sr-only")}>{t('tabs.upload')}</span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="generate"
@@ -442,7 +444,7 @@ export default function DashboardPage() {
                         isSidebarCollapsed && "h-4 w-4"
                       )}
                     />
-                    <span className={cn(isSidebarCollapsed && "sr-only")}>Generate</span>
+                    <span className={cn(isSidebarCollapsed && "sr-only")}>{t('tabs.visualize')}</span>
                   </TabsTrigger>
                 </TabsList>
 
@@ -548,7 +550,7 @@ export default function DashboardPage() {
                   variant={currentLayout.preset === 'overview' ? 'default' : 'outline'}
                   onClick={() => applyPreset('overview')}
                 >
-                  Overview
+                  {t('sidebar.overview')}
                 </Button>
                 <Button
                   size="sm"
@@ -654,7 +656,7 @@ export default function DashboardPage() {
                 </CollapsiblePanel>
 
                 <CollapsiblePanel
-                  title="Feedback"
+                  title={t('sidebar.feedback')}
                   icon={<MessageSquare className="h-4 w-4" />}
                   defaultCollapsed={currentLayout.panelsCollapsed.feedback}
                   preview={`${feedbackOverview?.total || 0} responses`}

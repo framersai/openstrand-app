@@ -76,6 +76,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 const DEFAULT_TIMEOUT = 30000;
 const INSIGHTS_TIMEOUT =
   Number(process.env.NEXT_PUBLIC_INSIGHTS_TIMEOUT_MS ?? 120000) || 120000;
+const OFFLINE_MODE = process.env.NEXT_PUBLIC_OFFLINE_MODE === 'true';
 
 export class ApiError extends Error {
   constructor(
@@ -524,21 +525,32 @@ class ApiService {
   }
 
   async listSampleDatasets(): Promise<SampleDatasetSummary[]> {
-    const response = await fetchWithTimeout(
-      `${this.baseUrl}/datasets/samples`,
-      this.withAuth(),
-    );
+    // In offline mode, return empty array instead of failing
+    if (OFFLINE_MODE || !this.baseUrl || this.baseUrl === 'http://localhost:8000') {
+      console.debug('[api] offline mode or local API not available, returning empty sample datasets');
+      return [];
+    }
 
-    const raw = await response.json();
-    if (!Array.isArray(raw)) return [];
-    return raw.map((item) => ({
-      id: String(item.id ?? ''),
-      filename: String(item.filename ?? ''),
-      sizeBytes: Number(item.sizeBytes ?? item.size_bytes ?? 0),
-      lastModified: String(item.lastModified ?? item.last_modified ?? new Date().toISOString()),
-      isDefault: Boolean(item.isDefault ?? item.is_default ?? false),
-      isLoaded: Boolean(item.isLoaded ?? item.is_loaded ?? false),
-    }));
+    try {
+      const response = await fetchWithTimeout(
+        `${this.baseUrl}/datasets/samples`,
+        this.withAuth(),
+      );
+
+      const raw = await response.json();
+      if (!Array.isArray(raw)) return [];
+      return raw.map((item) => ({
+        id: String(item.id ?? ''),
+        filename: String(item.filename ?? ''),
+        sizeBytes: Number(item.sizeBytes ?? item.size_bytes ?? 0),
+        lastModified: String(item.lastModified ?? item.last_modified ?? new Date().toISOString()),
+        isDefault: Boolean(item.isDefault ?? item.is_default ?? false),
+        isLoaded: Boolean(item.isLoaded ?? item.is_loaded ?? false),
+      }));
+    } catch (error) {
+      console.debug('[api] failed to fetch sample datasets, returning empty array', error);
+      return [];
+    }
   }
 
   async getDatasetSummary(datasetId: string): Promise<DatasetSummary> {
@@ -842,23 +854,45 @@ class ApiService {
   }
 
   async getDatasetLeaderboard(limit = 10): Promise<LeaderboardEntry[]> {
-    const response = await fetchWithTimeout(
-      `${this.baseUrl}/leaderboard/datasets?limit=${limit}`,
-      this.withAuth(),
-    );
-    const raw = await response.json();
-    if (!Array.isArray(raw)) return [];
-    return raw.map(normalizeLeaderboardEntry);
+    // In offline mode, return empty array instead of failing
+    if (OFFLINE_MODE || !this.baseUrl || this.baseUrl === 'http://localhost:8000') {
+      console.debug('[api] offline mode or local API not available, returning empty dataset leaderboard');
+      return [];
+    }
+
+    try {
+      const response = await fetchWithTimeout(
+        `${this.baseUrl}/leaderboard/datasets?limit=${limit}`,
+        this.withAuth(),
+      );
+      const raw = await response.json();
+      if (!Array.isArray(raw)) return [];
+      return raw.map(normalizeLeaderboardEntry);
+    } catch (error) {
+      console.debug('[api] failed to fetch dataset leaderboard, returning empty array', error);
+      return [];
+    }
   }
 
   async getVisualizationLeaderboard(limit = 10): Promise<LeaderboardEntry[]> {
-    const response = await fetchWithTimeout(
-      `${this.baseUrl}/leaderboard/visualizations?limit=${limit}`,
-      this.withAuth(),
-    );
-    const raw = await response.json();
-    if (!Array.isArray(raw)) return [];
-    return raw.map(normalizeLeaderboardEntry);
+    // In offline mode, return empty array instead of failing
+    if (OFFLINE_MODE || !this.baseUrl || this.baseUrl === 'http://localhost:8000') {
+      console.debug('[api] offline mode or local API not available, returning empty visualization leaderboard');
+      return [];
+    }
+
+    try {
+      const response = await fetchWithTimeout(
+        `${this.baseUrl}/leaderboard/visualizations?limit=${limit}`,
+        this.withAuth(),
+      );
+      const raw = await response.json();
+      if (!Array.isArray(raw)) return [];
+      return raw.map(normalizeLeaderboardEntry);
+    } catch (error) {
+      console.debug('[api] failed to fetch visualization leaderboard, returning empty array', error);
+      return [];
+    }
   }
 
   async listBillingPlans(): Promise<BillingPlan[]> {

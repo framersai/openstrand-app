@@ -31,6 +31,7 @@ import {
 // API Configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 const API_TIMEOUT = 30000; // 30 seconds
+const OFFLINE_MODE = process.env.NEXT_PUBLIC_OFFLINE_MODE === 'true';
 
 export interface TeamApiToken {
   id: string;
@@ -971,8 +972,63 @@ export const analysisAPI = {
  */
 export const metaAPI = {
   async capabilities(): Promise<CapabilityMatrix> {
-    const response = await apiFetch('/meta/capabilities');
-    return await parseData<CapabilityMatrix>(response);
+    // In offline mode or when API is unavailable, return default capabilities
+    if (OFFLINE_MODE || API_BASE_URL === 'http://localhost:8000/api/v1') {
+      console.debug('[api] offline mode or local API not available, returning default capabilities');
+      return {
+        analysisPipeline: false,
+        documentAnalysis: false,
+        mediaAnalysis: false,
+        dynamicVisualizations: false,
+        generativeVisualizations: false,
+        topContent: false,
+        aiArtisan: false,
+        knowledgeGraph: false,
+        analytics: {
+          googleAnalytics: false,
+        },
+        environment: {
+          mode: 'offline',
+        },
+        api: {
+          teamsAuthEnabled: false,
+          swaggerEnabled: false,
+          openRouter: false,
+          openAI: false,
+          anthropic: false,
+        },
+      };
+    }
+    
+    try {
+      const response = await apiFetch('/meta/capabilities');
+      return await parseData<CapabilityMatrix>(response);
+    } catch (error) {
+      console.debug('[api] failed to fetch capabilities, returning default', error);
+      return {
+        analysisPipeline: false,
+        documentAnalysis: false,
+        mediaAnalysis: false,
+        dynamicVisualizations: false,
+        generativeVisualizations: false,
+        topContent: false,
+        aiArtisan: false,
+        knowledgeGraph: false,
+        analytics: {
+          googleAnalytics: false,
+        },
+        environment: {
+          mode: 'offline',
+        },
+        api: {
+          teamsAuthEnabled: false,
+          swaggerEnabled: false,
+          openRouter: false,
+          openAI: false,
+          anthropic: false,
+        },
+      };
+    }
   },
 
   async developer(): Promise<{

@@ -1,0 +1,55 @@
+{
+  "tabs": {
+    "upload": "Upload",
+    "visualize": "Visualize"
+  },
+  "sidebar": {
+    "workspace": "Workspace",
+    "overview": "Overview",
+    "ai": "AI",
+    "feedback": "Feedback",
+    "inspector": "Inspector"
+  },
+  "actions": {
+    "changeLayout": "Change layout",
+    "uploadDataset": "Upload dataset",
+    "runAutoInsights": "Run Auto Insights",
+    "newVisualization": "New visualization",
+    "clearVisualizations": "Clear visualizations",
+    "openSettings": "Open settings"
+  },
+  "onboarding": {
+    "local": {
+      "title": "Local mode activated",
+      "description": "You're running in offline-first mode. Configure AI providers for generative features."
+    },
+    "team": {
+      "title": "Team edition setup",
+      "description": "Complete the team configuration to unlock collaboration features."
+    }
+  },
+  "status": {
+    "noDataset": "No dataset loaded",
+    "loadSample": "Load a sample or upload your own",
+    "noVisualizations": "No visualizations yet",
+    "generateOne": "Generate your first visualization",
+    "processing": "Processing...",
+    "uploadSuccess": "Upload successful",
+    "visualizationSaved": "Visualization saved"
+  },
+  "upload": {
+    "dragDrop": "Drag and drop your data file here or click to browse",
+    "supportedFormats": "Supported formats: CSV, JSON, Excel, Parquet",
+    "maxSize": "Max file size: {{size}}MB",
+    "sampleDatasets": "Sample Datasets",
+    "loading": "Loading sample datasets..."
+  },
+  "visualize": {
+    "prompt": "Enter your visualization prompt",
+    "placeholder": "e.g., Show me a bar chart of sales by region",
+    "generate": "Generate",
+    "examples": "Example prompts",
+    "processing": "Generating visualization...",
+    "error": "Failed to generate visualization"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "tabs": {
+    "upload": "アップロード",
+    "visualize": "ビジュアライゼーション"
+  },
+  "sidebar": {
+    "workspace": "ワークスペース",
+    "overview": "概要",
+    "ai": "AI",
+    "feedback": "フィードバック",
+    "inspector": "インスペクター"
+  },
+  "actions": {
+    "changeLayout": "レイアウトを変更",
+    "uploadDataset": "データセットをアップロード",
+    "runAutoInsights": "自動インサイトを実行",
+    "newVisualization": "新しいビジュアライゼーション",
+    "clearVisualizations": "ビジュアライゼーションをクリア",
+    "openSettings": "設定を開く"
+  },
+  "onboarding": {
+    "local": {
+      "title": "ローカルモードが有効",
+      "description": "オフラインファーストモードで実行中です。生成機能を使用するにはAIプロバイダーを設定してください。"
+    },
+    "team": {
+      "title": "チーム版のセットアップ",
+      "description": "チーム設定を完了してコラボレーション機能をロック解除します。"
+    }
+  },
+  "status": {
+    "noDataset": "データセットが読み込まれていません",
+    "loadSample": "サンプルを読み込むか、独自のファイルをアップロード",
+    "noVisualizations": "ビジュアライゼーションがまだありません",
+    "generateOne": "最初のビジュアライゼーションを生成",
+    "processing": "処理中...",
+    "uploadSuccess": "アップロード成功",
+    "visualizationSaved": "ビジュアライゼーションを保存しました"
+  },
+  "upload": {
+    "dragDrop": "データファイルをここにドラッグ＆ドロップするか、クリックして参照",
+    "supportedFormats": "対応形式：CSV、JSON、Excel、Parquet",
+    "maxSize": "最大ファイルサイズ：{{size}}MB",
+    "sampleDatasets": "サンプルデータセット",
+    "loading": "サンプルデータセットを読み込み中..."
+  },
+  "visualize": {
+    "prompt": "ビジュアライゼーションのプロンプトを入力",
+    "placeholder": "例：地域別の売上を棒グラフで表示",
+    "generate": "生成",
+    "examples": "プロンプトの例",
+    "processing": "ビジュアライゼーションを生成中...",
+    "error": "ビジュアライゼーションの生成に失敗しました"
+  }
+}

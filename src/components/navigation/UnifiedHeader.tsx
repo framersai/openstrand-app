@@ -451,7 +451,7 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
           </nav>
 
           {/* Right side */}
-          <div className="ml-auto flex items-center gap-3">
+          <div className="flex-1 flex items-center justify-end gap-3">
             <div className="hidden items-center gap-3 md:flex">
               {showDashboardNav && (
                 <Button
@@ -479,6 +479,7 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
               )}
               {mounted && authControls}
             </div>
+            {/* Mobile controls - aligned to right */}
             <div className="flex items-center gap-2 md:hidden">
               {mounted && (
                 <>
@@ -490,7 +491,7 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
                 variant="ghost"
                 size="icon"
                 onClick={() => setMobileMenuOpen((prev) => !prev)}
-                className="rounded-full border border-border/60 text-foreground/80 transition hover:border-foreground/40 hover:bg-foreground/5 hover:text-foreground dark:border-white/12 dark:text-white/80 dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:text-white md:hidden"
+                className="rounded-full border border-border/60 text-foreground/80 transition hover:border-foreground/40 hover:bg-foreground/5 hover:text-foreground dark:border-white/12 dark:text-white/80 dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:text-white"
                 aria-label={mobileMenuOpen ? tCommon('tooltips.closeNavigation') : tCommon('tooltips.toggleNavigation')}
                 aria-expanded={mobileMenuOpen}
               >

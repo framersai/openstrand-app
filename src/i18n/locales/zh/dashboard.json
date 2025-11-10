@@ -1,0 +1,55 @@
+{
+  "tabs": {
+    "upload": "上传",
+    "visualize": "可视化"
+  },
+  "sidebar": {
+    "workspace": "工作区",
+    "overview": "概览",
+    "ai": "人工智能",
+    "feedback": "反馈",
+    "inspector": "检查器"
+  },
+  "actions": {
+    "changeLayout": "更改布局",
+    "uploadDataset": "上传数据集",
+    "runAutoInsights": "运行自动洞察",
+    "newVisualization": "新建可视化",
+    "clearVisualizations": "清除可视化",
+    "openSettings": "打开设置"
+  },
+  "onboarding": {
+    "local": {
+      "title": "本地模式已激活",
+      "description": "您正在离线优先模式下运行。配置AI提供商以使用生成功能。"
+    },
+    "team": {
+      "title": "团队版设置",
+      "description": "完成团队配置以解锁协作功能。"
+    }
+  },
+  "status": {
+    "noDataset": "未加载数据集",
+    "loadSample": "加载示例或上传您自己的",
+    "noVisualizations": "尚无可视化",
+    "generateOne": "生成您的第一个可视化",
+    "processing": "处理中...",
+    "uploadSuccess": "上传成功",
+    "visualizationSaved": "可视化已保存"
+  },
+  "upload": {
+    "dragDrop": "将数据文件拖放到此处或点击浏览",
+    "supportedFormats": "支持的格式：CSV、JSON、Excel、Parquet",
+    "maxSize": "最大文件大小：{{size}}MB",
+    "sampleDatasets": "示例数据集",
+    "loading": "正在加载示例数据集..."
+  },
+  "visualize": {
+    "prompt": "输入您的可视化提示",
+    "placeholder": "例如：按地区显示销售额的条形图",
+    "generate": "生成",
+    "examples": "示例提示",
+    "processing": "正在生成可视化...",
+    "error": "生成可视化失败"
+  }
+}

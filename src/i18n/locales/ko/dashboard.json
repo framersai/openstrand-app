@@ -1,0 +1,55 @@
+{
+  "tabs": {
+    "upload": "업로드",
+    "visualize": "시각화"
+  },
+  "sidebar": {
+    "workspace": "작업 공간",
+    "overview": "개요",
+    "ai": "AI",
+    "feedback": "피드백",
+    "inspector": "검사기"
+  },
+  "actions": {
+    "changeLayout": "레이아웃 변경",
+    "uploadDataset": "데이터셋 업로드",
+    "runAutoInsights": "자동 인사이트 실행",
+    "newVisualization": "새 시각화",
+    "clearVisualizations": "시각화 지우기",
+    "openSettings": "설정 열기"
+  },
+  "onboarding": {
+    "local": {
+      "title": "로컬 모드 활성화됨",
+      "description": "오프라인 우선 모드로 실행 중입니다. 생성 기능을 사용하려면 AI 공급자를 구성하세요."
+    },
+    "team": {
+      "title": "팀 에디션 설정",
+      "description": "팀 구성을 완료하여 협업 기능을 잠금 해제하세요."
+    }
+  },
+  "status": {
+    "noDataset": "데이터셋이 로드되지 않음",
+    "loadSample": "샘플을 로드하거나 직접 업로드",
+    "noVisualizations": "아직 시각화가 없습니다",
+    "generateOne": "첫 번째 시각화 생성",
+    "processing": "처리 중...",
+    "uploadSuccess": "업로드 성공",
+    "visualizationSaved": "시각화 저장됨"
+  },
+  "upload": {
+    "dragDrop": "데이터 파일을 여기에 끌어다 놓거나 클릭하여 찾아보기",
+    "supportedFormats": "지원 형식: CSV, JSON, Excel, Parquet",
+    "maxSize": "최대 파일 크기: {{size}}MB",
+    "sampleDatasets": "샘플 데이터셋",
+    "loading": "샘플 데이터셋 로딩 중..."
+  },
+  "visualize": {
+    "prompt": "시각화 프롬프트 입력",
+    "placeholder": "예: 지역별 매출을 막대 차트로 보여주세요",
+    "generate": "생성",
+    "examples": "예제 프롬프트",
+    "processing": "시각화 생성 중...",
+    "error": "시각화 생성 실패"
+  }
+}

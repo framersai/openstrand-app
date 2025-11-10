@@ -1,0 +1,55 @@
+{
+  "tabs": {
+    "upload": "رفع",
+    "visualize": "تصور"
+  },
+  "sidebar": {
+    "workspace": "مساحة العمل",
+    "overview": "نظرة عامة",
+    "ai": "الذكاء الاصطناعي",
+    "feedback": "ملاحظات",
+    "inspector": "مفتش"
+  },
+  "actions": {
+    "changeLayout": "تغيير التخطيط",
+    "uploadDataset": "رفع مجموعة البيانات",
+    "runAutoInsights": "تشغيل الرؤى التلقائية",
+    "newVisualization": "تصور جديد",
+    "clearVisualizations": "مسح التصورات",
+    "openSettings": "فتح الإعدادات"
+  },
+  "onboarding": {
+    "local": {
+      "title": "تم تفعيل الوضع المحلي",
+      "description": "أنت تعمل في وضع غير متصل بالإنترنت. قم بتكوين موفري الذكاء الاصطناعي لاستخدام الميزات التوليدية."
+    },
+    "team": {
+      "title": "إعداد إصدار الفريق",
+      "description": "أكمل تكوين الفريق لإلغاء قفل ميزات التعاون."
+    }
+  },
+  "status": {
+    "noDataset": "لم يتم تحميل مجموعة بيانات",
+    "loadSample": "قم بتحميل عينة أو رفع ملفك الخاص",
+    "noVisualizations": "لا توجد تصورات حتى الآن",
+    "generateOne": "أنشئ أول تصور لك",
+    "processing": "جارٍ المعالجة...",
+    "uploadSuccess": "تم الرفع بنجاح",
+    "visualizationSaved": "تم حفظ التصور"
+  },
+  "upload": {
+    "dragDrop": "اسحب وأفلت ملف البيانات هنا أو انقر للاستعراض",
+    "supportedFormats": "التنسيقات المدعومة: CSV، JSON، Excel، Parquet",
+    "maxSize": "الحد الأقصى لحجم الملف: {{size}} ميجابايت",
+    "sampleDatasets": "مجموعات البيانات النموذجية",
+    "loading": "جارٍ تحميل مجموعات البيانات النموذجية..."
+  },
+  "visualize": {
+    "prompt": "أدخل موجه التصور",
+    "placeholder": "مثال: أظهر لي مخطط شريطي للمبيعات حسب المنطقة",
+    "generate": "إنشاء",
+    "examples": "أمثلة على المطالبات",
+    "processing": "جارٍ إنشاء التصور...",
+    "error": "فشل إنشاء التصور"
+  }
+}

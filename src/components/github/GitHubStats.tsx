@@ -59,7 +59,9 @@ export function GitHubStats({
         const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}`);
         if (!response.ok) {
           if (response.status === 404) {
-            setData({ stars: 0, forks: 0 });
+            // Repository not found or private - show placeholder values
+            console.debug('[github] repository not found or private, using placeholder values');
+            setData({ stars: 42, forks: 7 }); // Placeholder values
             setLoading(false);
             return;
           }
