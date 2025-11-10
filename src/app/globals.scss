@@ -139,6 +139,34 @@
     z-index: 1;
   }
 
+  // Dashboard-specific overrides
+  .dashboard-sidebar {
+    @include max-width('md') {
+      &::before,
+      &::after {
+        display: none !important;
+      }
+
+      background: var(--background) !important;
+    }
+  }
+
+  .dashboard-page {
+    .gradient-fade-left,
+    .gradient-fade-right,
+    .fade-overlay-left,
+    .fade-overlay-right,
+    [class*="bg-gradient-to-r"],
+    [class*="bg-gradient-to-l"] {
+      background: transparent !important;
+    }
+
+    &::before,
+    &::after {
+      display: none !important;
+    }
+  }
+
   .aurora-gradient {
     background: linear-gradient(
       135deg,
