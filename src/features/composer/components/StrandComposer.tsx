@@ -20,6 +20,8 @@ import { openstrandAPI } from '@/services/openstrand.api';
 import { StrandType, type NoteType as StrandNoteType, type Strand } from '@/types/openstrand';
 import { FloatingVoiceRecorder } from './FloatingVoiceRecorder';
 import { MediaAttachmentWizard } from './MediaAttachmentWizard';
+import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
+import { cn } from '@/lib/utils';
 
 const NOTE_TYPE_OPTIONS = [
   { value: 'main', label: 'Main note' },
@@ -66,6 +68,7 @@ export interface StrandComposerProps {
  */
 export function StrandComposer({ strandId: initialStrandId, title: initialTitle = '', summary: initialSummary = '', noteType: initialNoteType = 'main', coAuthorIds: initialCoAuthors = [], tags: initialTags = [], difficulty: initialDifficulty = '', onSave, onSaveSuccess }: StrandComposerProps) {
   const { planTier } = useSupabase();
+  const { device, orientation, utils } = useResponsiveLayout();
   const [strandId, setStrandId] = useState(initialStrandId ?? '');
   const [title, setTitle] = useState(initialTitle);
   const [summary, setSummary] = useState(initialSummary);
@@ -268,17 +271,32 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
 
   return (
     <TooltipProvider>
-      <div className="relative flex flex-col gap-6">
+      <div className={cn(
+        "relative flex flex-col",
+        device.isPhone ? "gap-4" : "gap-6"
+      )}>
         <div className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-primary" />
-              <h1 className="text-lg font-semibold">Strand Composer</h1>
+              <FileText className={cn(
+                "text-primary",
+                device.isPhone ? "h-4 w-4" : "h-5 w-5"
+              )} />
+              <h1 className={cn(
+                "font-semibold",
+                device.isPhone ? "text-base" : "text-lg"
+              )}>Strand Composer</h1>
             </div>
             {planBadge}
           </div>
 
-          <div className="grid gap-4 md:grid-cols-[220px_1fr]">
+          <div className={cn(
+            "grid gap-4",
+            device.isPhone && "grid-cols-1",
+            device.isTablet && orientation.isPortrait && "grid-cols-1",
+            device.isTablet && orientation.isLandscape && "md:grid-cols-[220px_1fr]",
+            (device.isLaptop || device.isDesktop || device.isUltrawide) && "md:grid-cols-[220px_1fr]"
+          )}>
             <div className="flex flex-col gap-2">
               <label className="text-xs font-medium uppercase text-muted-foreground">Target Strand ID</label>
               <Tooltip>
@@ -295,14 +313,28 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
               </Tooltip>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className={cn(
+              "grid gap-3",
+              device.isPhone ? "grid-cols-1" : "sm:grid-cols-2"
+            )}>
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-medium uppercase text-muted-foreground">Title</label>
-                <Input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Give your strand a working title" />
+                <Input 
+                  value={title} 
+                  onChange={(event) => setTitle(event.target.value)} 
+                  placeholder="Give your strand a working title" 
+                  className={device.isPhone ? "text-sm" : ""}
+                />
               </div>
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-medium uppercase text-muted-foreground">Summary</label>
-                <Textarea value={summary} onChange={(event) => setSummary(event.target.value)} placeholder="One-line summary for quick scanning" rows={2} />
+                <Textarea 
+                  value={summary} 
+                  onChange={(event) => setSummary(event.target.value)} 
+                  placeholder="One-line summary for quick scanning" 
+                  rows={device.isPhone ? 1 : 2}
+                  className={device.isPhone ? "text-sm" : ""} 
+                />
               </div>
             </div>
             <div className="flex flex-col gap-2">
@@ -356,7 +388,12 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
         />
 
         <Card className="shadow-lg">
-          <CardContent className="prose min-h-[360px] max-w-none rounded-md border border-border/60 bg-background/90 px-6 py-5 dark:prose-invert">
+          <CardContent className={cn(
+            "prose max-w-none rounded-md border border-border/60 bg-background/90 dark:prose-invert",
+            device.isPhone && "min-h-[240px] px-4 py-3",
+            device.isTablet && "min-h-[300px] px-5 py-4",
+            (device.isLaptop || device.isDesktop || device.isUltrawide) && "min-h-[360px] px-6 py-5"
+          )}>
             {loadingExisting ? (
               <motion.div
                 className="flex h-full w-full items-center justify-center text-sm text-muted-foreground"
@@ -373,7 +410,10 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
 
         <MediaAttachmentWizard strandId={strandId} planTier={planTier} />
 
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/60 bg-background/70 px-4 py-3">
+        <div className={cn(
+          "flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/60 bg-background/70",
+          device.isPhone ? "px-3 py-2" : "px-4 py-3"
+        )}>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Sparkles className="h-4 w-4 text-primary" />
             <span>Voice notes and media attachments automatically track GDPR-compliant retention policies.</span>

@@ -45,6 +45,7 @@ import { VisualizationWorkspace } from './VisualizationWorkspace';
 import { useDashboardShortcuts } from './useDashboardShortcuts';
 import { useDashboardController } from './useDashboardController';
 import { useLayoutPresets } from '@/hooks/useLayoutPresets';
+import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import { useKeyboardNavigation, defaultKeyboardBindings } from '@/hooks/useKeyboardNavigation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -139,6 +140,16 @@ export default function DashboardPage() {
     toggleStatusBar,
     cycleGridColumns
   } = useLayoutPresets();
+  
+  const { 
+    config: deviceConfig, 
+    device, 
+    orientation,
+    getResponsiveLayout,
+    utils 
+  } = useResponsiveLayout();
+  
+  const responsiveLayout = getResponsiveLayout(currentLayout.gridColumns);
 
   const [activePanel, setActivePanel] = useState<'upload' | 'visualize'>('upload');
 
@@ -378,17 +389,30 @@ export default function DashboardPage() {
 
       {/* Main content area */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        {/* Sidebar (if enabled) - Responsive design */}
+        {/* Sidebar - Fully responsive with device-aware behavior */}
         {currentLayout.showSidebar && (
-          <aside className={cn(
-            "dashboard-sidebar border-b lg:border-b-0 lg:border-r border-border/50 bg-background/95 backdrop-blur overflow-hidden flex flex-col transition-all duration-300",
-            // Mobile: full width, fixed height
-            "w-full h-64 lg:h-auto",
-            // Desktop: variable width
-            "lg:w-80",
-            isSidebarCollapsed && "lg:w-20 h-auto",
-            currentLayout.sidebarPosition === 'right' && 'lg:order-2 lg:border-l lg:border-r-0'
-          )}>
+          <aside 
+            className={cn(
+              "dashboard-sidebar border-border/50 bg-background/95 backdrop-blur overflow-hidden flex flex-col transition-all duration-300",
+              // Responsive behavior
+              device.isPhone && "w-full h-64 border-b",
+              device.isTablet && orientation.isPortrait && "w-full h-72 border-b",
+              device.isTablet && orientation.isLandscape && "w-80 h-full border-r",
+              device.isLaptop && "w-80 h-full border-r",
+              device.isDesktop && "w-96 h-full border-r",
+              device.isUltrawide && "w-[28rem] h-full border-r",
+              // Collapsed state
+              isSidebarCollapsed && !device.isPhone && !(device.isTablet && orientation.isPortrait) && "!w-20",
+              // Position
+              currentLayout.sidebarPosition === 'right' && !device.isPhone && !(device.isTablet && orientation.isPortrait) && 'order-2 border-l border-r-0',
+              // Overlay behavior on smaller screens
+              responsiveLayout.sidebarBehavior === 'overlay' && device.isTablet && orientation.isLandscape && "fixed z-40",
+              responsiveLayout.sidebarBehavior === 'overlay' && currentLayout.sidebarPosition === 'right' && "right-0",
+              responsiveLayout.sidebarBehavior === 'overlay' && currentLayout.sidebarPosition === 'left' && "left-0"
+            )}
+            style={{
+              width: responsiveLayout.sidebarBehavior === 'overlay' && !device.isPhone ? responsiveLayout.sidebarWidth : undefined
+            }}>
             <div className="flex items-center justify-between border-b border-border/40 px-3 py-2">
               <span
                 className={cn(
@@ -532,12 +556,20 @@ export default function DashboardPage() {
           </aside>
         )}
 
-        {/* Main content */}
+        {/* Main content - Responsive padding and spacing */}
         <main className={cn(
           "flex-1 overflow-y-auto",
-          currentLayout.showStatusBar && "pb-8"
+          currentLayout.showStatusBar && "pb-8",
+          // Add padding for overlay sidebar
+          responsiveLayout.sidebarBehavior === 'overlay' && currentLayout.showSidebar && !isSidebarCollapsed && 
+            currentLayout.sidebarPosition === 'left' && device.isTablet && "ml-80"
         )}>
-          <div className="container mx-auto p-6">
+          <div 
+            className="container mx-auto"
+            style={{ 
+              padding: utils.containerPadding(),
+              maxWidth: device.isUltrawide ? '2400px' : undefined
+            }}>
             {/* Layout preset selector - responsive */}
             <div className="mb-6 flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
               <div className="flex flex-wrap items-center gap-2">
@@ -610,7 +642,7 @@ export default function DashboardPage() {
             {visualizations.length > 0 ? (
               <MasonryGrid
                 items={masonryItems}
-                columns={currentLayout.gridColumns}
+                columns={responsiveLayout.gridColumns}
                 onReorder={(items) => console.log('Reordered', items)}
                 onRemove={handleRemoveVisualization}
                 onEdit={(id) => console.log('Edit', id)}

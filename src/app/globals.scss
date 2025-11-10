@@ -197,6 +197,98 @@
       background-position: 100% 50%;
     }
   }
+  
+  // Responsive utilities for all device types
+  @media (max-width: 375px) {
+    // Small phones (iPhone SE, etc)
+    html {
+      font-size: 14px;
+    }
+    .container {
+      padding: 0 1rem;
+    }
+  }
+  
+  @media (min-width: 375px) and (max-width: 640px) {
+    // Standard phones
+    .responsive-text-sm {
+      font-size: 0.875rem;
+    }
+  }
+  
+  @media (min-width: 640px) and (max-width: 768px) {
+    // Large phones / small tablets portrait
+    .responsive-cols-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (min-width: 768px) and (max-width: 1024px) {
+    // Tablets
+    @media (orientation: portrait) {
+      .responsive-sidebar {
+        width: 100%;
+        height: auto;
+        max-height: 40vh;
+      }
+      .responsive-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+    
+    @media (orientation: landscape) {
+      .responsive-sidebar {
+        position: fixed;
+        z-index: 40;
+        height: 100%;
+      }
+      .responsive-main {
+        margin-left: 320px;
+      }
+    }
+  }
+  
+  // Touch-specific optimizations
+  @media (hover: none) and (pointer: coarse) {
+    // Increase touch targets
+    button, 
+    a, 
+    [role="button"],
+    .clickable {
+      min-height: 44px;
+      min-width: 44px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    // Disable hover states on touch
+    .hover\\:bg-primary\\/10:hover {
+      background-color: transparent;
+    }
+    
+    // Improve scrolling performance
+    .scrollable {
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+    }
+  }
+  
+  // High DPI displays
+  @media (min-resolution: 2dppx) {
+    // Crisp borders
+    .border {
+      border-width: 0.5px;
+    }
+  }
+  
+  // Ultra-wide displays
+  @media (min-width: 2560px) {
+    .container {
+      max-width: 2400px;
+    }
+    html {
+      font-size: 18px;
+    }
+  }
 
   .theme-preview-surface {
     position: relative;
