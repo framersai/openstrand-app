@@ -1,0 +1,37 @@
+// Dashboard-specific styles without gradients on mobile
+@layer components {
+  // Remove gradients from dashboard sidebar on mobile
+  .dashboard-sidebar {
+    @media (max-width: 768px) {
+      // Remove any gradient overlays
+      &::before,
+      &::after {
+        display: none !important;
+      }
+      
+      // Ensure solid background
+      background: var(--background) !important;
+    }
+  }
+
+  // Remove side gradients in dashboard only
+  .dashboard-page {
+    // Remove left/right fade gradients on all screen sizes
+    .gradient-fade-left,
+    .gradient-fade-right,
+    .fade-overlay-left,
+    .fade-overlay-right,
+    [class*="bg-gradient-to-r"],
+    [class*="bg-gradient-to-l"] {
+      &:not(.landing-section *) {
+        background: transparent !important;
+      }
+    }
+    
+    // Remove gradient overlays
+    &::before,
+    &::after {
+      display: none !important;
+    }
+  }
+}

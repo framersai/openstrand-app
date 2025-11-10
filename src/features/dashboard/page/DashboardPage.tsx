@@ -50,6 +50,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useFeatureFlags } from '@/lib/feature-flags';
+import '@/app/dashboard.scss';
 import { useAppMode } from '@/hooks/useAppMode';
 import { useOpenStrandStore } from '@/store/openstrand.store';
 
@@ -365,7 +366,7 @@ export default function DashboardPage() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="dashboard-page min-h-screen flex flex-col bg-background">
       <GuidedTour />
       {shouldShowLocalOnboarding && <LocalOnboarding onOpenSettings={openSettings} />}
       {shouldShowTeamOnboarding && <TeamOnboarding onOpenSettings={openSettings} />}
@@ -376,7 +377,7 @@ export default function DashboardPage() {
         {/* Sidebar (if enabled) - More compact design */}
         {currentLayout.showSidebar && (
           <aside className={cn(
-            "border-r border-border/50 bg-background/95 backdrop-blur overflow-hidden flex flex-col transition-[width] duration-300",
+            "dashboard-sidebar border-r border-border/50 bg-background/95 backdrop-blur overflow-hidden flex flex-col transition-[width] duration-300",
             isSidebarCollapsed ? "w-20" : "w-80",
             currentLayout.sidebarPosition === 'right' && 'order-2 border-l border-r-0'
           )}>

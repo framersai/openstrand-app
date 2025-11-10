@@ -196,55 +196,51 @@ export function GuidedTour({ onComplete, forceShow = false }: GuidedTourProps) {
 
   return (
     <>
-      {/* Overlay */}
+      {/* Overlay - more opaque background for better visibility */}
       <div
-        className="fixed inset-x-0 top-0 z-40 h-[10vh] bg-gradient-to-b from-background/95 to-background/40"
-        aria-hidden="true"
-      />
-      <div
-        className="fixed inset-x-0 bottom-0 z-40 h-[10vh] bg-gradient-to-t from-background/95 to-background/40"
-        aria-hidden="true"
-      />
-      <div
-        className="fixed inset-y-[10vh] left-0 z-40 w-[18vw] bg-gradient-to-r from-background/95 to-background/30"
-        aria-hidden="true"
-      />
-      <div
-        className="fixed inset-y-[10vh] right-0 z-40 w-[18vw] bg-gradient-to-l from-background/95 to-background/30"
+        className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm"
         onClick={handleSkip}
+        aria-label="Close tour"
       />
 
-      {/* Highlight cutout styles */}
+          {/* Highlight cutout styles */}
       <style jsx>{`
         :global(.tour-highlight) {
           position: relative;
           z-index: 50 !important;
-          box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.8);
           border-radius: 8px;
           animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
           0%, 100% {
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5),
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.8),
                         0 0 0 4px rgba(59, 130, 246, 0.5);
           }
           50% {
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5),
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.8),
                         0 0 0 8px rgba(59, 130, 246, 0.3);
           }
         }
       `}</style>
 
-      {/* Tour Tooltip */}
+      {/* Tour Tooltip - responsive width and centered on mobile */}
       <Card
-        className="fixed z-50 w-[400px] shadow-2xl border-primary/20"
+        className="fixed z-50 w-[calc(100vw-2rem)] max-w-md shadow-2xl border-primary/20 bg-background/98 backdrop-blur"
         style={{
-          top: `${Math.min(Math.max(tooltipPosition.top, window.innerHeight * 0.12), window.innerHeight * 0.88)}px`,
-          left: `${Math.min(Math.max(tooltipPosition.left, window.innerWidth * 0.2), window.innerWidth * 0.8)}px`,
+          top: typeof window !== 'undefined' && window.innerWidth < 768 
+            ? '50%' 
+            : `${Math.min(Math.max(tooltipPosition.top, window.innerHeight * 0.12), window.innerHeight * 0.88)}px`,
+          left: typeof window !== 'undefined' && window.innerWidth < 768 
+            ? '50%' 
+            : `${Math.min(Math.max(tooltipPosition.left, window.innerWidth * 0.2), window.innerWidth * 0.8)}px`,
+          transform: typeof window !== 'undefined' && window.innerWidth < 768 
+            ? 'translate(-50%, -50%)' 
+            : 'none',
         }}
       >
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           {/* Header */}
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -271,7 +267,7 @@ export function GuidedTour({ onComplete, forceShow = false }: GuidedTourProps) {
           </div>
 
           {/* Content */}
-          <p className="text-sm text-muted-foreground mb-6">
+          <p className="text-sm text-muted-foreground mb-4 sm:mb-6">
             {step.content}
           </p>
 
