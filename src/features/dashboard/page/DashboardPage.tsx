@@ -230,6 +230,8 @@ export default function DashboardPage() {
     handleClearAllVisualizations,
     autoInsightsRunnerRef,
     setIsPaletteOpen,
+    openUpload,
+    openVisualize,
   ]);
 
   const commandActions = useMemo<CommandAction[]>(
