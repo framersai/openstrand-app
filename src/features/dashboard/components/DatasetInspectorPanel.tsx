@@ -53,6 +53,8 @@ import {
 } from '@/services/dataset-notes.service';
 import { useOpenStrandStore } from '@/store/openstrand.store';
 import { DatasetSummaryPanel } from './DatasetSummaryPanel';
+import { DatasetSchemaPanel } from './DatasetSchemaPanel';
+import { DatasetQualityPanel } from './DatasetQualityPanel';
 import { AutoInsightsPanel } from './AutoInsightsPanel';
 import { DatasetNoteComposer } from './DatasetNoteComposer';
 import type { AutoInsightsSnapshot } from './VisualizeTabContent';
@@ -482,6 +484,11 @@ export function DatasetInspectorPanel({
             onRefresh={onRefreshSummary}
             disableRefresh={isSummaryLoading}
           />
+
+          <div className="grid gap-3 md:grid-cols-2">
+            <DatasetSchemaPanel metadata={metadata ?? undefined} summary={summary ?? undefined} />
+            <DatasetQualityPanel metadata={metadata ?? undefined} summary={summary ?? undefined} />
+          </div>
 
           <DatasetNoteComposer datasetName={friendlyName} onSave={handleDatasetNoteSave} />
 

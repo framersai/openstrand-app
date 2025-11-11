@@ -10,7 +10,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState, Suspense, lazy } from 'react';
-import { Download, Maximize2, Edit3, Trash2, Copy, Info } from 'lucide-react';
+import { Download, Maximize2, Edit3, Trash2, Copy, Info, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import type { Visualization, FeedbackSummary } from '@/types';
 import { VisualizationTier } from '@/lib/visualization/types';
 import type { AIArtisanResult } from '@/lib/visualization/types';
+import { VisualizationDetailsDrawer } from '@/features/dashboard/components/VisualizationDetailsDrawer';
 
 // Lazy load visualization components for better performance
 const ChartDisplay = lazy(() => import('@/components/visualizations/tier1/ChartDisplay'));
@@ -103,6 +104,7 @@ export const VisualizationDisplay: React.FC<VisualizationDisplayProps> = ({
   const [modifyPrompt, setModifyPrompt] = useState('');
   const [showDebug, setShowDebug] = useState(false);
   const [artisanCode, setArtisanCode] = useState<AIArtisanResult['code'] | null>(null);
+  const [showDetails, setShowDetails] = useState(false);
 
   const heuristicDebug = visualization.debug?.heuristic;
   const llmDebug = visualization.debug?.llm;
@@ -370,6 +372,17 @@ export const VisualizationDisplay: React.FC<VisualizationDisplayProps> = ({
                 <Edit3 className="h-4 w-4" />
               </Button>
               
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setShowDetails(true)}
+                disabled={disabled}
+                title="Details"
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+              
               {visualization.type !== 'table' && (
                 <Button
                   variant="ghost"
@@ -572,6 +585,12 @@ export const VisualizationDisplay: React.FC<VisualizationDisplayProps> = ({
           </div>
         )}
       </CardContent>
+
+      <VisualizationDetailsDrawer
+        open={showDetails}
+        onOpenChange={setShowDetails}
+        visualization={visualization}
+      />
     </Card>
   );
 };

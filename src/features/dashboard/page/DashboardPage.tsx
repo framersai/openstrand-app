@@ -610,7 +610,11 @@ export default function DashboardPage() {
             <div className="mt-6 grid gap-4 lg:grid-cols-3">
               <AIUsagePanel usage={providerUsage} />
               <FeedbackPulsePanel feedback={feedbackOverview} />
-              <SystemStatusPanel />
+              {(isTeamEdition || capabilities?.teamFeatures) ? <SystemStatusPanel /> : (
+                <div className="rounded-2xl border border-dashed border-border/60 bg-muted/10 p-4 text-sm text-muted-foreground">
+                  Team infrastructure status is available on Team edition.
+                </div>
+              )}
             </div>
 
             {/* Visualizations Grid or Empty State */}
