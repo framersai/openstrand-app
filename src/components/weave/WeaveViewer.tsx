@@ -344,7 +344,7 @@ export const WeaveViewer: React.FC<WeaveViewerProps> = ({
     return () => {
       hideTooltip(true);
     };
-  }, []);
+  }, [hideTooltip]);
 
   useEffect(() => {
     if (!svgRef.current || !zoomRef.current) return;
