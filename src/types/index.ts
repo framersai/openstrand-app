@@ -662,3 +662,20 @@ export function isVisualization(data: any): data is Visualization {
     'data' in data
   );
 }
+
+// ============================================================================
+// Re-export OpenStrand types
+// ============================================================================
+
+export type { 
+  Weave, 
+  WeaveNode, 
+  WeaveEdge,
+  Strand,
+  StrandType,
+  StrandMetadata,
+  StrandContent,
+  Relationship,
+  RelationshipType,
+  CapabilityMatrix
+} from './openstrand';

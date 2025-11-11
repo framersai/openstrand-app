@@ -395,12 +395,11 @@ export const useKnowledgeGraphStore = create<KnowledgeGraphState>((set, get) => 
     }
 
     const center = positions.reduce(
-      (acc, position) => {
-        acc.x += position.x;
-        acc.y += position.y;
-        acc.z += position.z ?? 0;
-        return acc;
-      },
+      (acc, position) => ({
+        x: acc.x + position.x,
+        y: acc.y + position.y,
+        z: acc.z + (position.z ?? 0)
+      }),
       { x: 0, y: 0, z: 0 },
     );
 

@@ -8,6 +8,7 @@ import {
   Thread,
   Pattern,
   Weave,
+  WeaveNode,
   WeaveEdge,
   Relationship,
   StrandPermission,
@@ -1121,7 +1122,14 @@ export const weaveAPI = {
     const response = await apiFetch('/weaves');
     const payload = await parseData<{ success?: boolean; data?: any[] } | any[]>(response);
 
-    const items = Array.isArray(payload?.data) ? payload.data : Array.isArray(payload) ? payload : [];
+    const items = (() => {
+      if (!payload) return [];
+      if (Array.isArray(payload)) return payload;
+      if (typeof payload === 'object' && 'data' in payload && Array.isArray(payload.data)) {
+        return payload.data;
+      }
+      return [];
+    })();
     return items.map((item: any) => deserializeWeave(item));
   },
 
