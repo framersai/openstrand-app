@@ -133,7 +133,7 @@ Commands:
 
 <p align="center">
   <a href="https://frame.dev" title="Frame.dev">
-    <img src="public/logos/frame-dev.svg" alt="Frame.dev" height="28" /><br/>
+    <img src="https://raw.githubusercontent.com/framersai/openstrand-monorepo/master/openstrand-app/public/logos/frame-dev.svg" alt="Frame.dev" height="28" /><br/>
     <sub>Built by Frame.dev • team@frame.dev</sub>
   </a><br/>
   <sub>Follow us on X/Twitter <a href="https://twitter.com/openstrandai">@openstrandai</a></sub>
