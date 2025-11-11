@@ -48,7 +48,7 @@ export function ContactForm({ className, heading, subheading, compact = false }:
     event.preventDefault();
 
     if (!targetEndpoint) {
-      toast.error('Contact form is not configured yet. Please email support@openstrand.com.');
+      toast.error('Contact form is not configured yet. Please email team@frame.dev.');
       setStatus('error');
       return;
     }
@@ -190,7 +190,7 @@ export function ContactForm({ className, heading, subheading, compact = false }:
 
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
           <span>
-            Need something faster? Email <a className="font-medium text-primary hover:underline" href="mailto:team@openstrand.com">team@openstrand.com</a>
+            Need something faster? Email <a className="font-medium text-primary hover:underline" href="mailto:team@frame.dev">team@frame.dev</a>
           </span>
           {status === 'success' && <span className="text-emerald-500">Message sent ✔︎</span>}
           {status === 'error' && <span className="text-destructive">We couldn&apos;t send your message. Try again?</span>}

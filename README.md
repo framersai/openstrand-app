@@ -126,7 +126,7 @@ Commands:
 - Website: https://openstrand.ai
 - Backend: [`../packages/openstrand-teams-backend`](../packages/openstrand-teams-backend)
 - SDK: [`../packages/openstrand-sdk`](../packages/openstrand-sdk)
-- Socials: X/Twitter [`@openstrandai`](https://twitter.com/openstrandai)
+- Socials: X/Twitter [`@framersai`](https://twitter.com/openstrandai)
 - Contact: team@frame.dev
 
 ---
@@ -136,7 +136,7 @@ Commands:
     <img src="https://raw.githubusercontent.com/framersai/openstrand-monorepo/master/openstrand-app/public/logos/frame-dev.svg" alt="Frame.dev" height="28" /><br/>
     <sub>Built by Frame.dev • team@frame.dev</sub>
   </a><br/>
-  <sub>Follow us on X/Twitter <a href="https://twitter.com/openstrandai">@openstrandai</a></sub>
+  <sub>Follow us on X/Twitter <a href="https://twitter.com/openstrandai">@framersai</a></sub>
 </p>
 
 

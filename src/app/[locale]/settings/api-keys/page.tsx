@@ -188,7 +188,7 @@ export default function ApiKeysPage() {
                 <div>
                   <p className="text-sm font-medium mb-2">TypeScript SDK</p>
                   <pre className="bg-muted/50 rounded-md p-3 text-xs overflow-x-auto">
-{`import { OpenStrandSDK } from '@openstrand/sdk';
+{`import { OpenStrandSDK } from '@framers/openstrand-sdk';
 
 const sdk = new OpenStrandSDK({
   apiUrl: '${API_BASE_URL}',

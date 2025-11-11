@@ -38,7 +38,7 @@ export function useSupabase() {
     }
     return {
       id: 'local-admin',
-      email: 'local@openstrand.dev',
+      email: 'local@frame.dev',
       created_at: new Date(0).toISOString(),
       user_metadata: {
         full_name: 'Local Workspace',

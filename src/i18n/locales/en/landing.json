@@ -36,7 +36,7 @@
       },
       "sdk": {
         "title": "TypeScript SDK",
-        "description": "Type-safe client for Node.js and browsers. npm install @openstrand/sdk"
+        "description": "Type-safe client for Node.js and browsers. npm install @framers/openstrand-sdk"
       }
     },
     "journey": {

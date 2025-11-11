@@ -79,7 +79,7 @@ export function PlanGrid({ plans, onCheckout, isLoading, currentPlan, onManageCu
               </Button>
             ) : isEnterprise ? (
               <Button asChild className="w-full" variant="outline">
-                <a href="mailto:team@openstrand.ai">Contact us</a>
+                <a href="mailto:team@frame.dev">Contact us</a>
               </Button>
             ) : (
               <Button className="w-full" variant="outline" disabled>

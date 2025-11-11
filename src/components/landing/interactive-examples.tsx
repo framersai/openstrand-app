@@ -38,7 +38,7 @@ interface InteractiveExamplesProps {
 }
 
 const codeExamples = {
-  typescript: `import { OpenStrandSDK } from '@openstrand/sdk';
+  typescript: `import { OpenStrandSDK } from '@framers/openstrand-sdk';
 
 const client = new OpenStrandSDK({
   apiUrl: 'http://localhost:8000',
@@ -309,7 +309,7 @@ export function InteractiveExamples({ id, className }: InteractiveExamplesProps)
               {/* SDK Links */}
               <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
                 <Button variant="outline" size="sm" className="gap-2" asChild>
-                  <a href="https://npmjs.com/package/@openstrand/sdk" target="_blank" rel="noopener noreferrer">
+                  <a href="https://npmjs.com/package/@framers/openstrand-sdk" target="_blank" rel="noopener noreferrer">
                     <Image className="h-4 w-4" />
                     npm Package
                   </a>
