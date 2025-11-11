@@ -281,7 +281,7 @@ export function ProfileOnboardingWizard({
   /**
    * Check if user can proceed from current step
    */
-  function canProceed(step: number): boolean {
+  const canProceed = useCallback((step: number): boolean => {
     switch (step) {
       case 0:
         return state.selectedGoal !== null;
@@ -294,7 +294,7 @@ export function ProfileOnboardingWizard({
       default:
         return true;
     }
-  }
+  }, [state.selectedGoal]);
 
   return (
     <div
