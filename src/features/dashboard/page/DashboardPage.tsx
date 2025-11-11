@@ -55,7 +55,7 @@ import { useFeatureFlags } from '@/lib/feature-flags';
 import { useAppMode } from '@/hooks/useAppMode';
 import { useOpenStrandStore } from '@/store/openstrand.store';
 import { useTranslations } from 'next-intl';
-import { Footer } from '@/components/footer/Footer';
+import { SiteFooter } from '@/components/site-footer';
 
 export default function DashboardPage() {
   const {
@@ -802,7 +802,7 @@ export default function DashboardPage() {
           "overflow-hidden transition-all duration-300 ease-out",
           footerCollapsed ? "opacity-0 invisible h-0" : "opacity-100 visible"
         )}>
-          <Footer />
+          <SiteFooter />
         </div>
         
         {footerCollapsed && (

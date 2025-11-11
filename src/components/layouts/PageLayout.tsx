@@ -2,7 +2,7 @@
 
 import { ReactNode, useState } from 'react';
 import { UnifiedHeader } from '@/components/navigation/UnifiedHeader';
-import { Footer } from '@/components/footer/Footer';
+import { SiteFooter } from '@/components/site-footer';
 import { cn } from '@/lib/utils';
 import { ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -32,7 +32,7 @@ export function PageLayout({ children, hideFooter = false, className, collapsibl
             <div className={cn(
               "relative transition-all duration-300 ease-out",
               footerCollapsed ? "h-12" : "h-auto"
-            )}>
+              )}>
               <Button
                 variant="ghost"
                 size="sm"
@@ -60,7 +60,7 @@ export function PageLayout({ children, hideFooter = false, className, collapsibl
                 "overflow-hidden transition-all duration-300 ease-out",
                 footerCollapsed ? "opacity-0 invisible" : "opacity-100 visible"
               )}>
-                <Footer />
+                <SiteFooter />
               </div>
               
               {footerCollapsed && (
@@ -72,7 +72,7 @@ export function PageLayout({ children, hideFooter = false, className, collapsibl
               )}
             </div>
           ) : (
-            <Footer />
+            <SiteFooter />
           )}
         </>
       )}
