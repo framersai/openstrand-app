@@ -4,7 +4,7 @@
  * Shows relationships between all content types as a force-directed graph
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as d3 from 'd3';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -316,7 +316,7 @@ export const WeaveViewer: React.FC<WeaveViewerProps> = ({
       svg.on('click', null);
       svg.on('mouseleave', null);
     };
-  }, [data, width, height, showEdgeTypes, showLabels, selectedNodeId, highlightedNodes, hoveredNode, onNodeClick, onEdgeClick, onNodeHover, selectedCommunity]);
+  }, [data, width, height, showEdgeTypes, showLabels, selectedNodeId, highlightedNodes, hoveredNode, onNodeClick, onEdgeClick, onNodeHover, selectedCommunity, hideTooltip, showTooltip]);
 
   // Zoom setup
   useEffect(() => {
@@ -389,7 +389,7 @@ export const WeaveViewer: React.FC<WeaveViewerProps> = ({
     return baseSize * Math.sqrt(importanceScale);
   };
 
-  const showTooltip = (event: MouseEvent, text: string) => {
+  const showTooltip = useCallback((event: MouseEvent, text: string) => {
     const tooltip = ensureTooltip();
     const pageX = event.pageX ?? 0;
     const pageY = event.pageY ?? 0;
@@ -408,9 +408,9 @@ export const WeaveViewer: React.FC<WeaveViewerProps> = ({
     tooltip.style.opacity = '1';
     tooltip.style.left = `${left}px`;
     tooltip.style.top = `${top}px`;
-  };
+  }, []);
 
-  const hideTooltip = (remove: boolean = false) => {
+  const hideTooltip = useCallback((remove: boolean = false) => {
     if (!tooltipRef.current) {
       return;
     }
@@ -422,7 +422,7 @@ export const WeaveViewer: React.FC<WeaveViewerProps> = ({
       tooltipRef.current.remove();
       tooltipRef.current = null;
     }
-  };
+  }, []);
 
   // Control functions
   const handleZoom = (direction: 'in' | 'out') => {

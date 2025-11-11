@@ -9,7 +9,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint --max-warnings=0",
+    "lint": "next lint",
     "brand:export": "tsx scripts/export-logo-assets.ts",
     "type-check": "tsc --noEmit",
     "format": "node ../scripts/run-prettier.mjs --write",

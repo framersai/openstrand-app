@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useState, useEffect, useCallback } from 'react';
 import { Copy, RefreshCw, Key, Eye, EyeOff, ExternalLink } from 'lucide-react';
 import { PageLayout } from '@/components/layouts/PageLayout';
 
@@ -16,7 +15,6 @@ interface ApiKey {
 }
 
 export default function ApiKeysPage() {
-  const t = useTranslations('settings');
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [loading, setLoading] = useState(true);
   const [rotating, setRotating] = useState(false);
@@ -25,11 +23,7 @@ export default function ApiKeysPage() {
 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-  useEffect(() => {
-    fetchApiKeys();
-  }, []);
-
-  const fetchApiKeys = async () => {
+  const fetchApiKeys = useCallback(async () => {
     try {
       const token = localStorage.getItem('auth_token');
       if (!token) {
@@ -52,7 +46,11 @@ export default function ApiKeysPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_BASE_URL]);
+
+  useEffect(() => {
+    fetchApiKeys();
+  }, [fetchApiKeys]);
 
   const rotateKey = async () => {
     setRotating(true);

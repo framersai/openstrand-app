@@ -271,7 +271,7 @@ export function ProfileOnboardingWizard({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, state.currentStep, nextStep, previousStep, completeOnboarding, onDismiss]);
+  }, [isOpen, state.currentStep, nextStep, previousStep, completeOnboarding, onDismiss, canProceed]);
 
   if (!isOpen) return null;
 

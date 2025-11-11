@@ -174,7 +174,7 @@ export function useResponsiveLayout() {
       window.removeEventListener('resize', updateConfig);
       window.removeEventListener('orientationchange', updateConfig);
     };
-  }, []);
+  }, [isIPad, isAndroidTablet]);
 
   // Get responsive layout configuration
   const getResponsiveLayout = (customColumns?: number): ResponsiveLayoutConfig => {

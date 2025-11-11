@@ -294,6 +294,7 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
     openDashboardLink,
     signInLink,
     signUpLink,
+    tCommon,
   ]);
 
   // Handle scroll effect

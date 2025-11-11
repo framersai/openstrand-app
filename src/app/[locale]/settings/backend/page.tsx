@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
 import { Check, AlertCircle, RefreshCw, Server } from 'lucide-react';
 import { PageLayout } from '@/components/layouts/PageLayout';
 
@@ -17,7 +16,6 @@ interface Capabilities {
 }
 
 export default function BackendSettingsPage() {
-  const t = useTranslations('settings');
   const [backendUrl, setBackendUrl] = useState('');
   const [currentUrl, setCurrentUrl] = useState('');
   const [validating, setValidating] = useState(false);
