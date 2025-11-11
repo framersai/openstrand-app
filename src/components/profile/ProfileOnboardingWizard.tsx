@@ -374,8 +374,8 @@ export function ProfileOnboardingWizard({
                           ? 'border-primary bg-accent'
                           : 'border-border bg-background'
                       )}
-                      aria-pressed={isSelected}
                       role="radio"
+                      aria-checked={isSelected}
                     >
                       <div className={cn(
                         'flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br',

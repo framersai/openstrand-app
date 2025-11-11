@@ -331,7 +331,7 @@ export default function DashboardPage() {
     onOpenSettings: openSettings,
   });
 
-  const visualizeDisabled = !dataset;
+  // Note: visualize panel availability derived directly from dataset where needed
 
   return (
     <div className="dashboard-page min-h-screen flex flex-col bg-background">
