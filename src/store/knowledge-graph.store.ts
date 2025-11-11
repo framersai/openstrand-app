@@ -219,7 +219,7 @@ const fetchWeaveSnapshot = async (
       }
     }
 
-    let targetId = requestedId ?? available[0]?.id ?? null;
+    let targetId: string | null = requestedId ?? available[0]?.id ?? null;
     let readOnly = false;
     let weave: Weave;
 
@@ -394,7 +394,7 @@ export const useKnowledgeGraphStore = create<KnowledgeGraphState>((set, get) => 
       return;
     }
 
-    const center = positions.reduce(
+    const centerSum = positions.reduce(
       (acc, position) => ({
         x: acc.x + position.x,
         y: acc.y + position.y,
@@ -403,9 +403,11 @@ export const useKnowledgeGraphStore = create<KnowledgeGraphState>((set, get) => 
       { x: 0, y: 0, z: 0 },
     );
 
-    center.x /= positions.length;
-    center.y /= positions.length;
-    center.z /= positions.length;
+    const center = {
+      x: centerSum.x / positions.length,
+      y: centerSum.y / positions.length,
+      z: centerSum.z / positions.length
+    };
 
     const radius = positions.reduce((max, position) => {
       const dx = position.x - center.x;

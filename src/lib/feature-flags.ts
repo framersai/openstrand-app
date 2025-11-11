@@ -343,7 +343,7 @@ function normalizeUserPlan(value?: string | null): UserPlan {
     case 'team':
     case 'enterprise':
       return normalized;
-    case 'basic':
+    case 'basic' as PlanTier:
       return 'cloud';
     default:
       return 'free';

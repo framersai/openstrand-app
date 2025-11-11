@@ -162,7 +162,7 @@ export default function DashboardPage() {
           </div>
         </div>
       ),
-      height: viz.size === 'large' ? 'large' : viz.size === 'small' ? 'small' : 'medium',
+      height: (viz.size === 'large' ? 'large' : viz.size === 'small' ? 'small' : 'medium') as 'small' | 'medium' | 'large',
       width: viz.featured ? 2 : 1
     }));
   }, [visualizations]);
@@ -217,7 +217,7 @@ export default function DashboardPage() {
         label: 'Clear All',
         onClick: handleClearAllVisualizations,
         shortcut: 'c',
-        variant: 'danger' as const,
+        disabled: false,
       });
     }
 
@@ -496,16 +496,16 @@ export default function DashboardPage() {
               <div className="p-3 border-t border-border/50 space-y-2">
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">AI Calls</span>
-                  <span>{providerUsage?.totalCalls || 0}</span>
+                  <span>{providerUsage?.totalRequests || 0}</span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-muted-foreground">Tokens</span>
-                  <span>{providerUsage?.tokensUsed || 0}</span>
+                  <span>{providerUsage?.totalTokens || 0}</span>
                 </div>
                 {dataset && (
                   <div className="flex justify-between text-xs">
                     <span className="text-muted-foreground">Dataset</span>
-                    <span>{dataset.rows} rows</span>
+                    <span>{dataset.metadata?.rowCount || 0} rows</span>
                   </div>
                 )}
               </div>
@@ -612,7 +612,7 @@ export default function DashboardPage() {
             <div className="mt-6 grid gap-4 lg:grid-cols-3">
               <AIUsagePanel usage={providerUsage} />
               <FeedbackPulsePanel feedback={feedbackOverview} />
-              {(isTeamEdition || capabilities?.teamFeatures) ? <SystemStatusPanel /> : (
+              {isTeamEdition ? <SystemStatusPanel /> : (
                 <div className="rounded-2xl border border-dashed border-border/60 bg-muted/10 p-4 text-sm text-muted-foreground">
                   Team infrastructure status is available on Team edition.
                 </div>
@@ -688,16 +688,16 @@ export default function DashboardPage() {
                 <CollapsiblePanel
                   title="AI Usage"
                   defaultCollapsed={currentLayout.panelsCollapsed.insights}
-                  preview={`${providerUsage?.totalCalls || 0} API calls`}
+                  preview={`${providerUsage?.totalRequests || 0} API calls`}
                 >
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span>Total Calls:</span>
-                      <span>{providerUsage?.totalCalls || 0}</span>
+                      <span>{providerUsage?.totalRequests || 0}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Tokens Used:</span>
-                      <span>{providerUsage?.tokensUsed || 0}</span>
+                      <span>{providerUsage?.totalTokens || 0}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Cost:</span>
@@ -710,16 +710,16 @@ export default function DashboardPage() {
                   title={t('sidebar.feedback')}
                   icon={<MessageSquare className="h-4 w-4" />}
                   defaultCollapsed={currentLayout.panelsCollapsed.feedback}
-                  preview={`${feedbackOverview?.total || 0} responses`}
+                  preview={`${(feedbackOverview?.dataset?.likes ?? 0) + (feedbackOverview?.dataset?.dislikes ?? 0)} responses`}
                 >
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span>Positive:</span>
-                      <span>{feedbackOverview?.positive || 0}</span>
+                      <span>{feedbackOverview?.dataset?.likes || 0}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Negative:</span>
-                      <span>{feedbackOverview?.negative || 0}</span>
+                      <span>{feedbackOverview?.dataset?.dislikes || 0}</span>
                     </div>
                   </div>
                 </CollapsiblePanel>
@@ -751,10 +751,10 @@ export default function DashboardPage() {
       {currentLayout.showStatusBar && (
         <StatusBar
           dataset={dataset ? {
-            name: dataset.name || 'Dataset',
-            rows: dataset.rows || 0,
-            columns: dataset.columns || 0,
-            size: dataset.size || '0 MB'
+            name: dataset.metadata?.name || 'Dataset',
+            rows: dataset.metadata?.rowCount || 0,
+            columns: dataset.metadata?.columnCount || 0,
+            size: dataset.metadata?.fileSize ? `${(dataset.metadata.fileSize / 1024 / 1024).toFixed(1)} MB` : '0 MB'
           } : undefined}
           visualizations={visualizations.length}
           user={{

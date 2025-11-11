@@ -168,13 +168,13 @@ export async function listDatasetNotes(
           ? (metadata.plainText as string | undefined)
           : undefined;
       return {
-        id: note.id,
-        title: note.title,
-        summary: note.summary ?? (plain ? plain.slice(0, 180) : undefined),
-        modified: note.modified ?? note.created,
+        id: note?.id ?? '',
+        title: note?.title ?? 'Untitled note',
+        summary: note?.summary ?? (plain ? plain.slice(0, 180) : undefined),
+        modified: note?.modified ?? note?.created ?? new Date().toISOString(),
         plainText: plain,
-        noteType: note.noteType,
-        authorId: note.createdBy ?? note.owner_id,
+        noteType: note?.noteType,
+        authorId: note?.createdBy ?? note?.owner_id,
       };
     });
 }

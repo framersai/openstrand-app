@@ -64,6 +64,9 @@ export interface StrandVerificationResult {
   warnings: string[];
   duplicates: Array<{ id: string; title: string; similarity: number }>;
   message?: string;
+  fingerprint?: string;
+  isDuplicate?: boolean;
+  policyViolations?: string[];
 }
 
 export interface FeedbackPayload {

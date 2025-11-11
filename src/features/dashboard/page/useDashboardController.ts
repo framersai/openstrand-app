@@ -395,7 +395,7 @@ export function useDashboardController() {
     async (recommendation: InsightRecommendation) => {
       const key = recommendationKey(recommendation);
       if (usedRecommendationKeys.has(key)) {
-        toast.info('Visualization already generated from this recommendation.');
+        toast('Visualization already generated from this recommendation.');
         return;
       }
       if (pendingRecommendationKeysRef.current.has(key)) {
@@ -593,12 +593,18 @@ export function useDashboardController() {
       }
 
       if (classification) {
-        const tierName =
-          classification.tier === VisualizationTier.AIArtisan
-            ? 'Tier 3  AI Artisan (AI)'
-            : classification.tier === VisualizationTier.Dynamic
-            ? 'Tier 2  Dynamic'
-            : 'Tier 1  Static';
+        let tierName: string;
+        switch (classification.tier) {
+          case VisualizationTier.AIArtisan:
+            tierName = 'Tier 3  AI Artisan (AI)';
+            break;
+          case VisualizationTier.Dynamic:
+            tierName = 'Tier 2  Dynamic';
+            break;
+          default:
+            tierName = 'Tier 1  Static';
+            break;
+        }
         toast(`${tierName} selected (confidence ${(classification.confidence * 100).toFixed(0)}%).`);
       }
 
@@ -651,7 +657,7 @@ export function useDashboardController() {
             title: classification?.suggestedApproach ?? 'AI Artisan Visualization',
             description: classification?.reasoning ?? undefined,
             config: {},
-            data: previewRows,
+            data: { rows: previewRows },
             createdAt: now,
             updatedAt: now,
             prompt,
@@ -716,12 +722,18 @@ export function useDashboardController() {
         }
 
         if (classification) {
-          const tierName =
-            classification.tier === VisualizationTier.AIArtisan
-              ? 'Tier 3 - AI Artisan (AI)'
-              : classification.tier === VisualizationTier.Dynamic
-              ? 'Tier 2 - Dynamic'
-              : 'Tier 1 - Static';
+          let tierName: string;
+          switch (classification.tier) {
+            case VisualizationTier.AIArtisan:
+              tierName = 'Tier 3 - AI Artisan (AI)';
+              break;
+            case VisualizationTier.Dynamic:
+              tierName = 'Tier 2 - Dynamic';
+              break;
+            default:
+              tierName = 'Tier 1 - Static';
+              break;
+          }
           toast(`${tierName} selected (confidence ${(classification.confidence * 100).toFixed(0)}%).`);
         }
 
@@ -902,12 +914,12 @@ export function useDashboardController() {
         const base: FeedbackSummary = existing ?? {
           targetId: visualizationId,
           datasetId: target.datasetId ?? activeDatasetId ?? undefined,
-          likes: existing?.likes ?? 0,
-          dislikes: existing?.dislikes ?? 0,
-          favorites: existing?.favorites ?? 0,
-          score: existing?.score ?? 0,
-          userVote: existing?.userVote ?? null,
-          userFavorite: existing?.userFavorite ?? false,
+          likes: 0,
+          dislikes: 0,
+          favorites: 0,
+          score: 0,
+          userVote: null,
+          userFavorite: false,
         };
         const adjustedFavorites = favorite
           ? (base.favorites ?? 0) + 1

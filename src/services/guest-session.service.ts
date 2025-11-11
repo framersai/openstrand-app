@@ -143,7 +143,7 @@ class GuestSessionService {
       id: `guest_${uuidv4()}`,
       createdAt: now,
       lastActiveAt: now,
-      ipAddress: this.ipAddress,
+      ipAddress: this.ipAddress ?? undefined,
       credits: {
         openai: {
           ...DEFAULT_CREDITS.openai,
@@ -243,7 +243,7 @@ class GuestSessionService {
       this.ipAddress = data.ip;
 
       if (this.session) {
-        this.session.ipAddress = this.ipAddress;
+        this.session.ipAddress = this.ipAddress ?? undefined;
         this.persistSession();
       }
     } catch (error) {

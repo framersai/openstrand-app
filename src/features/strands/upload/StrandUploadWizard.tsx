@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useCallback, useMemo, useReducer, useState } from 'react';
-import Link from 'next/link';
+import React, { useCallback, useReducer, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, Sparkles, UploadCloud } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 import { api, StrandVerificationResult } from '@/services/api';
@@ -362,7 +361,7 @@ function StrandUploadWizardContent(props: {
 
               {state.verification ? (
                 <div className="space-y-3">
-                  {state.verification.isDuplicate ? (
+                  {(state.verification.isDuplicate ?? state.verification.status === 'duplicate') ? (
                     <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-4">
                       <div className="flex gap-3">
                         <AlertTriangle className="h-5 w-5 text-yellow-600" />
@@ -381,14 +380,17 @@ function StrandUploadWizardContent(props: {
                     </div>
                   )}
 
-                  {state.verification.policyViolations.length > 0 ? (
+                  {(state.verification.policyViolations?.length ??
+                    state.verification.warnings?.length ??
+                    0) > 0 ? (
                     <div className="rounded-lg border border-red-200 bg-red-50 p-4">
                       <div className="flex gap-3">
                         <AlertTriangle className="h-5 w-5 text-red-600" />
                         <div className="space-y-2">
                           <p className="text-sm font-medium text-red-900">Policy violations detected</p>
                           <ul className="list-disc list-inside text-xs text-red-800">
-                            {state.verification.policyViolations.map((violation, index) => (
+                            {(state.verification.policyViolations ?? state.verification.warnings ?? []).map(
+                              (violation, index) => (
                               <li key={index}>{violation}</li>
                             ))}
                           </ul>
@@ -449,21 +451,32 @@ function StrandUploadWizardContent(props: {
         <div className="flex gap-2">
           {currentStep.id === 'verification' && !state.verification && (
             <Button
-              onClick={() => {
+              onClick={async () => {
                 dispatch({ type: 'SET_VERIFYING', value: true });
-                // Simulate verification
-                setTimeout(() => {
+                try {
+                  const result = await api.verifyStrandDraft({
+                    strandType: state.draft.strandType,
+                    noteType: state.draft.noteType,
+                    title: state.draft.title,
+                    content: state.draft.content,
+                    tags: state.draft.tags,
+                    license: state.draft.license,
+                  });
                   dispatch({
                     type: 'SET_VERIFICATION',
                     value: {
-                      isDuplicate: false,
-                      duplicates: [],
-                      policyViolations: [],
-                      fingerprint: 'test-fingerprint',
+                      ...result,
+                      isDuplicate: result.isDuplicate ?? result.status === 'duplicate',
+                      policyViolations: result.policyViolations ?? result.warnings ?? [],
                     },
                   });
+                  toast.success('Strand verification completed');
+                } catch (error) {
+                  console.error('Strand verification failed', error);
+                  toast.error('Unable to verify strand at this time');
+                } finally {
                   dispatch({ type: 'SET_VERIFYING', value: false });
-                }, 2000);
+                }
               }}
               disabled={state.verifying}
             >
@@ -532,10 +545,10 @@ export function StrandUploadWizard(): JSX.Element {
     dispatch({ type: 'SET_PUBLISHING', value: true });
 
     try {
-      // Simulate API call
-      const response = await api.strands.create({
+      const response = await api.createStrand({
         ...state.draft,
-        verification: state.verification,
+        references: state.draft.references.join('\n'),
+        allowStructureRequests: state.draft.allowStructureRequests,
         forceDuplicate: state.forceDuplicate,
       });
 

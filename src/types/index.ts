@@ -197,6 +197,10 @@ export interface Visualization {
   title: string;
   /** Optional description */
   description?: string;
+  /** Whether this visualization is featured/highlighted */
+  featured?: boolean;
+  /** Size of the visualization in grid layout */
+  size?: 'small' | 'medium' | 'large';
   /** Configuration specific to the visualization type */
   config: VisualizationConfig;
   /** Data to be visualized */

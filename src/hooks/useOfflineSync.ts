@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { OpenStrandSDK } from '@openstrand/sdk';
 
 interface QueuedWrite {
   id: string;
@@ -71,12 +70,6 @@ export function useOfflineSync() {
       const apiUrl = localStorage.getItem('backend_url') || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const token = localStorage.getItem('auth_token');
       const apiKey = localStorage.getItem('api_key');
-
-      const sdk = new OpenStrandSDK({
-        apiUrl,
-        token,
-        apiKey,
-      });
 
       // Send batch to sync endpoint
       const response = await fetch(`${apiUrl}/api/v1/sync`, {

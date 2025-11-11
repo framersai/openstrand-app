@@ -279,6 +279,13 @@ export interface CapabilityMatrix {
   local?: {
     onboardingComplete?: boolean;
   };
+  api?: {
+    teamsAuthEnabled?: boolean;
+    swaggerEnabled?: boolean;
+    openRouter?: boolean;
+    openAI?: boolean;
+    anthropic?: boolean;
+  };
 }
 
 export interface DocumentPageSummary {
