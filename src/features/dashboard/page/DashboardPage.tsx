@@ -47,7 +47,6 @@ import { useDashboardController } from './useDashboardController';
 import { useLayoutPresets } from '@/hooks/useLayoutPresets';
 import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import { useKeyboardNavigation, defaultKeyboardBindings } from '@/hooks/useKeyboardNavigation';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
@@ -151,8 +150,6 @@ export default function DashboardPage() {
   
   const responsiveLayout = getResponsiveLayout(currentLayout.gridColumns);
 
-  const [activePanel, setActivePanel] = useState<'upload' | 'visualize'>('upload');
-
   // Prepare visualization items for masonry grid
   const masonryItems = useMemo(() => {
     return visualizations.map(viz => ({
@@ -177,7 +174,7 @@ export default function DashboardPage() {
         id: 'upload',
         icon: Upload,
         label: 'Upload Dataset',
-        onClick: () => setActivePanel('upload'),
+        onClick: openUpload,
         shortcut: 'u',
         disabled: isProcessing,
       },
@@ -185,7 +182,7 @@ export default function DashboardPage() {
         id: 'visualize',
         icon: LineChart,
         label: 'New Visualization',
-        onClick: () => setActivePanel('visualize'),
+        onClick: openVisualize,
         shortcut: 'v',
         disabled: !dataset,
       },
@@ -334,52 +331,6 @@ export default function DashboardPage() {
 
   const visualizeDisabled = !dataset;
 
-  const uploadContent = (
-    <UploadTabContent
-      metadata={metadata ?? null}
-      isProcessing={isProcessing}
-      isLoadingSamples={isLoadingSamples}
-      samples={sampleDatasets}
-      activeDatasetId={dataset?.id}
-      onFileUpload={handleFileUpload}
-      onClearDataset={handleClearDataset}
-      onLoadSample={handleLoadSampleDataset}
-      planTier={planTier}
-      planLimitMb={planLimitMb}
-      summary={datasetSummary}
-      isSummaryLoading={isSummaryLoading}
-      onRefreshSummary={handleRefreshSummary}
-    />
-  );
-
-  const visualizeContent = (
-    <VisualizeTabContent
-      datasetId={dataset?.id ?? null}
-      isProcessing={isProcessing}
-      useHeuristics={useHeuristics}
-      hasDataset={Boolean(dataset)}
-      onSubmitPrompt={handlePromptSubmit}
-      onQuickAction={(prompt: string) => handleGenerateVisualization(prompt)}
-      onProcessingChange={setIsProcessing}
-      datasetFeedback={datasetFeedback}
-      canSubmitFeedback={canSubmitFeedback}
-      onDatasetVote={handleDatasetVote}
-      onDatasetFavorite={handleDatasetFavorite}
-      leaderboardDatasets={datasetLeaderboard}
-      leaderboardVisualizations={visualizationLeaderboard}
-      leaderboardLoading={leaderboardLoading}
-      onRefreshLeaderboards={refreshLeaderboards}
-      onNavigateToVisualizations={focusVisualizations}
-      onAutoInsightsUpdate={handleAutoInsightsUpdate}
-      onRegisterAutoInsightsRunner={(runner) => {
-        autoInsightsRunnerRef.current = runner ?? null;
-      }}
-      onRegisterRecommendationRunner={(runner) => {
-        recommendationRunnerRef.current = runner ?? null;
-      }}
-    />
-  );
-
   return (
     <div className="dashboard-page min-h-screen flex flex-col bg-background">
       <GuidedTour />
@@ -441,7 +392,11 @@ export default function DashboardPage() {
             </div>
             {/* Sidebar tabs for better organization */}
             <div className="flex-1 overflow-hidden">
-              <Tabs defaultValue="data" className="h-full flex flex-col">
+              <Tabs
+                value={activeTab === 'upload' ? 'data' : 'generate'}
+                onValueChange={(val) => setActiveTab(val === 'data' ? 'upload' : 'visualize')}
+                className="h-full flex flex-col"
+              >
                 <TabsList
                   className={cn(
                     "m-2 grid grid-cols-2 gap-2 transition-all",
@@ -570,6 +525,19 @@ export default function DashboardPage() {
               padding: utils.containerPadding(),
               maxWidth: device.isUltrawide ? '2400px' : undefined
             }}>
+            {/* Quick Actions and Overview */}
+            <DashboardHeaderActions
+              onOpenUpload={openUpload}
+              onRunAutoInsights={runAutoInsights}
+              onOpenVisualize={openVisualize}
+              onOpenCommandPalette={() => setIsPaletteOpen(true)}
+              onClearVisualizations={handleClearAllVisualizations}
+              disableAutoInsights={!dataset || isProcessing}
+              disableClear={visualizations.length === 0}
+              showGuestIndicator={isGuest}
+            />
+            <DashboardOverviewMinimal data={dashboardOverview} className="rounded-xl mb-6" />
+
             {/* Layout preset selector - responsive */}
             <div className="mb-6 flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
               <div className="flex flex-wrap items-center gap-2">
@@ -638,6 +606,13 @@ export default function DashboardPage() {
               />
             )}
 
+            {/* Usage and Feedback panels */}
+            <div className="mt-6 grid gap-4 lg:grid-cols-3">
+              <AIUsagePanel usage={providerUsage} />
+              <FeedbackPulsePanel feedback={feedbackOverview} />
+              <SystemStatusPanel />
+            </div>
+
             {/* Visualizations Grid or Empty State */}
             {visualizations.length > 0 ? (
               <MasonryGrid
@@ -657,7 +632,7 @@ export default function DashboardPage() {
                     <p className="text-muted-foreground mb-6 max-w-md text-center">
                       Upload a dataset to start creating visualizations and exploring your data
                     </p>
-                    <Button onClick={() => setActivePanel('upload')}>
+                    <Button onClick={openUpload}>
                       <Upload className="mr-2 h-4 w-4" />
                       Upload Dataset
                     </Button>
@@ -669,7 +644,7 @@ export default function DashboardPage() {
                     <p className="text-muted-foreground mb-6 max-w-md text-center">
                       Your dataset is loaded. Create your first visualization to explore the data
                     </p>
-                    <Button onClick={() => setActivePanel('visualize')}>
+                    <Button onClick={openVisualize}>
                       <LineChart className="mr-2 h-4 w-4" />
                       Create Visualization
                     </Button>
@@ -677,6 +652,29 @@ export default function DashboardPage() {
                 )}
               </div>
             )}
+
+            {/* Visualization workspace with feedback and recommendations */}
+            <VisualizationWorkspace
+              ref={visualizationPanelRef as any}
+              visualizations={visualizations}
+              onClearAll={handleClearAllVisualizations}
+              onExport={handleExportVisualization}
+              onRemove={handleRemoveVisualization}
+              onModify={(_id, prompt) => handleGenerateVisualization(prompt)}
+              isProcessing={isProcessing}
+              feedbackMap={visualizationFeedback}
+              canSubmitFeedback={canSubmitFeedback}
+              onVote={handleVisualizationVote}
+              onFavoriteToggle={(id, fav) => handleVisualizationFavorite(id, fav)}
+              highlightNew={highlightVisualizations}
+              autoInsights={autoInsightsSnapshot.recommendations}
+              autoInsightsLoading={autoInsightsSnapshot.isLoading}
+              autoInsightsError={autoInsightsSnapshot.error}
+              autoInsightsStatus={autoInsightsSnapshot.status}
+              onRunRecommendation={handleRunRecommendation}
+              savedVisualizationIds={savedVisualizationIds}
+              usedRecommendationKeys={usedRecommendationKeys}
+            />
 
             {/* Collapsible insight panels (if in overview mode) */}
             {currentLayout.preset === 'overview' && (
