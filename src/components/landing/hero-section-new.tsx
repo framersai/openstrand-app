@@ -30,6 +30,8 @@ const HERO_HIGHLIGHT_CONFIG = [
   { key: 'approvals', icon: PrivacyShieldIcon },
   { key: 'ai', icon: SchemaIntelligenceIcon },
   { key: 'offline', icon: LocalFirstIcon },
+  { key: 'api', icon: SchemaIntelligenceIcon },
+  { key: 'sdk', icon: NeuralStrandIcon },
 ] as const;
 
 const HERO_DATA_FLOW_CONFIG = [

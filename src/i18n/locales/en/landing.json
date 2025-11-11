@@ -3,8 +3,8 @@
     "badge": {
       "community": "Free Forever • Community Edition"
     },
-    "headline": "Transform Data into <highlight>Living Knowledge</highlight> That Connects & Grows",
-    "subheadline": "Model recursive hierarchies, route structural requests through approvals, and let visibility cascades keep every scope aligned. <strong>Free forever. Works offline. No credit card.</strong>",
+    "headline": "Offline-First AI Knowledge OS with <highlight>REST API & TypeScript SDK</highlight>",
+    "subheadline": "Build knowledge graphs that work everywhere—browser, desktop, mobile. Auto-generated REST API, offline sync, and enterprise RBAC. <strong>Free forever. Works offline. No credit card.</strong>",
     "cta": {
       "primary": "Create Free Workspace",
       "secondary": "View Pricing",
@@ -27,8 +27,16 @@
         "description": "Pipelines propose structure requests automatically."
       },
       "offline": {
-        "title": "Self-host & offline ready",
-        "description": "Run in the cloud or fully offline in minutes."
+        "title": "Offline-first with auto-sync",
+        "description": "Works in browser, desktop, mobile. Syncs when online."
+      },
+      "api": {
+        "title": "Auto-generated REST API",
+        "description": "Every user gets a personal API key. Full SDK included."
+      },
+      "sdk": {
+        "title": "TypeScript SDK",
+        "description": "Type-safe client for Node.js and browsers. npm install @openstrand/sdk"
       }
     },
     "journey": {

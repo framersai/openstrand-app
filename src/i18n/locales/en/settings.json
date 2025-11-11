@@ -1,96 +1,24 @@
 {
   "title": "Settings",
-  "description": "Configure LLM providers and preferences",
-  "save": "Save Settings",
-  "cancel": "Cancel",
-  "saved": "Settings saved successfully",
-  "providers": {
-    "title": "Active Provider",
-    "openrouter": "OpenRouter",
-    "openai": "OpenAI",
-    "anthropic": "Anthropic",
-    "apiKeys": {
-      "title": "API Keys",
-      "openrouter": {
-        "label": "OpenRouter API Key",
-        "placeholder": "sk-or-...",
-        "help": "Get your key at openrouter.ai - unified access to multiple models"
-      },
-      "openai": {
-        "label": "OpenAI API Key",
-        "placeholder": "sk-...",
-        "help": "Get your key at platform.openai.com"
-      },
-      "anthropic": {
-        "label": "Anthropic API Key",
-        "placeholder": "sk-ant-...",
-        "help": "Get your key at console.anthropic.com"
-      }
-    }
+  "apiKeys": {
+    "title": "Developer API",
+    "description": "Your personal API key for programmatic access",
+    "noKey": "No API key found",
+    "rotate": "Rotate key",
+    "copy": "Copy to clipboard",
+    "show": "Show key",
+    "hide": "Hide key",
+    "copied": "Copied to clipboard!",
+    "security": "Keep your API key secret. Rotating will invalidate the old key immediately."
   },
-  "models": {
-    "title": "Model Selection",
-    "gpt35": "GPT-3.5 Turbo",
-    "gpt4": "GPT-4",
-    "gpt4Turbo": "GPT-4 Turbo",
-    "claude3Opus": "Claude 3 Opus",
-    "claude3Sonnet": "Claude 3 Sonnet",
-    "claude3Haiku": "Claude 3 Haiku",
-    "geminiPro": "Gemini Pro"
-  },
-  "parsing": {
-    "title": "Prompt parsing mode",
-    "heuristic": {
-      "label": "Heuristic Assist",
-      "description": "By default every prompt flows directly to your selected LLM for maximum fidelity. Enable this to run lightweight heuristics and static analysis before falling back to the LLM.",
-      "benefits": "Common patterns are fulfilled locally and only novel prompts hit the LLM"
-    },
-    "direct": {
-      "label": "Direct LLM",
-      "description": "Every request uses your configured model, ideal for richer schema intelligence"
-    }
-  },
-  "appearance": {
-    "title": "Appearance",
-    "theme": {
-      "title": "Theme",
-      "light": "Light",
-      "dark": "Dark",
-      "system": "System"
-    },
-    "language": {
-      "title": "Language",
-      "change": "Change language"
-    }
-  },
-  "costTracking": {
-    "title": "Cost Tracking",
-    "session": "Session Total",
-    "byProvider": "By Provider",
-    "average": "Avg",
-    "projected": "Projected Daily",
-    "requests": "{count} requests"
-  },
-  "advanced": {
-    "title": "Advanced",
-    "debug": {
-      "label": "Debug Mode",
-      "description": "Show debug information in visualizations"
-    },
-    "cache": {
-      "label": "Clear Cache",
-      "button": "Clear",
-      "description": "Clear all cached data and start fresh"
-    },
-    "export": {
-      "label": "Export Settings",
-      "button": "Export",
-      "description": "Export your settings as JSON"
-    },
-    "import": {
-      "label": "Import Settings",
-      "button": "Import",
-      "description": "Import settings from JSON file"
-    }
+  "backend": {
+    "title": "Backend URL",
+    "description": "Configure which OpenStrand backend to connect to",
+    "current": "Current backend",
+    "change": "Change backend",
+    "validate": "Validate",
+    "validating": "Validating...",
+    "valid": "Connected successfully",
+    "invalid": "Cannot connect to this backend"
   }
 }
