@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useCallback, useMemo, useReducer, useState } from 'react';
-import Link from 'next/link';
+import React, { useCallback, useReducer, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, UploadCloud } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 import { api, DatasetVerificationResult } from '@/services/api';
@@ -12,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAppMode } from '@/hooks/useAppMode';
 import { cn } from '@/lib/utils';

@@ -102,20 +102,22 @@ const socialLinks = [
   { key: 'youtube', href: 'https://youtube.com/@framersai', icon: Youtube },
 ] as const;
 
-const certifications = [
-  { key: 'soc2', image: '/images/certs/soc2.png' },
-  { key: 'gdpr', image: '/images/certs/gdpr.png' },
-  { key: 'iso27001', image: '/images/certs/iso27001.png' },
-  { key: 'hipaa', image: '/images/certs/hipaa.png' },
-] as const;
+// Certifications for future compliance badges
+// const _certifications = [
+//   { key: 'soc2', image: '/images/certs/soc2.png' },
+//   { key: 'gdpr', image: '/images/certs/gdpr.png' },
+//   { key: 'iso27001', image: '/images/certs/iso27001.png' },
+//   { key: 'hipaa', image: '/images/certs/hipaa.png' },
+// ] as const;
 
-const sectionAccentClasses = [
-  'from-primary/20 to-primary/0',
-  'from-emerald/20 to-emerald/0',
-  'from-purple/20 to-purple/0',
-  'from-blue/20 to-blue/0',
-  'from-amber/20 to-amber/0',
-] as const;
+// Section accent classes for future gradient customization
+// const _sectionAccentClasses = [
+//   'from-primary/20 to-primary/0',
+//   'from-emerald/20 to-emerald/0',
+//   'from-purple/20 to-purple/0',
+//   'from-blue/20 to-blue/0',
+//   'from-amber/20 to-amber/0',
+// ] as const;
 
 const bottomLinks = [
   { key: 'privacy', href: '/privacy' },
@@ -211,7 +213,7 @@ export function SiteFooter() {
 
           {/* Links sections - takes 3 columns */}
           <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:col-span-3 lg:grid-cols-5">
-            {footerSections.map((section, index) => (
+            {footerSections.map((section) => (
               <div key={section.key} className="space-y-4">
               <h4 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-foreground">
                 <section.icon className="h-4 w-4 text-primary" />

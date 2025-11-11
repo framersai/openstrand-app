@@ -131,7 +131,7 @@ interface LearningPathProps {
 export function LearningPath({
   path,
   completedTutorials = [],
-  onStartTutorial,
+  onStartTutorial: _onStartTutorial,
   onCompleteTutorial,
   className,
   compact = false,
