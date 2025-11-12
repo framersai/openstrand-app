@@ -104,10 +104,7 @@ export default function LandingPage({ params }: LandingPageParams) {
           key={`landing-structured-data-${index}`}
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              ...schema,
-              url: schema?.url ?? canonicalUrl,
-            }),
+            __html: JSON.stringify(Object.assign({}, schema as Record<string, unknown>, { url: canonicalUrl })),
           }}
         />
       ))}

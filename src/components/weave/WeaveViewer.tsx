@@ -123,6 +123,78 @@ export const WeaveViewer: React.FC<WeaveViewerProps> = ({
   const [hoveredNode, setHoveredNode] = useState<WeaveNode | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
 
+  // Helper functions
+  const ensureTooltip = () => {
+    if (tooltipRef.current) {
+      return tooltipRef.current;
+    }
+
+    const tooltip = document.createElement('div');
+    tooltip.className = 'weave-tooltip';
+    Object.assign(tooltip.style, {
+      position: 'fixed',
+      zIndex: '1000',
+      pointerEvents: 'none',
+      padding: '10px 12px',
+      background: 'rgba(15, 23, 42, 0.88)',
+      color: '#F8FAFC',
+      borderRadius: '8px',
+      boxShadow: '0 16px 40px rgba(15, 23, 42, 0.35)',
+      fontSize: '12px',
+      lineHeight: '1.45',
+      maxWidth: '260px',
+      whiteSpace: 'pre-wrap' as const,
+      opacity: '0',
+      transition: 'opacity 120ms ease-out',
+      display: 'none',
+    });
+
+    document.body.appendChild(tooltip);
+    tooltipRef.current = tooltip;
+    return tooltip;
+  };
+
+  const getNodeSize = (node: WeaveNode): number => {
+    const baseSize = 20;
+    const importanceScale = node.importance || 1;
+    return baseSize * Math.sqrt(importanceScale);
+  };
+
+  const showTooltip = useCallback((event: MouseEvent, text: string) => {
+    const tooltip = ensureTooltip();
+    const pageX = event.pageX ?? 0;
+    const pageY = event.pageY ?? 0;
+    const offsetX = 18;
+    const offsetY = 14;
+    const padding = 24;
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    const left = Math.min(viewportWidth - padding, pageX + offsetX);
+    const top = Math.min(viewportHeight - padding, pageY + offsetY);
+
+    tooltip.textContent = text;
+    tooltip.style.display = 'block';
+    tooltip.style.opacity = '1';
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${top}px`;
+  }, []);
+
+  const hideTooltip = useCallback((remove: boolean = false) => {
+    if (!tooltipRef.current) {
+      return;
+    }
+
+    tooltipRef.current.style.opacity = '0';
+    tooltipRef.current.style.display = 'none';
+
+    if (remove) {
+      tooltipRef.current.remove();
+      tooltipRef.current = null;
+    }
+  }, []);
+
   // Initialize D3 force simulation
   useEffect(() => {
     if (!svgRef.current || !data.nodes.length) return;
@@ -306,8 +378,8 @@ export const WeaveViewer: React.FC<WeaveViewerProps> = ({
       if (!event.active && sim) sim.alphaTarget(0);
       // Keep node fixed if shift key is held
       if (!event.sourceEvent.shiftKey) {
-        d.fx = null;
-        d.fy = null;
+        d.fx = undefined;
+        d.fy = undefined;
       }
     }
 
@@ -352,77 +424,7 @@ export const WeaveViewer: React.FC<WeaveViewerProps> = ({
     svg.call(zoomRef.current.transform, transform);
   }, [transform]);
 
-  // Helper functions
-  const ensureTooltip = () => {
-    if (tooltipRef.current) {
-      return tooltipRef.current;
-    }
-
-    const tooltip = document.createElement('div');
-    tooltip.className = 'weave-tooltip';
-    Object.assign(tooltip.style, {
-      position: 'fixed',
-      zIndex: '1000',
-      pointerEvents: 'none',
-      padding: '10px 12px',
-      background: 'rgba(15, 23, 42, 0.88)',
-      color: '#F8FAFC',
-      borderRadius: '8px',
-      boxShadow: '0 16px 40px rgba(15, 23, 42, 0.35)',
-      fontSize: '12px',
-      lineHeight: '1.45',
-      maxWidth: '260px',
-      whiteSpace: 'pre-wrap' as const,
-      opacity: '0',
-      transition: 'opacity 120ms ease-out',
-      display: 'none',
-    });
-
-    document.body.appendChild(tooltip);
-    tooltipRef.current = tooltip;
-    return tooltip;
-  };
-
-  const getNodeSize = (node: WeaveNode): number => {
-    const baseSize = 20;
-    const importanceScale = node.importance || 1;
-    return baseSize * Math.sqrt(importanceScale);
-  };
-
-  const showTooltip = useCallback((event: MouseEvent, text: string) => {
-    const tooltip = ensureTooltip();
-    const pageX = event.pageX ?? 0;
-    const pageY = event.pageY ?? 0;
-    const offsetX = 18;
-    const offsetY = 14;
-    const padding = 24;
-
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-
-    const left = Math.min(viewportWidth - padding, pageX + offsetX);
-    const top = Math.min(viewportHeight - padding, pageY + offsetY);
-
-    tooltip.textContent = text;
-    tooltip.style.display = 'block';
-    tooltip.style.opacity = '1';
-    tooltip.style.left = `${left}px`;
-    tooltip.style.top = `${top}px`;
-  }, []);
-
-  const hideTooltip = useCallback((remove: boolean = false) => {
-    if (!tooltipRef.current) {
-      return;
-    }
-
-    tooltipRef.current.style.opacity = '0';
-    tooltipRef.current.style.display = 'none';
-
-    if (remove) {
-      tooltipRef.current.remove();
-      tooltipRef.current = null;
-    }
-  }, []);
+  // (helpers moved above to satisfy dependency ordering)
 
   // Control functions
   const handleZoom = (direction: 'in' | 'out') => {

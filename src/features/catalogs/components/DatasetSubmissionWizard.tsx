@@ -2,7 +2,7 @@
 
 import React, { useCallback, useReducer, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, UploadCloud } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 import { api, DatasetVerificationResult } from '@/services/api';
@@ -226,7 +226,7 @@ function DatasetSubmissionWizardContent(props: {
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) {
-                        dispatch({ type: 'SET_FILE', value: file });
+                        dispatch({ type: 'SET_FILE', file });
                       }
                     }}
                     className="mx-auto max-w-xs"
@@ -275,13 +275,15 @@ function DatasetSubmissionWizardContent(props: {
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    {state.verification.compliance ? (
+                    {(state.verification.warnings?.length ?? 0) === 0 ? (
                       <CheckCircle2 className="h-5 w-5 text-green-600" />
                     ) : (
                       <AlertTriangle className="h-5 w-5 text-yellow-600" />
                     )}
                     <span className="text-sm font-medium">
-                      {state.verification.compliance ? 'Compliance check passed' : 'Compliance issues detected'}
+                      {(state.verification.warnings?.length ?? 0) === 0
+                        ? 'No policy warnings'
+                        : `${state.verification.warnings?.length ?? 0} warning(s)`}
                     </span>
                   </div>
                 </div>

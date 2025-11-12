@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
+import type { Locale } from '@/i18n/config';
 import { Menu, X, Github, Settings, WifiOff, Cloud, Sparkles } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -32,7 +33,7 @@ export function LandingHeader({ onOpenSettings }: LandingHeaderProps) {
   const tCommon = useTranslations('common');
   const tAuth = useTranslations('auth');
   const localizePath = useLocalizedPath();
-  const locale = useLocale();
+  const locale = useLocale() as Locale;
   const { isAuthenticated, authEnabled } = useSupabase();
   const { mode } = useAppMode();
   const tutorialLink = localizePath('/tutorials');

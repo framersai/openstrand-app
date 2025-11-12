@@ -160,9 +160,10 @@ export default function AIArtisanSandbox({
       if (event.data.type === 'ai-artisan-ready') {
         setIsLoading(false);
       } else if (event.data.type === 'ai-artisan-error') {
-        setError(event.data.error);
+        const msg = event.data.error ?? 'Unknown error';
+        setError(msg);
         setIsLoading(false);
-        onError?.(new Error(event.data.error));
+        onError?.(new Error(msg));
       }
     };
 

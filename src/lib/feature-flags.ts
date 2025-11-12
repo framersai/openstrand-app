@@ -23,6 +23,8 @@ export interface FeatureConfig {
   basicVisualizations: boolean;
   importExport: boolean;
   offlineMode: boolean;
+  /** Enterprise SSO availability */
+  sso: boolean;
 
   teamWorkspaces: boolean;
   collaboration: boolean;
@@ -55,6 +57,7 @@ const FEATURE_CONFIG: Record<AppVariant, Record<UserPlan, FeatureConfig>> = {
       basicVisualizations: true,
       importExport: true,
       offlineMode: true,
+      sso: false,
 
       teamWorkspaces: false,
       collaboration: false,
@@ -83,6 +86,7 @@ const FEATURE_CONFIG: Record<AppVariant, Record<UserPlan, FeatureConfig>> = {
       basicVisualizations: true,
       importExport: true,
       offlineMode: true,
+      sso: false,
 
       teamWorkspaces: false,
       collaboration: false,
@@ -111,6 +115,7 @@ const FEATURE_CONFIG: Record<AppVariant, Record<UserPlan, FeatureConfig>> = {
       basicVisualizations: true,
       importExport: true,
       offlineMode: true,
+      sso: false,
 
       teamWorkspaces: false,
       collaboration: false,
@@ -139,6 +144,7 @@ const FEATURE_CONFIG: Record<AppVariant, Record<UserPlan, FeatureConfig>> = {
       basicVisualizations: true,
       importExport: true,
       offlineMode: true,
+      sso: false,
 
       teamWorkspaces: true,
       collaboration: true,
@@ -167,6 +173,7 @@ const FEATURE_CONFIG: Record<AppVariant, Record<UserPlan, FeatureConfig>> = {
       basicVisualizations: true,
       importExport: true,
       offlineMode: true,
+      sso: true,
 
       teamWorkspaces: true,
       collaboration: true,
@@ -197,6 +204,7 @@ const FEATURE_CONFIG: Record<AppVariant, Record<UserPlan, FeatureConfig>> = {
       basicVisualizations: true,
       importExport: true,
       offlineMode: true,
+      sso: false,
 
       teamWorkspaces: true,
       collaboration: true,
@@ -225,6 +233,7 @@ const FEATURE_CONFIG: Record<AppVariant, Record<UserPlan, FeatureConfig>> = {
       basicVisualizations: true,
       importExport: true,
       offlineMode: true,
+      sso: false,
 
       teamWorkspaces: true,
       collaboration: true,
@@ -253,6 +262,7 @@ const FEATURE_CONFIG: Record<AppVariant, Record<UserPlan, FeatureConfig>> = {
       basicVisualizations: true,
       importExport: true,
       offlineMode: true,
+      sso: false,
 
       teamWorkspaces: true,
       collaboration: true,
@@ -281,6 +291,7 @@ const FEATURE_CONFIG: Record<AppVariant, Record<UserPlan, FeatureConfig>> = {
       basicVisualizations: true,
       importExport: true,
       offlineMode: true,
+      sso: false,
 
       teamWorkspaces: true,
       collaboration: true,
@@ -309,6 +320,7 @@ const FEATURE_CONFIG: Record<AppVariant, Record<UserPlan, FeatureConfig>> = {
       basicVisualizations: true,
       importExport: true,
       offlineMode: true,
+      sso: true,
 
       teamWorkspaces: true,
       collaboration: true,
@@ -386,14 +398,17 @@ export function useFeatureFlags() {
 
   const features = useMemo(() => {
     const base = getFeatureConfig(variant, resolvedPlan);
-    if (typeof capabilities?.aiArtisan === 'boolean') {
-      return {
-        ...base,
-        aiArtisan: capabilities.aiArtisan,
-      };
-    }
-    return base;
-  }, [variant, resolvedPlan, capabilities?.aiArtisan]);
+    const ssoEnv = process.env.NEXT_PUBLIC_SSO_ENABLED === 'true';
+    const aiArtisanOverride = typeof capabilities?.aiArtisan === 'boolean' ? { aiArtisan: capabilities.aiArtisan } : {};
+    const ssoOverride = typeof capabilities?.api?.teamsAuthEnabled === 'boolean' || ssoEnv
+      ? { sso: Boolean(capabilities?.api?.teamsAuthEnabled || ssoEnv) }
+      : {};
+    return {
+      ...base,
+      ...aiArtisanOverride,
+      ...ssoOverride,
+    };
+  }, [variant, resolvedPlan, capabilities?.aiArtisan, capabilities?.api?.teamsAuthEnabled]);
 
   return {
     variant,

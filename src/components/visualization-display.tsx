@@ -188,8 +188,8 @@ export const VisualizationDisplay: React.FC<VisualizationDisplayProps> = ({
         case 'd3-force':
           return (
             <D3ForceGraph
-              nodes={visualization.data.nodes || []}
-              links={visualization.data.links || []}
+              nodes={(visualization.data?.nodes as any[]) || []}
+              links={(visualization.data?.links as any[]) || []}
               width={800}
               height={600}
             />
@@ -198,7 +198,14 @@ export const VisualizationDisplay: React.FC<VisualizationDisplayProps> = ({
         case 'three-scatter':
           return (
             <Three3DScatter
-              data={visualization.data.points || []}
+              data={
+                ((visualization.data?.points as any[]) || []).map((p) => ({
+                  x: Number((p && p.x) ?? 0),
+                  y: Number((p && p.y) ?? 0),
+                  z: Number((p && p.z) ?? 0),
+                  ...(typeof p === 'object' ? p : {}),
+                }))
+              }
               title={visualization.title}
             />
           );

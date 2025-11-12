@@ -50,7 +50,6 @@ export function PricingSection({ id, className }: PricingSectionProps) {
       ctaHref: '/',
       ctaLabel: 'Download Free Forever',
       offlineReady: true,
-      openSource: true,
       badge: 'ALWAYS FREE',
     },
     {

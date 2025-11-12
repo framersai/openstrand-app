@@ -369,6 +369,8 @@ export interface StrandMetadata {
   source?: string;
   license?: string;
   language: string;
+  /** Required for spiral curriculum planning */
+  difficulty: Difficulty;
   tags: string[];
   keywords: string[];
   concepts: string[];

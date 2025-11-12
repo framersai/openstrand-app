@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
   X,
   ChevronLeft,
@@ -385,6 +385,30 @@ export function InteractiveTour({
   const currentStepData = tourSteps[currentStep];
   const progress = ((currentStep + 1) / tourSteps.length) * 100;
 
+  const handleNext = useCallback(() => {
+    // Validate current step if needed
+    if (currentStepData?.validation && !currentStepData.validation()) {
+      return;
+    }
+
+    // Mark step as completed
+    setCompletedSteps(prev => {
+      const updated = new Set(prev);
+      if (currentStepData) {
+        updated.add(currentStepData.id);
+      }
+      return updated;
+    });
+
+    setQuizAnswer(null);
+
+    if (currentStep < tourSteps.length - 1) {
+      setCurrentStep((prev) => prev + 1);
+    } else {
+      handleComplete();
+    }
+  }, [currentStep, currentStepData, tourSteps.length, handleComplete]);
+
   // Initialize tour
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -514,30 +538,6 @@ export function InteractiveTour({
       removeHighlight();
     }
   }, [isActive, currentStep, currentStepData, highlightTarget, removeHighlight, handleNext]);
-
-  const handleNext = useCallback(() => {
-    // Validate current step if needed
-    if (currentStepData?.validation && !currentStepData.validation()) {
-      return;
-    }
-
-    // Mark step as completed
-    setCompletedSteps(prev => {
-      const updated = new Set(prev);
-      if (currentStepData) {
-        updated.add(currentStepData.id);
-      }
-      return updated;
-    });
-
-    setQuizAnswer(null);
-
-    if (currentStep < tourSteps.length - 1) {
-      setCurrentStep((prev) => prev + 1);
-    } else {
-      handleComplete();
-    }
-  }, [currentStep, currentStepData, tourSteps.length, handleComplete]);
 
   const handlePrev = useCallback(() => {
     if (currentStep > 0) {
@@ -1030,5 +1030,4 @@ export function TourHotspot({
   );
 }
 
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { useMemo } from 'react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'; 

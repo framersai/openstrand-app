@@ -34,7 +34,7 @@ const NOTE_TYPE_OPTIONS = [
 type NoteTypeOption = typeof NOTE_TYPE_OPTIONS[number]['value'];
 
 const DIFFICULTY_OPTIONS = [
-  { value: '', label: 'Unspecified' },
+  { value: 'beginner', label: 'Beginner (default)' },
   { value: 'beginner', label: 'Beginner' },
   { value: 'intermediate', label: 'Intermediate' },
   { value: 'advanced', label: 'Advanced' },
@@ -75,7 +75,7 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
   const [noteType, setNoteType] = useState<NoteTypeOption>(initialNoteType);
   const [coAuthorIds, setCoAuthorIds] = useState<string[]>(initialCoAuthors);
   const [tags, setTags] = useState<string>(() => initialTags.join(', '));
-  const [difficulty, setDifficulty] = useState<string>(initialDifficulty ?? '');
+  const [difficulty, setDifficulty] = useState<string>(initialDifficulty || 'beginner');
   const [saving, setSaving] = useState(false);
   const [loadingExisting, setLoadingExisting] = useState(Boolean(initialStrandId));
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
@@ -184,7 +184,7 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
           noteType,
           coAuthorIds,
           tags: normalizedTags,
-          difficulty,
+          difficulty: difficulty || 'beginner',
         });
         if (strandId) {
           onSaveSuccess?.({
@@ -195,7 +195,7 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
             noteType,
             coAuthorIds,
             tags: normalizedTags,
-            difficulty,
+            difficulty: difficulty || 'beginner',
           });
         }
         setStatusMessage('Saved successfully');
@@ -213,7 +213,7 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
             origin: 'composer',
             updatedAt: new Date().toISOString(),
             tags: normalizedTags,
-            difficulty: difficulty || undefined,
+            difficulty: difficulty || 'beginner',
           },
         },
         contentType: 'application/vnd.tiptap+json',
@@ -222,7 +222,7 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
         visibility: 'private',
         type: StrandType.NOTE,
         metadata: {
-          ...(typeof difficulty === 'string' && difficulty ? { difficulty } : {}),
+          difficulty: (typeof difficulty === 'string' && difficulty) ? difficulty : 'beginner',
           ...(normalizedTags.length ? { tags: normalizedTags } : {}),
         },
       };
@@ -245,7 +245,7 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
         noteType,
         coAuthorIds,
         tags: normalizedTags,
-        difficulty,
+        difficulty: difficulty || 'beginner',
       });
     } catch (error) {
       setStatusMessage(error instanceof Error ? error.message : 'Failed to save changes');

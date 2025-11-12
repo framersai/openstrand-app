@@ -21,13 +21,20 @@ interface DashboardHeaderProps {
   onOpenSettings: () => void;
 }
 
-const NAV_ITEMS = [
+type NavItem = {
+  key: 'home' | 'product' | 'datasets' | 'pricing' | 'support';
+  href: string;
+  icon: typeof Home;
+  badge?: string;
+};
+
+const NAV_ITEMS: NavItem[] = [
   { key: 'home', href: '/', icon: Home },
   { key: 'product', href: '/landing', icon: Sparkles },
   { key: 'datasets', href: '/catalogs', icon: Database, badge: 'New' },
   { key: 'pricing', href: '/billing', icon: CreditCard },
   { key: 'support', href: '/contact', icon: LifeBuoy },
-] as const;
+];
 
 export function DashboardHeader({ onOpenSettings }: DashboardHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
