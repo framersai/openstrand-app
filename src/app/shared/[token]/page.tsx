@@ -49,16 +49,19 @@ export default function SharedPage() {
       setResource(infoResponse.data);
       
       // Check access
-      const accessResponse = await api.post(
-        `/access/${infoResponse.data.resource_type}/${infoResponse.data.resource_id}/check`,
-        { password: withPassword },
-        { headers: { 'X-Share-Token': token } }
-      );
+      const accessResponse = await fetch(`${api['baseUrl'] ?? ''}/access/${infoResponse.data.resource_type}/${infoResponse.data.resource_id}/check`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Share-Token': token,
+        },
+        body: JSON.stringify({ password: withPassword }),
+      }).then(res => res.json());
       
-      if (accessResponse.data.has_access) {
+      if (accessResponse?.data?.has_access || accessResponse?.has_access) {
         setHasAccess(true);
         await loadResource(infoResponse.data.resource_type, infoResponse.data.resource_id);
-      } else if (accessResponse.data.requires_password) {
+      } else if (accessResponse?.data?.requires_password || accessResponse?.requires_password) {
         setHasAccess(false);
       }
     } catch (err: any) {

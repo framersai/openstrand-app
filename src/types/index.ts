@@ -181,7 +181,11 @@ export type VisualizationType =
   | 'table' 
   | 'heatmap' 
   | 'bubble'
-  | 'ai_artisan';
+  | 'ai_artisan'
+  | 'force-graph'
+  | 'd3-force'
+  | '3d-scatter'
+  | 'three-scatter';
 
 /**
  * Base interface for all visualizations

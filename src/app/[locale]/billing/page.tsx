@@ -48,9 +48,10 @@ export default function BillingPage() {
 
     try {
       const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
-      const { portalUrl } = await openBillingPortal(`${origin}/billing`);
-      if (portalUrl) {
-        window.location.href = portalUrl;
+      const portal = await openBillingPortal(`${origin}/billing`);
+      const url = (portal as any)?.portalUrl ?? String(portal ?? '');
+      if (url) {
+        window.location.href = url;
       } else {
         toast.error('Unable to open the billing portal.');
       }

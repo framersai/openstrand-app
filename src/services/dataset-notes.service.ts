@@ -154,7 +154,7 @@ export async function listDatasetNotes(
   );
 
   return noteDetails
-    .filter((note): note is Strand => Boolean(note) && (note.type ?? note.strandType) === StrandType.NOTE)
+    .filter((note): note is Strand => Boolean(note) && ((note as any).type ?? (note as any).strandType) === StrandType.NOTE)
     .sort((a, b) => {
       const score = (strand: Strand) =>
         new Date(strand.modified ?? strand.created ?? 0).getTime();

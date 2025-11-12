@@ -55,7 +55,7 @@ interface UserProfile {
   email: string;
   name?: string;
   createdAt: string;
-  plan: 'free' | 'cloud' | 'pro' | 'team' | 'enterprise' | 'org';
+  plan: 'free' | 'basic' | 'cloud' | 'pro' | 'team' | 'enterprise' | 'org';
 }
 
 interface PreferencesState {
@@ -159,7 +159,7 @@ export default function ProfilePage() {
         email: user.email ?? 'user@example.com',
         name: user.user_metadata?.full_name ?? user.email ?? 'User',
         createdAt: user.created_at ?? new Date().toISOString(),
-        plan: (subscription?.plan ?? planTier ?? 'free'),
+        plan: ((subscription?.plan ?? planTier ?? 'free') as UserProfile['plan']),
       }
     : null;
 

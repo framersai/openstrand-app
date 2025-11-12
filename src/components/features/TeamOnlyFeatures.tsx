@@ -64,12 +64,12 @@ export function CollaborationPresence() {
  * Team analytics dashboard - premium feature
  */
 export function TeamAnalyticsDashboard() {
-  const { features } = useFeatureFlags();
-  const status = getFeatureStatus('teamAnalytics', features);
+  const { features, userPlan, variant } = useFeatureFlags();
+  const enabled = getFeatureStatus('teamAnalytics', userPlan, variant);
   
-  if (status === 'unavailable') return null;
+  if (!enabled) return null;
   
-  if (status === 'upgrade') {
+  if (!features.teamAnalytics) {
     return (
       <Card className="border-dashed">
         <CardHeader>
@@ -135,14 +135,14 @@ export function TeamAnalyticsDashboard() {
  * SSO configuration - enterprise only
  */
 export function SSOConfiguration() {
-  const { features } = useFeatureFlags();
-  const status = getFeatureStatus('sso', features);
+  const { features, userPlan, variant } = useFeatureFlags();
+  const enabled = getFeatureStatus('sso', userPlan, variant);
   
   return (
     <FeatureFlag 
       feature="sso"
       fallback={
-        status === 'upgrade' ? (
+        !enabled ? (
           <Card className="border-dashed opacity-75">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -187,7 +187,7 @@ export function SSOConfiguration() {
  */
 export function TeamActivityFeed() {
   return (
-    <FeatureFlag feature="activityFeed">
+    <FeatureFlag feature="collaboration">
       <div className="space-y-4">
         <h3 className="text-sm font-medium flex items-center gap-2">
           <Users className="h-4 w-4" />
