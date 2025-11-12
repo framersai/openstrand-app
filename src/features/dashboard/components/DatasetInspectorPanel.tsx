@@ -705,7 +705,7 @@ export function DatasetInspectorPanel({
                       <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] uppercase tracking-wide text-muted-foreground">
                         <span>Scope: {request.scopeId ?? 'global'}</span>
                         {request.parentId && <span>Parent: {request.parentId}</span>}
-                        {request.targetId && <span>Target: {request.targetId}</span>}
+                        {(request as any).targetId && <span>Target: {(request as any).targetId}</span>}
                         <span>Requested {new Date(request.createdAt).toLocaleString()}</span>
                         <span>By {request.requestedBy ?? 'unknown'}</span>
                       </div>
@@ -715,7 +715,7 @@ export function DatasetInspectorPanel({
                       <div className="flex flex-wrap items-center gap-2">
                         {request.status === 'PENDING' && (
                           <Button
-                            size="xs"
+                            size="sm"
                             className="gap-1"
                             onClick={() => void handleResolveStructureRequest(request, 'approve')}
                             disabled={resolvingRequestId === request.id}
@@ -726,7 +726,7 @@ export function DatasetInspectorPanel({
                         )}
                         {request.status === 'PENDING' && (
                           <Button
-                            size="xs"
+                            size="sm"
                             variant="destructive"
                             className="gap-1"
                             onClick={() => void handleResolveStructureRequest(request, 'reject')}
@@ -738,7 +738,7 @@ export function DatasetInspectorPanel({
                         )}
                         {request.status === 'PENDING' && (
                           <Button
-                            size="xs"
+                            size="sm"
                             variant="ghost"
                             className="gap-1 text-muted-foreground"
                             onClick={() => void handleResolveStructureRequest(request, 'cancel')}
@@ -749,7 +749,7 @@ export function DatasetInspectorPanel({
                           </Button>
                         )}
                         <Button
-                          size="xs"
+                          size="sm"
                           variant="outline"
                           className="gap-1"
                           onClick={() => handleOpenStructureDetail(request)}
@@ -871,7 +871,7 @@ export function DatasetInspectorPanel({
                   <div className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-2">
                     <div>Scope: <span className="text-foreground">{structureDetail.scopeId ?? 'global'}</span></div>
                     <div>Parent: <span className="text-foreground">{structureDetail.parentId ?? '-'}</span></div>
-                    <div>Target: <span className="text-foreground">{structureDetail.targetId ?? '-'}</span></div>
+                    <div>Target: <span className="text-foreground">{(structureDetail as any).targetId ?? '-'}</span></div>
                     <div>Updated: <span className="text-foreground">{new Date(structureDetail.updatedAt ?? structureDetail.createdAt).toLocaleString()}</span></div>
                   </div>
                   {structureDetail.justification && (

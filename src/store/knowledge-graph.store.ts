@@ -394,7 +394,7 @@ export const useKnowledgeGraphStore = create<KnowledgeGraphState>((set, get) => 
       return;
     }
 
-    const centerSum = positions.reduce(
+    const centerSum = positions.reduce<{ x: number; y: number; z: number }>(
       (acc, position) => ({
         x: acc.x + position.x,
         y: acc.y + position.y,

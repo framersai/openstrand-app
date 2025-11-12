@@ -6,9 +6,11 @@ const PLAN_FALLBACK: PlanTier =
 
 export const PLAN_UPLOAD_LIMITS_MB: Record<PlanTier, number | null> = {
   free: 5,
+  basic: 10,
   cloud: 50,
   pro: null,
   team: null,
+  org: null,
   enterprise: null,
 };
 

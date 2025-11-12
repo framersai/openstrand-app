@@ -722,18 +722,12 @@ export function useDashboardController() {
         }
 
         if (classification) {
-          let tierName: string;
-          switch (classification.tier) {
-            case VisualizationTier.AIArtisan:
-              tierName = 'Tier 3 - AI Artisan (AI)';
-              break;
-            case VisualizationTier.Dynamic:
-              tierName = 'Tier 2 - Dynamic';
-              break;
-            default:
-              tierName = 'Tier 1 - Static';
-              break;
-          }
+          const tierName =
+            classification.tier === VisualizationTier.AIArtisan
+              ? 'Tier 3 - AI Artisan (AI)'
+              : classification.tier === VisualizationTier.Dynamic
+                ? 'Tier 2 - Dynamic'
+                : 'Tier 1 - Static';
           toast(`${tierName} selected (confidence ${(classification.confidence * 100).toFixed(0)}%).`);
         }
 
