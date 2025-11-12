@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useAppMode } from '@/hooks/useAppMode';
-import { WeavePattern } from '@/components/icons/WeavePattern';
 import { OpenStrandLogo } from '@/components/icons/OpenStrandLogo';
 import { GitHubStats } from '@/components/github/GitHubStats';
 
@@ -50,7 +49,7 @@ export function HeroSection({ id, className }: HeroSectionProps) {
 
 
   return (
-    <section id={id} className={cn('landing-section hero-section gradient-surface', className)}>
+    <section id={id} className={cn('landing-section hero-section', className)}>
       <div className="container mx-auto grid gap-10 px-4 pb-20 pt-24 lg:grid-cols-2 lg:items-center">
         <div className="space-y-8">
           <div className="flex flex-wrap items-center gap-3">
@@ -65,10 +64,6 @@ export function HeroSection({ id, className }: HeroSectionProps) {
               highlight: (chunks) => (
                 <span className="relative">
                   <span className="relative z-10 text-gradient">{chunks}</span>
-                  <WeavePattern 
-                    variant="subtle" 
-                    className="absolute inset-0 -z-10 h-full w-full scale-150 opacity-20" 
-                  />
                 </span>
               ),
             })}
@@ -80,7 +75,7 @@ export function HeroSection({ id, className }: HeroSectionProps) {
           <div className="flex flex-col gap-4 sm:flex-row">
             <Button
               size="lg"
-              className="btn-gradient-border gap-2"
+              className="btn-gradient-border gap-2 whitespace-nowrap px-6 py-3 text-base"
               asChild
             >
               <a href="/" className="group">
@@ -122,9 +117,6 @@ export function HeroSection({ id, className }: HeroSectionProps) {
         </div>
 
         <div className="relative">
-          <div className="absolute -inset-4 -z-10">
-            <WeavePattern variant="hero" className="h-full w-full opacity-30" animated />
-          </div>
           <div className="card-glass relative overflow-hidden rounded-3xl border border-border/50 bg-background/80 shadow-2xl backdrop-blur-xl">
             <div className="relative p-8">
               <div className="mb-8 flex items-center justify-between">

@@ -1,12 +1,31 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import { lowlight } from 'lowlight/lib/core';
+// Register a sensible default set of popular languages for highlighting
+import ts from 'highlight.js/lib/languages/typescript';
+import js from 'highlight.js/lib/languages/javascript';
+import json from 'highlight.js/lib/languages/json';
+import bash from 'highlight.js/lib/languages/bash';
+import python from 'highlight.js/lib/languages/python';
+import markdown from 'highlight.js/lib/languages/markdown';
 import { motion } from 'framer-motion';
 import { FileText, Save, Sparkles, Tag } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+
+// Initialize lowlight once
+lowlight.registerLanguage('typescript', ts);
+lowlight.registerLanguage('javascript', js);
+lowlight.registerLanguage('json', json);
+lowlight.registerLanguage('bash', bash);
+lowlight.registerLanguage('shell', bash);
+lowlight.registerLanguage('python', python);
+lowlight.registerLanguage('md', markdown);
+lowlight.registerLanguage('markdown', markdown);
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -97,7 +116,13 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        codeBlock: false, // disable default to use lowlight version
+      }),
+      CodeBlockLowlight.configure({
+        lowlight,
+        defaultLanguage: 'typescript',
+      }),
       Placeholder.configure({
         placeholder: 'Start narrating your strand... Use voice notes or paste content.',
       }),

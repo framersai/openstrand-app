@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useAppMode } from '@/hooks/useAppMode';
-import { WeavePattern } from '@/components/icons/WeavePattern';
 
 interface PricingTier {
   id: string;
@@ -95,9 +94,6 @@ export function PricingSection({ id, className }: PricingSectionProps) {
 
   return (
     <section id={id} className={cn('landing-section pricing-section relative bg-background py-24', className)}>
-      <div className="absolute inset-0 -z-10">
-        <WeavePattern variant="hero" className="h-full w-full opacity-5" />
-      </div>
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-3xl text-center">
           <Badge className="mb-4 border-emerald-400/50 bg-emerald-50/50 text-emerald-700 dark:border-emerald-500/50 dark:bg-emerald-500/10 dark:text-emerald-300">

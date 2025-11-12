@@ -17,7 +17,7 @@ export function CTASection({ id, className }: CTASectionProps) {
   const { mode } = useAppMode();
 
   return (
-    <section id={id} className={cn('landing-section cta-section gradient-surface', className)}>
+    <section id={id} className={cn('landing-section cta-section', className)}>
       <div className="container mx-auto px-4 pb-24">
         <div className="relative overflow-hidden rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/10 via-primary/5 to-secondary/10 p-12 text-center shadow-xl">
           <div className="absolute -left-24 -top-24 h-64 w-64 rounded-full bg-primary/20 blur-3xl" />

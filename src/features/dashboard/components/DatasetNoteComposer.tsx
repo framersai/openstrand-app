@@ -9,6 +9,14 @@ import { useCallback, useMemo, useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
+import { lowlight } from 'lowlight/lib/core';
+import ts from 'highlight.js/lib/languages/typescript';
+import js from 'highlight.js/lib/languages/javascript';
+import json from 'highlight.js/lib/languages/json';
+import bash from 'highlight.js/lib/languages/bash';
+import python from 'highlight.js/lib/languages/python';
+import markdown from 'highlight.js/lib/languages/markdown';
 import { Save, RotateCcw, Type } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -61,11 +69,26 @@ export function DatasetNoteComposer({
   const { run: runAutoMetadata } = require('../../composer/hooks/useAutoMetadata') as {
     run: (params: { strandId: string; plainText?: string; existingTags?: string[]; options: { autoTag: boolean; autoBacklinks: boolean; maxBacklinks?: number } }) => Promise<any>;
   };
+  // Register popular languages once (safe to call multiple times)
+  lowlight.registerLanguage('typescript', ts);
+  lowlight.registerLanguage('javascript', js);
+  lowlight.registerLanguage('json', json);
+  lowlight.registerLanguage('bash', bash);
+  lowlight.registerLanguage('shell', bash);
+  lowlight.registerLanguage('python', python);
+  lowlight.registerLanguage('md', markdown);
+  lowlight.registerLanguage('markdown', markdown);
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
+        codeBlock: false,
         bulletList: { keepMarks: true },
         orderedList: { keepMarks: true },
+      }),
+      CodeBlockLowlight.configure({
+        lowlight,
+        defaultLanguage: 'typescript',
       }),
       Placeholder.configure({
         placeholder: datasetName
