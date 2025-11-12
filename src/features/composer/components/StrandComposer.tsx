@@ -20,8 +20,14 @@ import { openstrandAPI } from '@/services/openstrand.api';
 import { StrandType, type NoteType as StrandNoteType, type Strand } from '@/types/openstrand';
 import { FloatingVoiceRecorder } from './FloatingVoiceRecorder';
 import { MediaAttachmentWizard } from './MediaAttachmentWizard';
+import { InlineVisualizationWizard } from './InlineVisualizationWizard';
 import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import { cn } from '@/lib/utils';
+import { useAutoMetadata } from '../hooks/useAutoMetadata';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { useComposerPreferences } from '../hooks/useComposerPreferences';
+import { AutoMetadataReviewModal } from './AutoMetadataReviewModal';
 
 const NOTE_TYPE_OPTIONS = [
   { value: 'main', label: 'Main note' },
@@ -49,6 +55,7 @@ export interface StrandComposerProps {
   coAuthorIds?: string[];
   tags?: string[];
   difficulty?: string;
+  initialContentHtml?: string;
   onSave?: (payload: { strandId?: string; title: string; summary: string; content: any; noteType: NoteTypeOption; coAuthorIds: string[]; tags: string[]; difficulty: string }) => Promise<void> | void;
   onSaveSuccess?: (result: {
     strandId: string;
@@ -66,7 +73,7 @@ export interface StrandComposerProps {
  * Rich strand authoring surface used across dashboard and inline knowledge graph flows.
  * Exposes metadata controls (note type, tags, difficulty) and invokes callbacks after persistence.
  */
-export function StrandComposer({ strandId: initialStrandId, title: initialTitle = '', summary: initialSummary = '', noteType: initialNoteType = 'main', coAuthorIds: initialCoAuthors = [], tags: initialTags = [], difficulty: initialDifficulty = '', onSave, onSaveSuccess }: StrandComposerProps) {
+export function StrandComposer({ strandId: initialStrandId, title: initialTitle = '', summary: initialSummary = '', noteType: initialNoteType = 'main', coAuthorIds: initialCoAuthors = [], tags: initialTags = [], difficulty: initialDifficulty = '', initialContentHtml, onSave, onSaveSuccess }: StrandComposerProps) {
   const { planTier } = useSupabase();
   const { device, orientation, utils } = useResponsiveLayout();
   const [strandId, setStrandId] = useState(initialStrandId ?? '');
@@ -79,6 +86,14 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
   const [saving, setSaving] = useState(false);
   const [loadingExisting, setLoadingExisting] = useState(Boolean(initialStrandId));
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [inlineVisualizations, setInlineVisualizations] = useState<any[]>([]);
+  const { run: runAutoMetadata, suggest: suggestAutoMetadata } = useAutoMetadata();
+  const [prefs, updatePrefs] = useComposerPreferences();
+  const contentDirtyRef = useRef(false as boolean);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [reviewTags, setReviewTags] = useState<string[]>([]);
+  const [reviewRelated, setReviewRelated] = useState<Array<{ id: string; title?: string; summary?: string }>>([]);
+  const [visibility, setVisibility] = useState<'private' | 'public' | 'unlisted' | 'team'>('private');
 
   const editor = useEditor({
     extensions: [
@@ -89,6 +104,9 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
     ],
     content: '<p></p>',
     autofocus: true,
+    onUpdate: () => {
+      contentDirtyRef.current = true;
+    },
   });
 
   const handleInsertTranscript = useCallback((transcript: string) => {
@@ -100,6 +118,14 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
   useEffect(() => {
     if (!initialStrandId || !editor) {
       setLoadingExisting(false);
+      // If creating a new strand and a template body is provided, seed the editor.
+      if (!initialStrandId && initialContentHtml) {
+        try {
+          editor.commands.setContent(initialContentHtml, true);
+        } catch {
+          // ignore if invalid HTML
+        }
+      }
       return;
     }
 
@@ -197,9 +223,33 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
             tags: normalizedTags,
             difficulty: difficulty || 'beginner',
           });
+          // Background auto-metadata on custom save path
+          if (prefs.reviewBeforeApply) {
+            const suggestions = await suggestAutoMetadata({
+              strandId,
+              plainText,
+              existingTags: normalizedTags,
+              maxBacklinks: prefs.maxBacklinks,
+            });
+            setReviewTags(suggestions.tags);
+            setReviewRelated(suggestions.related);
+            setReviewOpen(true);
+          } else {
+            void runAutoMetadata({
+              strandId,
+              plainText,
+              existingTags: normalizedTags,
+              options: {
+                autoTag: prefs.autoTag,
+                autoBacklinks: prefs.autoBacklinks,
+                maxBacklinks: prefs.maxBacklinks,
+              },
+            });
+          }
         }
         setStatusMessage('Saved successfully');
         toast.success('Strand saved');
+        contentDirtyRef.current = false;
         return;
       }
 
@@ -214,12 +264,13 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
             updatedAt: new Date().toISOString(),
             tags: normalizedTags,
             difficulty: difficulty || 'beginner',
+            visualizations: inlineVisualizations.length ? inlineVisualizations : undefined,
           },
         },
         contentType: 'application/vnd.tiptap+json',
         noteType: noteType as StrandNoteType,
         coAuthorIds,
-        visibility: 'private',
+        visibility,
         type: StrandType.NOTE,
         metadata: {
           language: 'en',
@@ -242,6 +293,7 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
       setStrandId(saved.id);
       setStatusMessage('Saved successfully');
       toast.success('Strand saved');
+      contentDirtyRef.current = false;
       onSaveSuccess?.({
         strandId: saved.id,
         title: payload.title ?? saved.title ?? title,
@@ -252,13 +304,49 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
         tags: normalizedTags,
         difficulty: difficulty || 'beginner',
       });
+
+      if (prefs.reviewBeforeApply) {
+        const suggestions = await suggestAutoMetadata({
+          strandId: saved.id,
+          plainText,
+          existingTags: normalizedTags,
+          maxBacklinks: prefs.maxBacklinks,
+        });
+        setReviewTags(suggestions.tags);
+        setReviewRelated(suggestions.related);
+        setReviewOpen(true);
+      } else {
+        // Background auto-metadata on default save path
+        void runAutoMetadata({
+          strandId: saved.id,
+          plainText,
+          existingTags: normalizedTags,
+          options: {
+            autoTag: prefs.autoTag,
+            autoBacklinks: prefs.autoBacklinks,
+            maxBacklinks: prefs.maxBacklinks,
+          },
+        });
+      }
     } catch (error) {
       setStatusMessage(error instanceof Error ? error.message : 'Failed to save changes');
       toast.error(error instanceof Error ? error.message : 'Failed to save strand');
     } finally {
       setSaving(false);
     }
-  }, [editor, onSave, strandId, title, summary, noteType, coAuthorIds, onSaveSuccess, tags, difficulty]);
+  }, [editor, onSave, strandId, title, summary, noteType, coAuthorIds, onSaveSuccess, tags, difficulty, prefs, runAutoMetadata, suggestAutoMetadata]);
+
+  // Autosave after idle if enabled
+  useEffect(() => {
+    if (!prefs.autosave) return;
+    if (!editor) return;
+    const interval = setInterval(() => {
+      if (contentDirtyRef.current && !saving) {
+        void handleSave();
+      }
+    }, 8000);
+    return () => clearInterval(interval);
+  }, [prefs.autosave, editor, handleSave, saving]);
 
   const planBadge = useMemo(() => {
     switch (planTier) {
@@ -382,6 +470,20 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
                 </SelectContent>
               </Select>
             </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-medium uppercase text-muted-foreground">Visibility</label>
+              <Select value={visibility} onValueChange={(v) => setVisibility(v as any)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select visibility" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="private">Private</SelectItem>
+                  <SelectItem value="public">Public</SelectItem>
+                  <SelectItem value="unlisted">Unlisted</SelectItem>
+                  <SelectItem value="team">Team</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
         </div>
       </div>
 
@@ -414,14 +516,34 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
       </div>
 
         <MediaAttachmentWizard strandId={strandId} planTier={planTier} />
+        <InlineVisualizationWizard
+          strandId={strandId}
+          onAddVisualizationMetadata={(viz) => {
+            setInlineVisualizations((prev) => [...prev, {
+              id: viz.id,
+              type: viz.type,
+              title: viz.title,
+              config: viz.config,
+              data: viz.data,
+              createdAt: viz.createdAt,
+            }]);
+          }}
+        />
 
         <div className={cn(
-          "flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/60 bg-background/70",
-          device.isPhone ? "px-3 py-2" : "px-4 py-3"
+          "flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/60 bg-background/80",
+          device.isPhone ? "px-3 py-2 sticky bottom-2 z-10 backdrop-blur supports-[backdrop-filter]:bg-background/70" : "px-4 py-3"
         )}>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
             <Sparkles className="h-4 w-4 text-primary" />
-            <span>Voice notes and media attachments automatically track GDPR-compliant retention policies.</span>
+            <span>Autosave</span>
+            <Switch checked={prefs.autosave} onCheckedChange={(v) => updatePrefs({ autosave: Boolean(v) })} />
+            <span className="ml-3">Auto-tag</span>
+            <Switch checked={prefs.autoTag} onCheckedChange={(v) => updatePrefs({ autoTag: Boolean(v) })} />
+            <span className="ml-3">Auto-backlinks</span>
+            <Switch checked={prefs.autoBacklinks} onCheckedChange={(v) => updatePrefs({ autoBacklinks: Boolean(v) })} />
+            <span className="ml-3">Review before apply</span>
+            <Switch checked={prefs.reviewBeforeApply} onCheckedChange={(v) => updatePrefs({ reviewBeforeApply: Boolean(v) })} />
           </div>
           <div className="flex items-center gap-2">
             {statusMessage ? <span className="text-xs text-muted-foreground">{statusMessage}</span> : null}
@@ -432,6 +554,35 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
           </div>
         </div>
       </div>
+
+      <AutoMetadataReviewModal
+        open={reviewOpen}
+        onOpenChange={setReviewOpen}
+        tags={reviewTags}
+        related={reviewRelated}
+        onApply={async ({ tags: chosenTags, relatedIds }) => {
+          const strand = (strandId || '').trim() ? strandId! : undefined;
+          if (!strand) return;
+          // Apply selected tags
+          if (chosenTags.length) {
+            await openstrandAPI.strands.update(strand, { metadata: { tags: Array.from(new Set([...(tags.split(',').map((t)=>t.trim()).filter(Boolean)), ...chosenTags])) } } as any);
+          }
+          // Apply selected backlinks
+          if (relatedIds.length) {
+            await Promise.allSettled(
+              relatedIds.map((rid) =>
+                openstrandAPI.strands.createRelationship(strand, {
+                  targetId: rid,
+                  type: 'related',
+                  weight: 1,
+                  metadata: { origin: 'review' },
+                }),
+              ),
+            );
+          }
+          setStatusMessage('Metadata applied');
+        }}
+      />
     </TooltipProvider>
   );
 }

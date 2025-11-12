@@ -1848,6 +1848,50 @@ export const openstrandAPI = {
   export: exportAPI,
   system: systemAPI,
   team: teamAdminAPI,
+  scraper: {
+    async scrapeUrl(payload: {
+      url: string;
+      method?: 'auto' | 'readability' | 'llm';
+      llmProvider?: 'openai' | 'anthropic';
+      options?: {
+        createStrand?: boolean;
+        downloadImages?: boolean;
+        extractMetadata?: boolean;
+        findRelated?: boolean;
+        autoSync?: boolean;
+        syncInterval?: number;
+      };
+    }): Promise<{
+      id: string;
+      title?: string;
+      content?: unknown;
+      extractedBy?: string;
+      strandId?: string;
+    }> {
+      const response = await apiFetch('/scraper/url', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+      return await parseData(response);
+    },
+
+    async check(url: string): Promise<{ allowed: boolean; reason?: string }> {
+      const response = await apiFetch('/scraper/check', {
+        method: 'POST',
+        body: JSON.stringify({ url }),
+      });
+      return await parseData(response);
+    },
+
+    async bulk(payload: { urls: string[]; method?: 'auto' | 'readability' | 'llm'; createStrands?: boolean }): Promise<{ jobId: string }> {
+      const response = await apiFetch('/scraper/bulk', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+      const data = await parseData<any>(response);
+      return { jobId: data?.jobId ?? '' };
+    },
+  },
 
   /**
    * Health check

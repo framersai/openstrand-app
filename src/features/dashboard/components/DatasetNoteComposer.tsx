@@ -31,6 +31,15 @@ export interface DatasetNoteComposerProps {
    * Optional callback when user clears the current draft.
    */
   onReset?: () => void;
+  /**
+   * When provided, enables background auto-metadata (tags/backlinks) after save.
+   * The strandId should refer to the dataset strand representing this dataset.
+   */
+  strandId?: string;
+  /**
+   * Toggle for running auto-metadata on save. Defaults to false to avoid surprises.
+   */
+  autoMetadata?: boolean;
 }
 
 /**
@@ -43,10 +52,15 @@ export function DatasetNoteComposer({
   datasetName,
   onSave,
   onReset,
+  strandId,
+  autoMetadata = false,
 }: DatasetNoteComposerProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [statusTone, setStatusTone] = useState<'success' | 'error' | null>(null);
+  const { run: runAutoMetadata } = require('../../composer/hooks/useAutoMetadata') as {
+    run: (params: { strandId: string; plainText?: string; existingTags?: string[]; options: { autoTag: boolean; autoBacklinks: boolean; maxBacklinks?: number } }) => Promise<any>;
+  };
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -83,6 +97,19 @@ export function DatasetNoteComposer({
       editor.commands.clearContent();
       setStatusTone('success');
       setStatusMessage('Note saved to strands');
+
+      // Optional background auto-metadata for the dataset strand
+      if (autoMetadata && typeof strandId === 'string' && strandId.trim().length > 0) {
+        void runAutoMetadata({
+          strandId,
+          plainText,
+          existingTags: [],
+          options: {
+            autoTag: true,
+            autoBacklinks: false,
+          },
+        }).catch(() => undefined);
+      }
     } catch (error) {
       setStatusTone('error');
       setStatusMessage(

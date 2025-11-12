@@ -1,8 +1,5 @@
 import type { Metadata } from 'next';
-import { PKMSHero } from '@/components/pkms/PKMSHero';
-import { PKMSFeatures } from '@/components/pkms/PKMSFeatures';
-import { WeaveShowcase } from '@/components/pkms/WeaveShowcase';
-import { StrandExamples } from '@/components/pkms/StrandExamples';
+import { PKMSDashboard } from '@/components/pkms/PKMSDashboard';
 import { getRouteMetadata, siteMetadata } from '@/config/seo';
 import type { Locale } from '@/i18n/config';
 
@@ -17,15 +14,15 @@ export async function generateMetadata({ params }: PKMSPageParams): Promise<Meta
   const canonicalUrl = `${siteMetadata.siteUrl}/${locale}/pkms`;
 
   return {
-    title: 'Personal Knowledge Management System | OpenStrand',
-    description: 'Build your interconnected knowledge graph with strands, weaves, and AI-enhanced learning paths. Free forever, works offline.',
+    title: 'PKMS Dashboard | OpenStrand',
+    description: 'Create, import, and organise strands. Build your knowledge weave with templates and a WYSIWYG composer.',
     keywords: ['pkms', 'personal knowledge management', 'knowledge graph', 'strands', 'weave', 'learning', 'open source'],
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
-      title: 'OpenStrand PKMS - Your Knowledge, Interconnected',
-      description: 'Build your interconnected knowledge graph with strands, weaves, and AI-enhanced learning paths.',
+      title: 'OpenStrand PKMS • Dashboard',
+      description: 'Create, import, and organise strands with templates and a WYSIWYG composer.',
       url: canonicalUrl,
       siteName: siteMetadata.siteName,
       images: [
@@ -33,7 +30,7 @@ export async function generateMetadata({ params }: PKMSPageParams): Promise<Meta
           url: `${siteMetadata.siteUrl}/images/pkms-og.png`,
           width: 1200,
           height: 630,
-          alt: 'OpenStrand Personal Knowledge Management System',
+          alt: 'OpenStrand PKMS Dashboard',
         },
       ],
       locale,
@@ -44,16 +41,8 @@ export async function generateMetadata({ params }: PKMSPageParams): Promise<Meta
 
 export default function PKMSPage({ params }: PKMSPageParams) {
   return (
-    <main className="pkms-page min-h-screen relative overflow-hidden">
-      {/* Aurora background effect */}
-      <div className="aurora-bg absolute inset-0" />
-      
-      <div className="relative z-10">
-        <PKMSHero />
-        <PKMSFeatures />
-        <WeaveShowcase />
-        <StrandExamples />
-      </div>
+    <main className="min-h-screen">
+      <PKMSDashboard />
     </main>
   );
 }

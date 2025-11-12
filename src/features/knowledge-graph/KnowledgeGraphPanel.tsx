@@ -10,6 +10,9 @@ import { useKnowledgeGraphStore } from '@/store/knowledge-graph.store';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { PanelRight } from 'lucide-react';
 
 interface KnowledgeGraphPanelProps {
   className?: string;
@@ -37,6 +40,7 @@ export function KnowledgeGraphPanel({ className, weaveId = null, autoLoad = true
   const initializedRef = useRef(false);
   const [canvasSize, setCanvasSize] = useState({ width: 960, height: 640 });
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [mobileInspectorOpen, setMobileInspectorOpen] = useState(false);
 
   useEffect(() => {
     if (!autoLoad || initializedRef.current) {
@@ -66,6 +70,10 @@ export function KnowledgeGraphPanel({ className, weaveId = null, autoLoad = true
   const handleNodeSelected = useCallback(
     (nodeId: string) => {
       selectNodes([nodeId]);
+      // On small screens, open inspector overlay automatically
+      if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+        setMobileInspectorOpen(true);
+      }
     },
     [selectNodes],
   );
@@ -117,10 +125,38 @@ export function KnowledgeGraphPanel({ className, weaveId = null, autoLoad = true
                 <p>Add strands and relationships to populate the knowledge graph.</p>
               </div>
             )}
+
+            {/* Mobile inspector toggle button (hidden on lg+) */}
+            <div className="pointer-events-none absolute right-3 top-3 block lg:hidden">
+              <Button
+                size="sm"
+                variant="secondary"
+                className="pointer-events-auto gap-2"
+                onClick={() => setMobileInspectorOpen(true)}
+              >
+                <PanelRight className="h-4 w-4" />
+                Inspector
+              </Button>
+            </div>
           </div>
 
-          <KnowledgeGraphInspector className="space-y-6" />
+          {/* Desktop sidebar */}
+          <div className="hidden lg:block">
+            <KnowledgeGraphInspector className="space-y-6" />
+          </div>
         </div>
+
+        {/* Mobile inspector overlay */}
+        <Dialog open={mobileInspectorOpen} onOpenChange={setMobileInspectorOpen}>
+          <DialogContent className="max-w-3xl">
+            <DialogHeader>
+              <DialogTitle>Inspector</DialogTitle>
+            </DialogHeader>
+            <div className="max-h-[70vh] overflow-y-auto">
+              <KnowledgeGraphInspector className="space-y-6" />
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <KnowledgeGraphComposerDialog />

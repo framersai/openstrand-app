@@ -1,6 +1,6 @@
 {
   "name": "openstrand",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "OpenStrand - AI-enhanced Personal Knowledge Management System for documentation, visualization, and learning",
   "author": "Framers <team@frame.dev>",
   "license": "MIT",
@@ -8,6 +8,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "export:static": "next build && next export",
+    "electron:dev": "concurrently -k -n NEXT,ELECTRON \"next dev\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron:build": "electron-builder -c electron-builder.yml",
     "start": "next start",
     "lint": "next lint --quiet || true",
     "brand:export": "tsx scripts/export-logo-assets.ts",
@@ -25,6 +28,7 @@
     "sitemap": "node scripts/generate-sitemap.js",
     "postbuild": "npm run sitemap"
   },
+  "main": "electron/main.js",
   "dependencies": {
     "@capacitor/camera": "^7.0.2",
     "@capacitor/filesystem": "^7.1.4",
@@ -82,6 +86,10 @@
     "zustand": "^4.5.0"
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
+    "electron": "^30.0.7",
+    "electron-builder": "^24.13.3",
+    "wait-on": "^7.2.0",
     "@capacitor/android": "^7.4.4",
     "@capacitor/cli": "^7.4.4",
     "@capacitor/core": "^7.4.4",

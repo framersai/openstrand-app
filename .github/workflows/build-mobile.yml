@@ -1,0 +1,53 @@
+name: build-mobile (scaffold)
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  ios:
+    if: ${{ false }} # enable when ready
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run export:static
+      # - run: npx cap sync ios
+      # - run: xcodebuild -workspace ios/App/App.xcworkspace -scheme App -configuration Release -sdk iphoneos -archivePath build/App.xcarchive archive
+      # - run: xcodebuild -exportArchive -archivePath build/App.xcarchive -exportPath build -exportOptionsPlist ios/exportOptions.plist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-build
+          path: build/**
+          if-no-files-found: warn
+
+  android:
+    if: ${{ false }} # enable when ready
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run export:static
+      # - uses: actions/setup-java@v4
+      #   with:
+      #     java-version: '17'
+      #     distribution: 'temurin'
+      # - uses: android-actions/setup-android@v3
+      # - run: npx cap sync android
+      # - run: cd android && ./gradlew assembleRelease
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-build
+          path: android/app/build/outputs/**
+          if-no-files-found: warn
+
+

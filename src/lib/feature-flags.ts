@@ -403,11 +403,11 @@ export function useFeatureFlags() {
     const ssoOverride = typeof capabilities?.api?.teamsAuthEnabled === 'boolean' || ssoEnv
       ? { sso: Boolean(capabilities?.api?.teamsAuthEnabled || ssoEnv) }
       : {};
-    return {
-      ...base,
+      return {
+        ...base,
       ...aiArtisanOverride,
       ...ssoOverride,
-    };
+      };
   }, [variant, resolvedPlan, capabilities?.aiArtisan, capabilities?.api?.teamsAuthEnabled]);
 
   return {
