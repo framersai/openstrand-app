@@ -9,6 +9,7 @@ import type { ComponentType, ReactNode } from 'react';
 import { useSupabase } from '@/features/auth';
 import { useOpenStrandStore } from '@/store/openstrand.store';
 import { normalizePlanTier } from '@/lib/plan-info';
+import type { PlanTier } from '@/types';
 
 /** Application deployment variant */
 export type AppVariant = 'personal' | 'team';

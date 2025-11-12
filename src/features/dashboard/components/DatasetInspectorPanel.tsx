@@ -105,6 +105,10 @@ export function DatasetInspectorPanel({
 
   const [structureRequests, setStructureRequests] = useState<StrandStructureRequest[]>([]);
   const [structureLoading, setStructureLoading] = useState(false);
+  const [structureDetailOpen, setStructureDetailOpen] = useState(false);
+  const [structureDetail, setStructureDetail] = useState<StrandStructureRequest | null>(null);
+  const [structureResolutionNote, setStructureResolutionNote] = useState('');
+  const [resolvingRequestId, setResolvingRequestId] = useState<string | null>(null);
   const [placeholderDialogOpen, setPlaceholderDialogOpen] = useState(false);
   const [placeholderText, setPlaceholderText] = useState('');
   const [placeholderIcon, setPlaceholderIcon] = useState('');

@@ -232,7 +232,7 @@ export function KnowledgeGraphScene({
     acknowledgeFocus: state.acknowledgeFocus,
   }));
   const hasRequestedSegmentRef = useRef(false);
-  const controlsRef = useRef<OrbitControlsImpl | null>(null);
+  const controlsRef = useRef<any>(null);
   const pendingSegmentRef = useRef(false);
   const lastBoundsRef = useRef<{ center: THREE.Vector3; radius: number } | null>(null);
   const lastRequestAtRef = useRef(0);

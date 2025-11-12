@@ -228,29 +228,35 @@ function normalizeVisualization(raw: any): Visualization {
   };
 }
 
-const PLAN_ORDER: PlanTier[] = ['free', 'cloud', 'pro', 'team', 'enterprise'];
+const PLAN_ORDER: PlanTier[] = ['free', 'basic', 'cloud', 'pro', 'team', 'org', 'enterprise'];
 
 const PLAN_SUMMARIES: Record<PlanTier, string> = {
   free: 'Local-first exploration with manual structure requests and offline tooling.',
+  basic: 'Basic cloud features for individuals getting started.',
   cloud: 'Managed cloud with automated syncs, approvals, and placeholder governance.',
   pro: 'Advanced automation, higher quotas, and AI-assisted structure placement.',
   team: 'Collaborative scopes, shared approvals, and real-time presence for teams.',
+  org: 'Organization workspaces with centralized governance and controls.',
   enterprise: 'Enterprise controls with SSO, SLAs, dedicated support, and on-prem options.',
 };
 
 const AUTO_SYNC_NOTES: Record<PlanTier, string> = {
   free: 'Manual only',
+  basic: 'Manual + monthly auto-sync',
   cloud: 'Weekly auto-sync',
   pro: 'Daily auto-sync',
   team: 'Hourly auto-sync',
+  org: 'Hourly auto-sync',
   enterprise: 'Real-time or custom cadence',
 };
 
 const VERSION_HISTORY_NOTES: Record<PlanTier, string> = {
   free: 'No history',
+  basic: '7-day history',
   cloud: '30-day history',
   pro: 'Unlimited history',
   team: 'Unlimited history',
+  org: 'Unlimited history',
   enterprise: 'Unlimited + retention policies',
 };
 

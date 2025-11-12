@@ -521,11 +521,7 @@ export function StrandUploadWizard(): JSX.Element {
   // Compute policy note and dataset hint based on mode
   const policyNote = mode === 'cloud'
     ? 'Published to your cloud workspace. Collaborators can view and edit.'
-    : mode === 'local'
-    ? 'Stored locally on your device. Not synced to cloud.'
-    : mode === 'teams'
-    ? 'Shared with your organization. Subject to team policies.'
-    : 'Published to your personal library.';
+    : 'Stored locally on your device. Not synced to cloud.';
 
   const handleNext = useCallback(() => {
     if (stepIndex < STEPS.length - 1) {

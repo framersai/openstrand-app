@@ -158,12 +158,12 @@ export default function DashboardPage() {
         <div className="h-full">
           <h4 className="text-sm font-semibold mb-2">{viz.type}</h4>
           <div className="h-32 bg-muted/20 rounded flex items-center justify-center">
-            {viz.content || 'Visualization'}
+            {viz.title || viz.type}
           </div>
         </div>
       ),
       height: (viz.size === 'large' ? 'large' : viz.size === 'small' ? 'small' : 'medium') as 'small' | 'medium' | 'large',
-      width: viz.featured ? 2 : 1
+      width: (viz.featured ? 2 : 1) as 1 | 2
     }));
   }, [visualizations]);
 
@@ -751,10 +751,10 @@ export default function DashboardPage() {
       {currentLayout.showStatusBar && (
         <StatusBar
           dataset={dataset ? {
-            name: dataset.metadata?.name || 'Dataset',
+            name: dataset.metadata?.filename || 'Dataset',
             rows: dataset.metadata?.rowCount || 0,
-            columns: dataset.metadata?.columnCount || 0,
-            size: dataset.metadata?.fileSize ? `${(dataset.metadata.fileSize / 1024 / 1024).toFixed(1)} MB` : '0 MB'
+            columns: dataset.metadata?.columns.length || 0,
+            size: '-'
           } : undefined}
           visualizations={visualizations.length}
           user={{
