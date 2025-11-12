@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Plus, Settings, BookOpen, Code, GraduationCap } from 'lucide-react';
+import { Plus, Settings, BookOpen, Code, GraduationCap } from 'lucide-react';
 import React from 'react';
 import { useTranslations } from 'next-intl';
 
@@ -480,26 +480,8 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
               )}
               {mounted && authControls}
             </div>
-            {/* Mobile controls - always show hamburger when nav is hidden */}
-            {mounted && (
-              <div className="flex items-center gap-2 md:hidden">
-                <LanguageSwitcher variant="compact" showName={false} />
-                <ThemeToggle />
-              </div>
-            )}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setMobileMenuOpen((prev) => !prev)}
-              className={cn(
-                "rounded-full border border-border/60 text-foreground/80 transition hover:border-foreground/40 hover:bg-foreground/5 hover:text-foreground dark:border-white/12 dark:text-white/80 dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:text-white",
-                "md:hidden" // Only show on mobile
-              )}
-              aria-label={mobileMenuOpen ? tCommon('tooltips.closeNavigation') : tCommon('tooltips.toggleNavigation')}
-              aria-expanded={mobileMenuOpen}
-            >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
+            {/* Hide in-flow hamburger on mobile; we render fixed buttons instead */}
+            <div className="hidden md:block" />
           </div>
         </div>
 
@@ -675,8 +657,57 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
           </div>
         )}
       </div>
+
+      {/* Fixed mobile quick toolbar (top-right) */}
+      {mounted && (
+        <div className="fixed right-3 top-3 z-[60] flex items-center gap-2 md:hidden">
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            aria-label={mobileMenuOpen ? tCommon('tooltips.closeNavigation') : tCommon('tooltips.toggleNavigation')}
+            aria-expanded={mobileMenuOpen}
+            className="rounded-full border border-border/70 bg-card/90 p-2 text-foreground/85 shadow-sm transition hover:border-primary/40 hover:bg-primary/10 hover:text-primary dark:border-white/10 dark:bg-background/70 dark:text-white/85"
+          >
+            {mobileMenuOpen ? <MobileCloseIcon className="h-5 w-5" /> : <MobileMenuIcon className="h-5 w-5" />}
+          </button>
+          <div className="rounded-full border border-border/70 bg-card/90 p-1 shadow-sm">
+            <ThemeToggle />
+          </div>
+          <Button
+            asChild
+            size="icon"
+            className="rounded-full border border-border/70 bg-primary/90 text-primary-foreground hover:bg-primary"
+            aria-label={tCommon('actions.new') ?? 'New'}
+          >
+            <Link href={importLink}>
+              <Plus className="h-5 w-5" />
+            </Link>
+          </Button>
+        </div>
+      )}
     </header>
   );
 }
 
+function MobileMenuIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" {...props}>
+      <rect x="3.5" y="6" width="17" height="1.6" rx="0.8" className="fill-current" />
+      <rect x="3.5" y="11.2" width="17" height="1.6" rx="0.8" className="fill-current" />
+      <rect x="3.5" y="16.4" width="17" height="1.6" rx="0.8" className="fill-current" />
+      <circle cx="20" cy="6.8" r="0.4" className="fill-primary" />
+      <circle cx="20" cy="12" r="0.4" className="fill-primary" />
+      <circle cx="20" cy="17.2" r="0.4" className="fill-primary" />
+    </svg>
+  );
+}
+
+function MobileCloseIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" {...props}>
+      <circle cx="12" cy="12" r="9.5" className="stroke-current" strokeWidth="1.2" opacity="0.5" />
+      <path d="M8 8l8 8M16 8l-8 8" className="stroke-current" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
 
