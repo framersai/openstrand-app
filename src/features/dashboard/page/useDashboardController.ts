@@ -31,6 +31,7 @@ import type { AutoInsightsSnapshot } from '@/features/dashboard/components/Visua
 import type { InsightRecommendation } from '@/features/dashboard/components/AutoInsightsPanel';
 import type { TierClassification } from '@/lib/visualization/types';
 import { VisualizationTier } from '@/lib/visualization/types';
+import { useFeatureFlags } from '@/lib/feature-flags';
 
 import { useSavedVisualizationsSync } from '@/hooks/useSavedVisualizationsSync';
 import {
@@ -121,6 +122,15 @@ export function useDashboardController() {
   const capabilities = useOpenStrandStore((state) => state.capabilities);
   const loadCapabilities = useOpenStrandStore((state) => state.loadCapabilities);
   const { planTier, isAuthenticated, isLocalAuth, user } = useSupabase();
+  const { isTeamEdition } = useFeatureFlags();
+  const isAdmin = useMemo(() => {
+    const role =
+      ((user as any)?.app_metadata?.role as string | undefined) ||
+      ((user as any)?.user_metadata?.role as string | undefined) ||
+      '';
+    return role === 'admin' || role === 'owner';
+  }, [user]);
+  const canEditProviderKeys = !isTeamEdition || isAdmin;
   const {
     isGuest,
     hasCredits,
@@ -614,15 +624,23 @@ export function useDashboardController() {
         if (classification?.tier === VisualizationTier.AIArtisan) {
           if (!providerEnabled) {
             const message = resolvedProvider.envDetected && preferByok
-              ? `Disable "Always use BYOK keys" to use the detected ${providerDisplayName} .env key, or add a workspace key.`
-              : `Enable ${providerDisplayName} in Settings or allow environment fallbacks to generate AI Artisan visualizations.`;
+              ? (canEditProviderKeys
+                  ? `Disable "Always use BYOK keys" to use the detected ${providerDisplayName} .env key, or add a workspace key.`
+                  : `Disable "Always use BYOK keys" to use the detected ${providerDisplayName} .env key. Provider keys are managed by your workspace admin.`)
+              : (canEditProviderKeys
+                  ? `Enable ${providerDisplayName} in Settings or allow environment fallbacks to generate AI Artisan visualizations.`
+                  : `Ask your workspace admin to enable ${providerDisplayName} keys, or rely on managed rotating keys.`);
             toast.error(message);
             return;
           }
           if (!resolvedProvider.apiKey) {
             const hint = resolvedProvider.envDetected && preferByok
-              ? `Disable "Always use BYOK keys" or paste a ${providerDisplayName} API key to generate AI Artisan visualizations.`
-              : `Add a ${providerDisplayName} API key in Settings or define it in your .env file to generate AI Artisan visualizations.`;
+              ? (canEditProviderKeys
+                  ? `Disable "Always use BYOK keys" or paste a ${providerDisplayName} API key to generate AI Artisan visualizations.`
+                  : `Disable "Always use BYOK keys" to fall back to the detected ${providerDisplayName} .env key. Contact your admin to update provider keys.`)
+              : (canEditProviderKeys
+                  ? `Add a ${providerDisplayName} API key in Settings or define it in your .env file to generate AI Artisan visualizations.`
+                  : `Provider keys are managed by your workspace admin. Use managed rotating keys or contact your admin.`);
             toast.error(hint);
             return;
           }

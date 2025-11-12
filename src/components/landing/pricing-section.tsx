@@ -62,7 +62,7 @@ export function PricingSection({ id, className }: PricingSectionProps) {
         'Full production OpenAPI + live Swagger explorer',
         'Team token management with scoped permissions and auditing',
         'Real-time collaboration & workspace sharing',
-        'AI Artisan BYOK (unlimited) + optional managed keys',
+        'AI Artisan BYOK (admin-only) + managed rotating keys for members',
         'Structured knowledge graph APIs & automated backlinks',
         'Priority support with 48h SLA',
         'Optional installation & hardening service (+$500)',

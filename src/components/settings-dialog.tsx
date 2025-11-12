@@ -30,6 +30,8 @@ import { ThemeSwitcher } from '@/components/theme-switcher';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
+import { useFeatureFlags } from '@/lib/feature-flags';
+import { useSupabase } from '@/features/auth';
 
 interface SettingsDialogProps {
   isOpen: boolean;
@@ -123,6 +125,16 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
     setPreferByok: state.setPreferByok,
     getResolvedApiKey: state.getResolvedApiKey,
   }));
+  const { isTeamEdition } = useFeatureFlags();
+  const { user } = useSupabase();
+  const isAdmin = useMemo(() => {
+    const role =
+      ((user as any)?.app_metadata?.role as string | undefined) ||
+      ((user as any)?.user_metadata?.role as string | undefined) ||
+      '';
+    return role === 'admin' || role === 'owner';
+  }, [user]);
+  const canEditProviderKeys = !isTeamEdition || isAdmin;
   const capabilities = useOpenStrandStore(state => state.capabilities);
   const artisanQuota = useOpenStrandStore(state => state.artisanQuota);
   const loadCapabilities = useOpenStrandStore(state => state.loadCapabilities);
@@ -367,11 +379,13 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
     PROVIDER_KEYS.forEach((providerKey) => {
       const trimmedKey = trimmedKeys[providerKey];
       const model = selectedModels[providerKey];
-      const enabled = Boolean(trimmedKey);
+      const envDetected = getResolvedApiKey(providerKey).envDetected;
+      const finalApiKey = canEditProviderKeys && trimmedKey ? trimmedKey : undefined;
+      const enabled = Boolean(finalApiKey) || (!preferByok && envDetected);
 
       configureProvider(providerKey, {
         enabled,
-        apiKey: enabled ? trimmedKey : undefined,
+        apiKey: finalApiKey,
         model,
       });
     });
@@ -498,13 +512,23 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
                   <h3 className="text-sm font-semibold">LLM providers</h3>
                   <p className="text-xs text-muted-foreground">
                     Bring your own keys or rely on detected .env defaults. We fall back to environment keys automatically unless you force BYOK mode.
+                    {isTeamEdition && !isAdmin && (
+                      <>
+                        {' '}
+                        In Team Edition, BYOK is managed by your workspace admin. Members use managed rotating keys.
+                      </>
+                    )}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-xs font-medium text-muted-foreground">Always use BYOK keys</span>
                   <Switch
                     checked={preferByok}
-                    onCheckedChange={(value) => setPreferByok(value)}
+                    onCheckedChange={(value) => {
+                      if (!canEditProviderKeys) return;
+                      setPreferByok(value);
+                    }}
+                    disabled={!canEditProviderKeys}
                     aria-label="Toggle BYOK preference"
                   />
                 </div>
@@ -597,7 +621,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
                         <div className="space-y-3 rounded-xl border border-border/60 bg-background/80 p-3">
                           <div className="flex flex-wrap items-center justify-between gap-2">
                             <span className="text-xs font-semibold uppercase tracking-[0.3em]">
-                              BYOK API key
+                            BYOK API key{isTeamEdition && !isAdmin ? ' (Admin only)' : ''}
                             </span>
                             <a
                               href={meta.docsHref}
@@ -617,11 +641,13 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
                                 onChange={(e) => setApiKeys((prev) => ({ ...prev, [card.key]: e.target.value }))}
                                 placeholder={card.key === 'openrouter' ? 'sk-or-...' : card.key === 'anthropic' ? 'sk-ant-...' : 'sk-...'}
                                 className="w-full rounded-md border border-border/60 bg-background px-3 py-2"
+                                disabled={!canEditProviderKeys}
                               />
                               <button
                                 onClick={() => setShowKeys((prev) => ({ ...prev, [card.key]: !prev[card.key] }))}
                                 className="absolute right-2 top-2.5 text-muted-foreground hover:text-foreground"
                                 type="button"
+                                disabled={!canEditProviderKeys}
                               >
                                 {showKeys[card.key] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}                    
                               </button>
@@ -639,9 +665,11 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
                             </select>
                           </div>
                           <p className="text-xs text-muted-foreground">
-                            {card.hasUnsavedChanges
-                              ? 'Unsaved changes detected. Save settings to apply your BYOK key.'
-                              : 'Leave blank to rely on detected .env keys when available.'}
+                            {!canEditProviderKeys
+                              ? 'This field is managed by your workspace admin. Contact an admin to update provider keys.'
+                              : card.hasUnsavedChanges
+                                ? 'Unsaved changes detected. Save settings to apply your BYOK key.'
+                                : 'Leave blank to rely on detected .env keys when available.'}
                           </p>
                         </div>
                       </div>
