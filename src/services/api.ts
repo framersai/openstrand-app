@@ -488,6 +488,24 @@ class ApiService {
     };
   }
 
+  // Lightweight helpers for simple GET/POST usage sites
+  async get<T = any>(path: string): Promise<T> {
+    const response = await fetchWithTimeout(`${this.baseUrl}${path}`, this.withAuth());
+    return response.json();
+  }
+
+  async post<T = any>(path: string, body?: any): Promise<T> {
+    const response = await fetchWithTimeout(
+      `${this.baseUrl}${path}`,
+      this.withAuth({
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+      }),
+    );
+    return response.json();
+  }
+
   async uploadDataset(file: File): Promise<UploadDatasetResult> {
     const formData = new FormData();
     formData.append('file', file);

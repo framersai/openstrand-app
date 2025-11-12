@@ -496,6 +496,11 @@ export function hasTeamFeaturesStatic(plan: UserPlan = 'free', variant: AppVaria
   return getFeatureConfig(variant, plan).teamWorkspaces;
 }
 
+// Back-compat utility expected by some components
+export function getFeatureStatus(feature: keyof FeatureConfig, plan: UserPlan = 'free', variant: AppVariant = getAppVariant()): boolean {
+  return getFeatureConfig(variant, plan)[feature];
+}
+
 export function useCanUseAI(): boolean {
   const { canUseAI } = useFeatureFlags();
   return canUseAI;

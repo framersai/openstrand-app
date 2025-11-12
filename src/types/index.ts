@@ -43,7 +43,7 @@ export interface SaaSCompany {
  */
 export type DataRow = Record<string, string | number | boolean | null>;
 
-export type PlanTier = 'free' | 'cloud' | 'pro' | 'team' | 'enterprise';
+export type PlanTier = 'free' | 'cloud' | 'pro' | 'team' | 'enterprise' | 'basic' | 'org';
 
 /**
  * Dataset metadata for understanding data structure
@@ -301,6 +301,12 @@ export interface ProcessedData {
   rows?: DataRow[];
   /** Column definitions for tables */
   columns?: ColumnDefinition[];
+  /** Graph nodes for force/3D renderers */
+  nodes?: Array<Record<string, unknown>>;
+  /** Graph links for force/3D renderers */
+  links?: Array<Record<string, unknown>>;
+  /** Scatter/point clouds */
+  points?: Array<{ x: number; y: number; z?: number }>;
 }
 
 /**

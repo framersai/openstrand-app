@@ -4,7 +4,6 @@ const config: CapacitorConfig = {
   appId: 'com.framers.openstrand',
   appName: 'OpenStrand',
   webDir: 'out',
-  bundledWebRuntime: false,
 
   // iOS Configuration
   ios: {
