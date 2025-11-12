@@ -385,30 +385,6 @@ export function InteractiveTour({
   const currentStepData = tourSteps[currentStep];
   const progress = ((currentStep + 1) / tourSteps.length) * 100;
 
-  const handleNext = useCallback(() => {
-    // Validate current step if needed
-    if (currentStepData?.validation && !currentStepData.validation()) {
-      return;
-    }
-
-    // Mark step as completed
-    setCompletedSteps(prev => {
-      const updated = new Set(prev);
-      if (currentStepData) {
-        updated.add(currentStepData.id);
-      }
-      return updated;
-    });
-
-    setQuizAnswer(null);
-
-    if (currentStep < tourSteps.length - 1) {
-      setCurrentStep((prev) => prev + 1);
-    } else {
-      handleComplete();
-    }
-  }, [currentStep, currentStepData, tourSteps.length, handleComplete]);
-
   // Initialize tour
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -524,6 +500,30 @@ export function InteractiveTour({
     }
     onComplete?.();
   }, [removeHighlight, onComplete]);
+
+  const handleNext = useCallback(() => {
+    // Validate current step if needed
+    if (currentStepData?.validation && !currentStepData.validation()) {
+      return;
+    }
+
+    // Mark step as completed
+    setCompletedSteps(prev => {
+      const updated = new Set(prev);
+      if (currentStepData) {
+        updated.add(currentStepData.id);
+      }
+      return updated;
+    });
+
+    setQuizAnswer(null);
+
+    if (currentStep < tourSteps.length - 1) {
+      setCurrentStep((prev) => prev + 1);
+    } else {
+      handleComplete();
+    }
+  }, [currentStep, currentStepData, tourSteps.length, handleComplete]);
 
   // Highlight current step
   useEffect(() => {

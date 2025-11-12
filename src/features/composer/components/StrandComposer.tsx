@@ -222,9 +222,14 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
         visibility: 'private',
         type: StrandType.NOTE,
         metadata: {
-          difficulty: (typeof difficulty === 'string' && difficulty) ? difficulty : 'beginner',
-          ...(normalizedTags.length ? { tags: normalizedTags } : {}),
-        },
+          language: 'en',
+          tags: normalizedTags,
+          keywords: [],
+          concepts: [],
+          version: '1.0',
+          citations: [],
+          difficulty: (typeof difficulty === 'string' && difficulty && ['beginner', 'intermediate', 'advanced', 'expert'].includes(difficulty)) ? difficulty : 'beginner',
+        } as any,
       };
 
       let saved: Strand;

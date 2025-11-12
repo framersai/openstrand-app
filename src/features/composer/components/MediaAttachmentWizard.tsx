@@ -16,7 +16,7 @@ import { Badge } from '@/components/ui/badge';
 
 interface MediaAttachmentWizardProps {
   strandId?: string;
-  planTier: 'free' | 'cloud' | 'pro' | 'team' | 'enterprise';
+  planTier: 'free' | 'basic' | 'cloud' | 'pro' | 'team' | 'org' | 'enterprise';
 }
 
 type WizardStep = 0 | 1 | 2;

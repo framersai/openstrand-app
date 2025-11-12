@@ -77,6 +77,14 @@ export function FeaturesSection({ id, className }: FeaturesSectionProps) {
     [tFeatures],
   );
 
+  interface ComparisonRow {
+    feature: string;
+    openstrand: boolean | string;
+    notion: boolean | string;
+    obsidian: boolean | string;
+    tableau?: boolean | string;
+  }
+
   const comparisonRows = useMemo(
     () => ((tFeatures.raw('comparison.rows') as ComparisonRow[]) ?? []),
     [tFeatures],

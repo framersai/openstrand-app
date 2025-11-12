@@ -144,7 +144,7 @@ export function ImportInterface() {
               status: isSuccess ? 'success' : 'error',
               error: isSuccess ? undefined : 'Failed to process file',
               metadata: isSuccess ? {
-                ...f.metadata,
+                type: f.metadata?.type || 'unknown',
                 extractedTitle: `Extracted: ${f.file.name}`,
                 contentPreview: 'Lorem ipsum dolor sit amet...'
               } : f.metadata

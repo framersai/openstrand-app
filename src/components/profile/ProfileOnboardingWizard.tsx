@@ -198,6 +198,8 @@ export function ProfileOnboardingWizard({
     setState((prev) => ({ ...prev, ...updates }));
   }, []);
 
+  const TOTAL_STEPS = 5;
+
   /**
    * Move to the next step
    */
@@ -271,12 +273,7 @@ export function ProfileOnboardingWizard({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, state.currentStep, nextStep, previousStep, completeOnboarding, onDismiss, canProceed]);
-
-  if (!isOpen) return null;
-
-  const TOTAL_STEPS = 5;
-  const progress = ((state.currentStep + 1) / TOTAL_STEPS) * 100;
+  }, [isOpen, state.currentStep, nextStep, previousStep, completeOnboarding, onDismiss]);
 
   /**
    * Check if user can proceed from current step
@@ -295,6 +292,8 @@ export function ProfileOnboardingWizard({
         return true;
     }
   }, [state.selectedGoal]);
+
+  const progress = ((state.currentStep + 1) / TOTAL_STEPS) * 100;
 
   return (
     <div

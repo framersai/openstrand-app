@@ -722,10 +722,11 @@ export function useDashboardController() {
         }
 
         if (classification) {
+          const tier = classification.tier as number;
           const tierName =
-            classification.tier === VisualizationTier.AIArtisan
+            tier === VisualizationTier.AIArtisan
               ? 'Tier 3 - AI Artisan (AI)'
-              : classification.tier === VisualizationTier.Dynamic
+              : tier === VisualizationTier.Dynamic
                 ? 'Tier 2 - Dynamic'
                 : 'Tier 1 - Static';
           toast(`${tierName} selected (confidence ${(classification.confidence * 100).toFixed(0)}%).`);

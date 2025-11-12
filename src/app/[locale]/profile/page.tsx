@@ -194,7 +194,8 @@ export default function ProfilePage() {
   const handleOpenBillingPortal = useCallback(async () => {
     try {
       const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
-      const { portalUrl } = await openBillingPortal(`${origin}/billing`);
+      const result = await openBillingPortal(`${origin}/billing`) as any;
+      const portalUrl = typeof result === 'object' && result !== null && 'portalUrl' in result ? String(result.portalUrl) : null;
       if (portalUrl) {
         window.location.href = portalUrl;
       } else {

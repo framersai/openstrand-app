@@ -301,7 +301,7 @@ export function SiteFooter() {
             </div>
             <div className="flex flex-wrap items-center gap-4">
               {bottomLinks.map((link) => {
-                const isExternal = Boolean(link.external || link.href.startsWith('http'));
+                const isExternal = Boolean(('external' in link && link.external) || link.href.startsWith('http'));
                 const href = isExternal ? link.href : localizePath(link.href);
                 return (
                   <Link

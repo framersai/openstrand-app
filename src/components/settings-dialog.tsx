@@ -173,7 +173,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
       const enabled = providerConfig.enabled !== false || (!preferByok && envDetected);
       const ready = enabled && hasEffectiveKey;
       const active = provider === key;
-      const statusVariant = active
+      const statusVariant: 'default' | 'secondary' | 'outline' = active
         ? 'default'
         : ready
           ? 'secondary'

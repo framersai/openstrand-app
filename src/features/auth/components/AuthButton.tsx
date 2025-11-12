@@ -106,7 +106,7 @@ export function AuthButton({ className, suppressLocalBadge = false }: AuthButton
   const displayName = (user?.user_metadata as Record<string, any> | undefined)?.full_name || user?.email || 'Account';
   const initials = displayName
     .split(' ')
-    .map((segment) => segment[0])
+    .map((segment: string) => segment[0])
     .join('')
     .slice(0, 2)
     .toUpperCase();

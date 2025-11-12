@@ -177,7 +177,7 @@ export default function SharedPage() {
 
         {/* Content */}
         <main className="container mx-auto p-4 py-8">
-          {resource.resource_type === 'strand' && (
+          {resource && resource.resource_type === 'strand' && (
             <Card>
               <CardHeader>
                 <div className="flex items-start justify-between">

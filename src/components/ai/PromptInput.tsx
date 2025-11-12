@@ -59,6 +59,7 @@ export function PromptInput({
       }, 50);
       return () => clearTimeout(timer);
     }
+    return () => {};
   }, [charIndex, suggestionIndex, value, isLoading]);
 
   // Auto-resize textarea

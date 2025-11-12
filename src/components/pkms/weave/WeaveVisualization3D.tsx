@@ -255,8 +255,9 @@ export function WeaveGraph({
           
           // Boundary checks
           ['x', 'y', 'z'].forEach((axis) => {
-            if (Math.abs(node[axis as keyof typeof node]) > 150) {
-              node.velocity[axis as keyof typeof node.velocity] *= -1;
+            const coord = node[axis as 'x' | 'y' | 'z'];
+            if (typeof coord === 'number' && Math.abs(coord) > 150) {
+              node.velocity[axis as 'x' | 'y' | 'z'] *= -1;
             }
           });
         }

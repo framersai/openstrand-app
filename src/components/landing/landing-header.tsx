@@ -18,9 +18,9 @@ import { useAppMode } from '@/hooks/useAppMode';
 import { Separator } from '@/components/ui/separator';
 
 const NAV_ITEMS = [
-  { key: 'features', href: '#features', label: 'Features' },
-  { key: 'pricing', href: '#pricing', label: 'Pricing' },
-  { key: 'docs', href: '/docs', label: 'Documentation' },
+  { key: 'features', href: '#features', label: 'Features', badge: undefined },
+  { key: 'pricing', href: '#pricing', label: 'Pricing', badge: undefined },
+  { key: 'docs', href: '/docs', label: 'Documentation', badge: undefined },
   { key: 'pkms', href: '/pkms', label: 'PKMS', badge: 'New' },
 ] as const;
 

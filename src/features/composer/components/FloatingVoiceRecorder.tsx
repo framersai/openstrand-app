@@ -18,7 +18,7 @@ type RecorderState = 'idle' | 'recording' | 'preview' | 'uploading' | 'uploaded'
 
 interface FloatingVoiceRecorderProps {
   strandId?: string;
-  planTier: 'free' | 'cloud' | 'pro' | 'team' | 'enterprise';
+  planTier: 'free' | 'basic' | 'cloud' | 'pro' | 'team' | 'org' | 'enterprise';
   onTranscriptReady?: (transcript: string) => void;
 }
 

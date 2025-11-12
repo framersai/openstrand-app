@@ -105,7 +105,7 @@ export function PKMSHeader({ onOpenSettings }: PKMSHeaderProps) {
 
             <div className="hidden items-center gap-2 lg:flex">
               <ThemeSwitcher />
-              <LanguageSwitcher currentLocale={locale} variant="compact" showName={false} />
+              <LanguageSwitcher currentLocale={locale as any} variant="compact" showName={false} />
               
               {onOpenSettings && (
                 <Button
@@ -191,7 +191,7 @@ export function PKMSHeader({ onOpenSettings }: PKMSHeaderProps) {
                 
                 <div className="flex items-center gap-2">
                   <ThemeSwitcher tooltip="Change theme" />
-                  <LanguageSwitcher currentLocale={locale} variant="compact" />
+                  <LanguageSwitcher currentLocale={locale as any} variant="compact" />
                 </div>
               </div>
               
