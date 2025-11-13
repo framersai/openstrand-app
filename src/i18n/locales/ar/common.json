@@ -20,12 +20,13 @@
     "pkms": "PKMS",
     "landing": "الصفحة الرئيسية",
     "feed": "الخلاصة",
-    "knowledge": "المعرفة"
+    "strands": "الخيوط",
+    "features": "الميزات"
   },
   "navigationDescriptions": {
     "feed": "أحدث السلاسل والتحديثات",
     "visualizations": "رسوم بيانية، شروحات، وقصص مدعومة بالذكاء الاصطناعي",
-    "knowledge": "مركز PKMS ومساحات النسج المشتركة",
+    "strands": "مركز PKMS والنسج",
     "datasets": "المصادر، الاستيراد، والتحسين"
   },
   "actions": {

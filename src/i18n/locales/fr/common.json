@@ -4,12 +4,13 @@
     "pkms": "PKMS",
     "landing": "Accueil",
     "feed": "Flux",
-    "knowledge": "Connaissance"
+    "strands": "Trames",
+    "features": "Fonctionnalités"
   },
   "navigationDescriptions": {
     "feed": "Dernières hebras et mises à jour",
     "visualizations": "Graphiques, explications et créations IA",
-    "knowledge": "Hub PKMS et trames partagées",
+    "strands": "Hub PKMS et trames",
     "datasets": "Sources, importations et enrichissements"
   },
   "actions": {

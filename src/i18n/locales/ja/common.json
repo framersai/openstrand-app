@@ -20,12 +20,13 @@
     "pkms": "PKMS",
     "landing": "ランディング",
     "feed": "フィード",
-    "knowledge": "ナレッジ"
+    "strands": "ストランド",
+    "features": "機能"
   },
   "navigationDescriptions": {
     "feed": "最新のストランドと更新",
     "visualizations": "グラフ・解説・AIストーリー",
-    "knowledge": "PKMSハブと共有ウィーブ",
+    "strands": "PKMSハブとウィーブ",
     "datasets": "ソース・インポート・拡張"
   },
   "actions": {

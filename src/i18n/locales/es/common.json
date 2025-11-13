@@ -20,12 +20,13 @@
     "pkms": "PKMS",
     "landing": "Landing",
     "feed": "Novedades",
-    "knowledge": "Conocimiento"
+    "strands": "Tramas",
+    "features": "Funciones"
   },
   "navigationDescriptions": {
     "feed": "Últimas hebras y actualizaciones",
     "visualizations": "Gráficos, explicaciones y piezas generadas por IA",
-    "knowledge": "Centro PKMS y tejidos colaborativos",
+    "strands": "Centro PKMS y tejidos",
     "datasets": "Fuentes, importaciones y enriquecimientos"
   },
   "actions": {

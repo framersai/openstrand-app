@@ -20,12 +20,13 @@
     "pkms": "PKMS",
     "landing": "登录页",
     "feed": "动态",
-    "knowledge": "知识"
+    "strands": "知识线",
+    "features": "功能"
   },
   "navigationDescriptions": {
     "feed": "最新的主题与更新",
     "visualizations": "图表、讲解与 AI 作品",
-    "knowledge": "PKMS 中心与知识编织",
+    "strands": "PKMS 中心与知识编织",
     "datasets": "数据来源、导入与丰富"
   },
   "actions": {

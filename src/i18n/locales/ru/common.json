@@ -4,12 +4,13 @@
     "pkms": "PKMS",
     "landing": "Лендинг",
     "feed": "Лента",
-    "knowledge": "Знания"
+    "strands": "Страны",
+    "features": "Возможности"
   },
   "navigationDescriptions": {
     "feed": "Последние связи и обновления",
     "visualizations": "Графики, пояснения и истории от ИИ",
-    "knowledge": "Центр PKMS и совместные плетения",
+    "strands": "Центр PKMS и плетения",
     "datasets": "Источники, импорт и обогащение"
   },
   "actions": {

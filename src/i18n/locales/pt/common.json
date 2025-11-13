@@ -4,12 +4,13 @@
     "pkms": "PKMS",
     "landing": "Landing",
     "feed": "Feed",
-    "knowledge": "Conhecimento"
+    "strands": "Tramas",
+    "features": "Recursos"
   },
   "navigationDescriptions": {
     "feed": "Últimas tramas e atualizações",
     "visualizations": "Gráficos, explicações e histórias geradas por IA",
-    "knowledge": "Hub PKMS e teias colaborativas",
+    "strands": "Hub PKMS e teias",
     "datasets": "Fontes, importações e enriquecimentos"
   },
   "actions": {

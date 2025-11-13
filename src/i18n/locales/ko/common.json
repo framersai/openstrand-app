@@ -20,12 +20,13 @@
     "pkms": "PKMS",
     "landing": "랜딩",
     "feed": "피드",
-    "knowledge": "지식"
+    "strands": "스트랜드",
+    "features": "기능"
   },
   "navigationDescriptions": {
     "feed": "최근 스트랜드와 업데이트",
     "visualizations": "차트, 설명, AI 스토리",
-    "knowledge": "PKMS 허브와 공유 위브",
+    "strands": "PKMS 허브와 위브",
     "datasets": "소스, 가져오기 및 확장"
   },
   "actions": {

@@ -4,12 +4,13 @@
     "pkms": "PKMS",
     "landing": "लैंडिंग",
     "feed": "फ़ीड",
-    "knowledge": "ज्ञान"
+    "strands": "स्ट्रैंड्स",
+    "features": "विशेषताएँ"
   },
   "navigationDescriptions": {
     "feed": "नवीनतम स्ट्रैंड और अपडेट",
     "visualizations": "चार्ट, व्याख्या और AI द्वारा बनाई कहानियाँ",
-    "knowledge": "PKMS हब और साझा वीव",
+    "strands": "PKMS हब और वीव",
     "datasets": "स्रोत, आयात और संवर्धन"
   },
   "actions": {
