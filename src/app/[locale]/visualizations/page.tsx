@@ -9,7 +9,7 @@ import { SiteFooter } from '@/components/site-footer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
-import { openstrandAPI } from '@/store/openstrand.store' as any;
+import { openstrandAPI } from '@/services/openstrand.api';
 
 export default function VisualizationsPage() {
   const t = useTranslations('common');
