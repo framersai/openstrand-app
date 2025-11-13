@@ -12,6 +12,7 @@ import {
   FileSpreadsheet,
   Code2,
   FolderPlus,
+  HardDrive,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -29,6 +30,13 @@ export function FeaturesSection({ id, className }: FeaturesSectionProps) {
 
   const features = useMemo(
     () => [
+      {
+        icon: HardDrive,
+        title: 'Backup & Sync',
+        description:
+          'Mirror notes and assets to your filesystem with optional Git version control. Works offline and plays nicely with AI/CLI tools. Teams can enforce policy or use S3-compatible cloud.',
+        badge: 'core',
+      },
       {
         icon: Code2,
         title: 'Runnable Snippets',
