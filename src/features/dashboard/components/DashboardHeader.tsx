@@ -185,7 +185,13 @@ export function DashboardHeader({ onOpenSettings }: DashboardHeaderProps) {
           </div>
 
           {mobileMenuOpen && (
-            <div className="mt-4 space-y-4 rounded-2xl border border-border/60 bg-background/95 p-4 shadow-xl lg:hidden">
+            <div className="fixed inset-0 z-50 lg:hidden">
+              <div
+                className="absolute inset-0 bg-background/60 backdrop-blur-sm"
+                onClick={closeMobileMenu}
+                aria-hidden="true"
+              />
+              <div className="absolute left-3 right-3 top-16 space-y-4 rounded-2xl border border-border/60 bg-background/95 p-4 shadow-xl">
               <div className="flex items-center justify-between rounded-xl border border-border/70 bg-background/60 px-3 py-3 text-xs font-medium text-foreground/80">
                 <CostTracker mode="compact" />
                 <div className="flex items-center gap-2">
@@ -236,6 +242,7 @@ export function DashboardHeader({ onOpenSettings }: DashboardHeaderProps) {
                   );
                 })}
               </nav>
+              </div>
             </div>
           )}
         </div>

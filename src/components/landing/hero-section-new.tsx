@@ -45,6 +45,7 @@ export function HeroSection({ id, className }: HeroSectionProps) {
   const [activeDataPoint, setActiveDataPoint] = useState(0);
   const localizePath = useLocalizedPath();
   const tHero = useTranslations('landing.hero');
+  const SHOW_METRICS = process.env.NEXT_PUBLIC_SHOW_LANDING_METRICS === 'true';
 
 
   // Animate data points
@@ -269,27 +270,29 @@ export function HeroSection({ id, className }: HeroSectionProps) {
                 </div>
               </div>
 
-              {/* Stats cards */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-xl border border-cyan-200/30 bg-gradient-to-br from-cyan-50/50 to-white/50 p-4 dark:border-cyan-800/30 dark:from-cyan-950/50 dark:to-gray-900/50">
-                  <p className="text-xs text-muted-foreground">{tHero('metrics.approvals.title')}</p>
-                  <p className="text-2xl font-bold text-foreground">
-                    <ShieldCheck className="mr-1 inline h-5 w-5 text-emerald-500" /> 128
-                  </p>
-                  <p className="mt-1 text-xs text-cyan-600 dark:text-cyan-400">
-                    {tHero('metrics.approvals.detail')}
-                  </p>
+              {/* Stats cards (only if enabled) */}
+              {SHOW_METRICS && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="rounded-xl border border-cyan-200/30 bg-gradient-to-br from-cyan-50/50 to-white/50 p-4 dark:border-cyan-800/30 dark:from-cyan-950/50 dark:to-gray-900/50">
+                    <p className="text-xs text-muted-foreground">{tHero('metrics.approvals.title')}</p>
+                    <p className="text-2xl font-bold text-foreground">
+                      <ShieldCheck className="mr-1 inline h-5 w-5 text-emerald-500" /> —
+                    </p>
+                    <p className="mt-1 text-xs text-cyan-600 dark:text-cyan-400">
+                      {tHero('metrics.approvals.detail')}
+                    </p>
+                  </div>
+                  <div className="rounded-xl border border-teal-200/30 bg-gradient-to-br from-teal-50/50 to-white/50 p-4 dark:border-teal-800/30 dark:from-teal-950/50 dark:to-gray-900/50">
+                    <p className="text-xs text-muted-foreground">{tHero('metrics.placeholders.title')}</p>
+                    <p className="text-2xl font-bold text-foreground">
+                      <Eye className="mr-1 inline h-5 w-5 text-teal-500" /> —
+                    </p>
+                    <p className="mt-1 text-xs text-teal-600 dark:text-teal-400">
+                      {tHero('metrics.placeholders.detail')}
+                    </p>
+                  </div>
                 </div>
-                <div className="rounded-xl border border-teal-200/30 bg-gradient-to-br from-teal-50/50 to-white/50 p-4 dark:border-teal-800/30 dark:from-teal-950/50 dark:to-gray-900/50">
-                  <p className="text-xs text-muted-foreground">{tHero('metrics.placeholders.title')}</p>
-                  <p className="text-2xl font-bold text-foreground">
-                    <Eye className="mr-1 inline h-5 w-5 text-teal-500" /> 100%
-                  </p>
-                  <p className="mt-1 text-xs text-teal-600 dark:text-teal-400">
-                    {tHero('metrics.placeholders.detail')}
-                  </p>
-                </div>
-              </div>
+              )}
 
               {/* Try it now button */}
               <Button

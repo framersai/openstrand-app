@@ -38,6 +38,7 @@ import {
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { useFeatureFlags } from '@/lib/feature-flags';
 
 type NavItem = {
   key: string;
@@ -116,6 +117,7 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
   const { isGuest } = useGuestSession();
   const { mode } = useAppMode();
   const tCommon = useTranslations('common');
+  const { isTeamEdition } = useFeatureFlags();
 
   const closeMobileMenu = useCallback(() => {
     setMobileMenuOpen(false);
@@ -133,6 +135,7 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
       { key: 'teams', href: '/teams', label: tCommon('navigation.teamsApi'), icon: DocsIcon },
       { key: 'docs', href: '#', label: tCommon('navigation.docs'), icon: DocsIcon },
       { key: 'pkms', href: '/pkms', label: tCommon('navigation.pkms'), icon: PKMSIcon },
+      { key: 'import', href: '/composer', label: tCommon('navigation.import'), icon: DatasetsIcon },
     ],
     [tCommon],
   );
@@ -148,17 +151,17 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
       },
       {
         key: 'visualizations',
-        href: '/', // TODO: Create visualizations page
+        href: '/visualizations',
         label: tCommon('navigation.visualizations'),
         icon: VisualizationsIcon,
         description: tCommon('navigationDescriptions.visualizations'),
       },
       {
-        key: 'knowledge',
+        key: 'strands',
         href: '/pkms',
-        label: tCommon('navigation.knowledge'),
+        label: tCommon('navigation.strands'),
         icon: KnowledgeIcon,
-        description: tCommon('navigationDescriptions.knowledge'),
+        description: tCommon('navigationDescriptions.strands'),
       },
       {
         key: 'datasets',
@@ -166,6 +169,13 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
         label: tCommon('navigation.datasets'),
         icon: DatasetsIcon,
         description: tCommon('navigationDescriptions.datasets'),
+      },
+      {
+        key: 'import',
+        href: '/composer',
+        label: tCommon('navigation.import'),
+        icon: DatasetsIcon,
+        description: tCommon('actions.import'),
       },
     ],
     [tCommon],
@@ -177,7 +187,7 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
   const signInLink = localizePath('/auth?view=sign-in');
   const signUpLink = localizePath('/auth?view=sign-up');
   const openDashboardLink = localizePath('/');
-  const importLink = localizePath('/pkms/import');
+  const importLink = localizePath('/composer');
 
   useEffect(() => {
     setMounted(true);
@@ -331,10 +341,12 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
               className="transition-all duration-300"
             />
             <div className="flex flex-col">
-              <span className="text-base font-semibold tracking-tight">OpenStrand</span>
+              <span className="text-base font-semibold tracking-tight">
+                OpenStrand{isTeamEdition && showDashboardNav ? ' Teams' : ''}
+              </span>
               {showDashboardNav && (
                 <span className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
-                  Dashboard
+                  {isTeamEdition ? 'Teams Edition' : 'Dashboard'}
                 </span>
               )}
             </div>
@@ -371,7 +383,7 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
                     <DropdownMenuContent align="start" className="w-72">
                       <DropdownMenuItem asChild disabled>
                         <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
-                          Knowledge Base
+                          Strands
                         </span>
                       </DropdownMenuItem>
                       {docsLinks.map((link) => (
@@ -485,10 +497,18 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile menu (overlay) */}
         {mobileMenuOpen && (
-          <div className="mt-4 space-y-4 rounded-2xl border border-border/60 bg-background/95 p-4 shadow-xl backdrop-blur lg:hidden">
-            <nav className="flex flex-col gap-2">
+          <div className="fixed inset-0 z-50 lg:hidden">
+            {/* Backdrop */}
+            <div
+              className="absolute inset-0 bg-background/60 backdrop-blur-sm"
+              onClick={closeMobileMenu}
+              aria-hidden="true"
+            />
+            {/* Panel */}
+            <div className="absolute left-3 right-3 top-16 space-y-4 rounded-2xl border border-border/60 bg-background/95 p-4 shadow-xl">
+              <nav className="flex flex-col gap-2">
               {navItems.map((item) => {
                 const Icon = item.icon ?? null;
                 const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
@@ -576,7 +596,7 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
                   </Link>
                 );
               })}
-            </nav>
+              </nav>
 
             {showDashboardNav && (
               <Button
@@ -653,6 +673,7 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
                   ) : null}
                 </div>
               )}
+            </div>
             </div>
           </div>
         )}

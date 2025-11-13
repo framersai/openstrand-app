@@ -440,7 +440,7 @@ export interface Strand {
   analysis_notes?: string[];
   analysisNotes?: string[];
   derivatives?: string[];
-  visibility: 'public' | 'private' | 'unlisted' | 'premium';
+  visibility: 'public' | 'private' | 'unlisted' | 'premium' | 'team';
   owner_id?: string;
   ownerId?: string;
   createdBy?: string;

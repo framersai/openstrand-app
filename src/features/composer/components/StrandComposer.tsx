@@ -5,7 +5,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import { lowlight } from 'lowlight/lib/core';
+import { lowlight } from 'lowlight';
 // Register a sensible default set of popular languages for highlighting
 import ts from 'highlight.js/lib/languages/typescript';
 import js from 'highlight.js/lib/languages/javascript';
@@ -13,6 +13,22 @@ import json from 'highlight.js/lib/languages/json';
 import bash from 'highlight.js/lib/languages/bash';
 import python from 'highlight.js/lib/languages/python';
 import markdown from 'highlight.js/lib/languages/markdown';
+import c from 'highlight.js/lib/languages/c';
+import cpp from 'highlight.js/lib/languages/cpp';
+import java from 'highlight.js/lib/languages/java';
+import go from 'highlight.js/lib/languages/go';
+import rust from 'highlight.js/lib/languages/rust';
+import ruby from 'highlight.js/lib/languages/ruby';
+import php from 'highlight.js/lib/languages/php';
+import swift from 'highlight.js/lib/languages/swift';
+import kotlin from 'highlight.js/lib/languages/kotlin';
+import scala from 'highlight.js/lib/languages/scala';
+import sql from 'highlight.js/lib/languages/sql';
+import yaml from 'highlight.js/lib/languages/yaml';
+import toml from 'highlight.js/lib/languages/toml';
+import dockerfile from 'highlight.js/lib/languages/dockerfile';
+import html from 'highlight.js/lib/languages/xml';
+import css from 'highlight.js/lib/languages/css';
 import { motion } from 'framer-motion';
 import { FileText, Save, Sparkles, Tag } from 'lucide-react';
 import { toast } from 'react-hot-toast';
@@ -26,6 +42,23 @@ lowlight.registerLanguage('shell', bash);
 lowlight.registerLanguage('python', python);
 lowlight.registerLanguage('md', markdown);
 lowlight.registerLanguage('markdown', markdown);
+lowlight.registerLanguage('c', c);
+lowlight.registerLanguage('cpp', cpp);
+lowlight.registerLanguage('java', java);
+lowlight.registerLanguage('go', go);
+lowlight.registerLanguage('rust', rust);
+lowlight.registerLanguage('ruby', ruby);
+lowlight.registerLanguage('php', php);
+lowlight.registerLanguage('swift', swift);
+lowlight.registerLanguage('kotlin', kotlin);
+lowlight.registerLanguage('scala', scala);
+lowlight.registerLanguage('sql', sql);
+lowlight.registerLanguage('yaml', yaml);
+lowlight.registerLanguage('toml', toml);
+lowlight.registerLanguage('dockerfile', dockerfile);
+lowlight.registerLanguage('html', html);
+lowlight.registerLanguage('xml', html);
+lowlight.registerLanguage('css', css);
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -40,6 +73,7 @@ import { StrandType, type NoteType as StrandNoteType, type Strand } from '@/type
 import { FloatingVoiceRecorder } from './FloatingVoiceRecorder';
 import { MediaAttachmentWizard } from './MediaAttachmentWizard';
 import { InlineVisualizationWizard } from './InlineVisualizationWizard';
+import { ProjectImportWizard } from './ProjectImportWizard';
 import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import { cn } from '@/lib/utils';
 import { useAutoMetadata } from '../hooks/useAutoMetadata';
@@ -47,6 +81,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useComposerPreferences } from '../hooks/useComposerPreferences';
 import { AutoMetadataReviewModal } from './AutoMetadataReviewModal';
+import { CodeSnippetRunner } from './CodeSnippetRunner';
 
 const NOTE_TYPE_OPTIONS = [
   { value: 'main', label: 'Main note' },
@@ -113,6 +148,8 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
   const [reviewTags, setReviewTags] = useState<string[]>([]);
   const [reviewRelated, setReviewRelated] = useState<Array<{ id: string; title?: string; summary?: string }>>([]);
   const [visibility, setVisibility] = useState<'private' | 'public' | 'unlisted' | 'team'>('private');
+  const snippetApiRef = useRef<{ runWith: (code: string, language: 'ts' | 'js' | 'py') => void; getLastLogs: () => string[]; getLastError: () => string | null } | null>(null);
+  const [lastCodeRun, setLastCodeRun] = useState<{ language: string; logs: string[]; error?: string | null; ranAt: string } | null>(null);
 
   const editor = useEditor({
     extensions: [
@@ -133,6 +170,35 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
       contentDirtyRef.current = true;
     },
   });
+
+  const runCurrentCodeBlock = useCallback(() => {
+    if (!editor || !snippetApiRef.current) return;
+    const { state } = editor;
+    const { $from } = state.selection;
+    const parent = $from.parent;
+    if (parent?.type?.name !== 'codeBlock') {
+      toast.error('Place the cursor inside a code block to run it.');
+      return;
+    }
+    const language = (parent.attrs?.language as string | undefined) ?? 'ts';
+    const text = parent?.textContent ?? '';
+    if (!text.trim()) {
+      toast.error('Code block is empty.');
+      return;
+    }
+    snippetApiRef.current.runWith(text, (language === 'javascript' ? 'js' : language) as any);
+    // poll logs briefly after a short delay
+    setTimeout(() => {
+      const logs = snippetApiRef.current?.getLastLogs() ?? [];
+      const error = snippetApiRef.current?.getLastError() ?? null;
+      setLastCodeRun({
+        language,
+        logs,
+        error,
+        ranAt: new Date().toISOString(),
+      });
+    }, 400);
+  }, [editor]);
 
   const handleInsertTranscript = useCallback((transcript: string) => {
     if (!editor || !transcript) return;
@@ -278,6 +344,9 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
         return;
       }
 
+      const normalizedVisibility: 'public' | 'private' | 'unlisted' | 'premium' =
+        visibility === 'team' ? 'private' : visibility;
+
       const payload: Partial<Strand> = {
         title: title || 'Untitled strand',
         summary,
@@ -290,12 +359,15 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
             tags: normalizedTags,
             difficulty: difficulty || 'beginner',
             visualizations: inlineVisualizations.length ? inlineVisualizations : undefined,
+            ...(lastCodeRun
+              ? { codeLastRun: lastCodeRun }
+              : {}),
           },
         },
         contentType: 'application/vnd.tiptap+json',
         noteType: noteType as StrandNoteType,
         coAuthorIds,
-        visibility,
+        visibility: normalizedVisibility,
         type: StrandType.NOTE,
         metadata: {
           language: 'en',
@@ -513,6 +585,16 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
       </div>
 
       <div className="relative">
+        <div className="mb-2 flex flex-wrap items-center gap-2">
+          <Button variant="outline" size="sm" onClick={runCurrentCodeBlock}>
+            Run current code block
+          </Button>
+          {lastCodeRun ? (
+            <span className="text-xs text-muted-foreground">
+              Last run ({lastCodeRun.language}) at {new Date(lastCodeRun.ranAt).toLocaleTimeString()}
+            </span>
+          ) : null}
+        </div>
         <FloatingVoiceRecorder
           strandId={strandId}
           planTier={planTier}
@@ -540,7 +622,20 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
         </Card>
       </div>
 
+      {/* Runnable snippet utility - optional helper side by side with editor */}
+      <div className="mt-4">
+        <CodeSnippetRunner
+          hideControls
+          onReady={(api) => {
+            snippetApiRef.current = api;
+          }}
+        />
+      </div>
+
         <MediaAttachmentWizard strandId={strandId} planTier={planTier} />
+      <div className="mt-4">
+        <ProjectImportWizard />
+      </div>
         <InlineVisualizationWizard
           strandId={strandId}
           onAddVisualizationMetadata={(viz) => {

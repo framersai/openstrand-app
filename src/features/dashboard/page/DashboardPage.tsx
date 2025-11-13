@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Upload,
   LineChart,
@@ -124,6 +124,7 @@ export default function DashboardPage() {
   const environmentMode = capabilities?.environment?.mode ?? mode;
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [footerCollapsed, setFooterCollapsed] = useState(true); // Start collapsed in dashboard
   const t = useTranslations('dashboard');
 
@@ -331,6 +332,16 @@ export default function DashboardPage() {
     onOpenSettings: openSettings,
   });
 
+  // Close mobile sidebar on Escape
+  useEffect(() => {
+    if (!isMobileSidebarOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsMobileSidebarOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isMobileSidebarOpen]);
+
   // Note: visualize panel availability derived directly from dataset where needed
 
   return (
@@ -340,6 +351,29 @@ export default function DashboardPage() {
       {shouldShowTeamOnboarding && <TeamOnboarding onOpenSettings={openSettings} />}
       <UnifiedHeader onOpenSettings={openSettings} />
 
+      {/* Mobile sidebar open button */}
+      {(device.isPhone || (device.isTablet && orientation.isPortrait)) && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setIsMobileSidebarOpen(true)}
+          className="fixed bottom-5 left-4 z-30 lg:hidden"
+          aria-label="Open sidebar"
+        >
+          <Layout className="mr-2 h-4 w-4" />
+          Sidebar
+        </Button>
+      )}
+
+      {/* Backdrop for mobile sidebar */}
+      {(device.isPhone || (device.isTablet && orientation.isPortrait)) && isMobileSidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
+          onClick={() => setIsMobileSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Main content area */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
         {/* Sidebar - Fully responsive with device-aware behavior */}
@@ -348,8 +382,14 @@ export default function DashboardPage() {
             className={cn(
               "dashboard-sidebar border-border/50 bg-background/95 backdrop-blur overflow-hidden flex flex-col transition-all duration-300",
               // Responsive behavior
-              device.isPhone && "w-full h-64 border-b",
-              device.isTablet && orientation.isPortrait && "w-full h-72 border-b",
+              // Mobile/portrait tablets: off-canvas overlay
+              (device.isPhone || (device.isTablet && orientation.isPortrait)) &&
+                cn(
+                  "fixed inset-y-0 left-0 z-50 h-full w-[85%] max-w-xs border-r shadow-xl bg-background/80 backdrop-blur-md transform",
+                  isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
+                ),
+              // Landscape tablet and up: docked
+              device.isTablet && orientation.isLandscape && "w-80 h-full border-r",
               device.isTablet && orientation.isLandscape && "w-80 h-full border-r",
               device.isLaptop && "w-80 h-full border-r",
               device.isDesktop && "w-96 h-full border-r",
@@ -375,6 +415,17 @@ export default function DashboardPage() {
               >
                 {t('sidebar.workspace')}
               </span>
+              {(device.isPhone || (device.isTablet && orientation.isPortrait)) ? (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsMobileSidebarOpen(false)}
+                  className="h-7 w-7 rounded-full border border-border/50 bg-background/70 text-muted-foreground hover:border-primary/40 hover:text-primary lg:hidden"
+                  aria-label="Close sidebar"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              ) : (
               <Button
                 variant="ghost"
                 size="icon"
@@ -391,6 +442,7 @@ export default function DashboardPage() {
                   <ChevronLeft className="h-4 w-4" />
                 )}
               </Button>
+              )}
             </div>
             {/* Sidebar tabs for better organization */}
             <div className="flex-1 overflow-hidden">

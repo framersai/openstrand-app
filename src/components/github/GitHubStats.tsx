@@ -20,7 +20,7 @@ interface GitHubData {
   forks: number;
 }
 
-const GITHUB_REPO = 'framersai/openstrand-monorepo';
+const GITHUB_REPO = 'framersai/openstrand';
 const CACHE_KEY = 'openstrand-github-stats';
 const CACHE_DURATION = 1000 * 60 * 60; // 1 hour
 const OFFLINE_MODE = typeof process !== 'undefined'
@@ -58,13 +58,7 @@ export function GitHubStats({
         // Fetch from GitHub API
         const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}`);
         if (!response.ok) {
-          if (response.status === 404) {
-            // Repository not found or private - show placeholder values
-            console.debug('[github] repository not found or private, using placeholder values');
-            setData({ stars: 42, forks: 7 }); // Placeholder values
-            setLoading(false);
-            return;
-          }
+          // Do not show fake numbers; fall back to zeros or cached
           throw new Error(`Failed to fetch (${response.status})`);
         }
 
@@ -90,6 +84,8 @@ export function GitHubStats({
         if (cached) {
           const { data: cachedData } = JSON.parse(cached);
           setData(cachedData);
+        } else {
+          setData({ stars: 0, forks: 0 });
         }
       } finally {
         setLoading(false);

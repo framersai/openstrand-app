@@ -7,7 +7,7 @@ import {
   FilePlus2,
   Grid,
   Info,
-  CircleHelp,
+  HelpCircle,
   Settings2,
   Layers3,
   List,
@@ -33,7 +33,7 @@ import { useTranslations } from 'next-intl';
 import { PKMSHelpModal } from '@/components/pkms/PKMSHelpModal';
 import { PKMSPreferencesModal } from '@/components/pkms/PKMSPreferencesModal';
 import { QuickCapturePanel } from '@/components/pkms/QuickCapturePanel';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { WeavePreviewCard } from '@/components/pkms/WeavePreviewCard';
 import { LoomsPanel } from '@/components/pkms/LoomsPanel';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -153,7 +153,7 @@ export function PKMSDashboard() {
                 {t('actions.about')}
               </Button>
               <Button variant="outline" size="sm" className="gap-2" onClick={() => setHelpOpen(true)}>
-                <CircleHelp className="h-4 w-4" />
+                <HelpCircle className="h-4 w-4" />
                 {t('help.titleShort')}
               </Button>
               <Button variant="outline" size="sm" className="gap-2" onClick={() => setPrefsOpen(true)}>

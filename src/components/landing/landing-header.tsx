@@ -190,8 +190,14 @@ export function LandingHeader({ onOpenSettings }: LandingHeaderProps) {
       </div>
 
       {mobileMenuOpen && (
-        <div className="border-t border-border/40 bg-background/95 px-4 py-4 lg:hidden">
-          <nav className="flex flex-col gap-2">
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div
+            className="absolute inset-0 bg-background/60 backdrop-blur-sm"
+            onClick={closeMobileMenu}
+            aria-hidden="true"
+          />
+          <div className="absolute left-3 right-3 top-16 rounded-2xl border border-border/60 bg-background/95 px-4 py-4 shadow-xl">
+            <nav className="flex flex-col gap-2">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.key}
@@ -215,56 +221,57 @@ export function LandingHeader({ onOpenSettings }: LandingHeaderProps) {
                 </span>
               </Link>
             </Button>
-          </nav>
+            </nav>
 
-          <Separator className="my-4" />
+            <Separator className="my-4" />
           
-          <div className="space-y-3">
-            <GitHubStats className="justify-center" />
+            <div className="space-y-3">
+              <GitHubStats className="justify-center" />
             
-            <div className="flex items-center justify-between">
-              <Badge variant="outline" className="gap-1.5 text-xs">
-                {mode === 'offline' ? (
-                  <>
-                    <WifiOff className="h-3 w-3" />
-                    Local Mode
-                  </>
-                ) : (
-                  <>
-                    <Cloud className="h-3 w-3 text-emerald-600" />
-                    Cloud Ready
-                  </>
-                )}
-              </Badge>
+              <div className="flex items-center justify-between">
+                <Badge variant="outline" className="gap-1.5 text-xs">
+                  {mode === 'offline' ? (
+                    <>
+                      <WifiOff className="h-3 w-3" />
+                      Local Mode
+                    </>
+                  ) : (
+                    <>
+                      <Cloud className="h-3 w-3 text-emerald-600" />
+                      Cloud Ready
+                    </>
+                  )}
+                </Badge>
               
-              <div className="flex items-center gap-3">
-                <ThemeToggle />
-                <LanguageSwitcher currentLocale={locale} variant="compact" />
+                <div className="flex items-center gap-3">
+                  <ThemeToggle />
+                  <LanguageSwitcher currentLocale={locale} variant="compact" />
+                </div>
               </div>
-            </div>
             
-            <div className="flex flex-col gap-2 pt-2">
-              {isAuthenticated ? (
-                <Button asChild size="lg" className="w-full">
-                  <Link href={localizePath('/')} onClick={closeMobileMenu}>
-                    Open Dashboard
-                  </Link>
-                </Button>
-              ) : (
-                <>
-                  <Button asChild variant="outline" size="lg" className="w-full">
-                    <a href="https://github.com/framersai/openstrand" target="_blank" rel="noopener noreferrer">
-                      <Github className="mr-2 h-4 w-4" />
-                      View on GitHub
-                    </a>
-                  </Button>
-                  <Button asChild size="lg" className="btn-gradient-border w-full">
+              <div className="flex flex-col gap-2 pt-2">
+                {isAuthenticated ? (
+                  <Button asChild size="lg" className="w-full">
                     <Link href={localizePath('/')} onClick={closeMobileMenu}>
-                      Start Free Forever
+                      Open Dashboard
                     </Link>
                   </Button>
-                </>
-              )}
+                ) : (
+                  <>
+                    <Button asChild variant="outline" size="lg" className="w-full">
+                      <a href="https://github.com/framersai/openstrand" target="_blank" rel="noopener noreferrer">
+                        <Github className="mr-2 h-4 w-4" />
+                        View on GitHub
+                      </a>
+                    </Button>
+                    <Button asChild size="lg" className="btn-gradient-border w-full">
+                      <Link href={localizePath('/')} onClick={closeMobileMenu}>
+                        Start Free Forever
+                      </Link>
+                    </Button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>

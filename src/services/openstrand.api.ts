@@ -928,9 +928,47 @@ export const strandAPI = {
  * Visualization Operations
  */
 export const visualizationAPI = {
+  async list(options?: { page?: number; pageSize?: number; tier?: number }): Promise<{ items: any[]; total: number; page: number; pageSize: number; totalPages: number }> {
+    const params = new URLSearchParams();
+    if (options?.page) params.set('page', String(options.page));
+    if (options?.pageSize) params.set('pageSize', String(options.pageSize));
+    if (options?.tier) params.set('tier', String(options.tier));
+    const response = await apiFetch(`/visualizations${params.toString() ? `?${params.toString()}` : ''}`);
+    return await parseData(response);
+  },
+
   async getTop(limit: number = 10): Promise<Strand[]> {
     const response = await apiFetch(`/visualizations/top?limit=${limit}`);
     return response.json();
+  },
+
+  async get(id: string): Promise<any> {
+    const response = await apiFetch(`/visualizations/${id}`);
+    return await parseData(response);
+  },
+
+  async update(id: string, data: Record<string, unknown>): Promise<any> {
+    const response = await apiFetch(`/visualizations/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    });
+    return await parseData(response);
+  },
+
+  async remove(id: string): Promise<void> {
+    await apiFetch(`/visualizations/${id}`, { method: 'DELETE' });
+  },
+
+  async export(id: string, format: 'png' | 'svg' | 'json' = 'json'): Promise<Blob> {
+    const response = await apiFetch(`/visualizations/${id}/export`, {
+      method: 'POST',
+      body: JSON.stringify({ format })
+    });
+    if (format === 'json') {
+      const data = await response.json();
+      return new Blob([JSON.stringify(data)], { type: 'application/json' });
+    }
+    return response.blob();
   },
 };
 

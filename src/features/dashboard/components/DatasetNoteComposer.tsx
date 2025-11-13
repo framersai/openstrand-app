@@ -10,7 +10,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import { lowlight } from 'lowlight/lib/core';
+import { lowlight } from 'lowlight';
 import ts from 'highlight.js/lib/languages/typescript';
 import js from 'highlight.js/lib/languages/javascript';
 import json from 'highlight.js/lib/languages/json';
@@ -100,8 +100,8 @@ export function DatasetNoteComposer({
     autofocus: false,
   });
 
-  const canUndo = editor?.can().undo() ?? false;
-  const canRedo = editor?.can().redo() ?? false;
+  const canUndo = editor ? editor.can().undo() : false;
+  const canRedo = editor ? editor.can().redo() : false;
   const hasContent = useMemo(() => {
     if (!editor) return false;
     return editor.getText().trim().length > 0;

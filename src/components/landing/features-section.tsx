@@ -10,6 +10,8 @@ import {
   Workflow,
   Bot,
   FileSpreadsheet,
+  Code2,
+  FolderPlus,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -27,6 +29,27 @@ export function FeaturesSection({ id, className }: FeaturesSectionProps) {
 
   const features = useMemo(
     () => [
+      {
+        icon: Code2,
+        title: 'Runnable Snippets',
+        description:
+          'Author and run TypeScript/JavaScript and Python snippets inline. Copy with one click and enjoy rich syntax highlighting for dozens of languages. Works offline in web, Electron, and mobile.',
+        badge: 'core',
+      },
+      {
+        icon: FolderPlus,
+        title: 'Drag & Drop Folders → Strands',
+        description:
+          'Import any folder or repository and auto-map files into strands with metadata, language detection, and directory hierarchy preserved. Build knowledge from your codebases instantly.',
+        badge: 'core',
+      },
+      {
+        icon: FileSpreadsheet,
+        title: 'Export & Import',
+        description:
+          'Export strands to Markdown, HTML, PDF, DOCX, JSON, CSV (datasets), or an Obsidian-ready vault (ZIP). Import repos via URL (PAT for private), zips, and Obsidian vaults.',
+        badge: 'core',
+      },
       {
         icon: Activity,
         title: t('items.analytics.title'),

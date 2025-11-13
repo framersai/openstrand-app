@@ -6,6 +6,7 @@
   },
   "navigation": {
     "home": "Home",
+    "features": "Features",
     "datasets": "Datasets",
     "visualizations": "Visualizations",
     "pricing": "Pricing",
@@ -20,12 +21,13 @@
     "pkms": "PKMS",
     "landing": "Landing",
     "feed": "Feed",
-    "knowledge": "Knowledge"
+    "strands": "Strands",
+    "import": "Import Project"
   },
   "navigationDescriptions": {
     "feed": "Recent strands & updates",
     "visualizations": "Charts, explainers, AI artisan stories",
-    "knowledge": "PKMS hub & weaves",
+    "strands": "PKMS hub & weaves",
     "datasets": "Sources, imports, enrichments"
   },
   "actions": {
