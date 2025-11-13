@@ -9,6 +9,8 @@ type PKMSPageParams = {
   };
 };
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({ params }: PKMSPageParams): Promise<Metadata> {
   const { locale } = params;
   const canonicalUrl = `${siteMetadata.siteUrl}/${locale}/pkms`;

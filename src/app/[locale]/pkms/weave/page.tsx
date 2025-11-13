@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   description: 'Explore your interconnected knowledge graph. Discover relationships and learning paths.',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default function WeavePage() {
   return (
     <main className="min-h-screen">
