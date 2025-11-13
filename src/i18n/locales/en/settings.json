@@ -20,5 +20,11 @@
     "validating": "Validating...",
     "valid": "Connected successfully",
     "invalid": "Cannot connect to this backend"
+  },
+  "appearance": {
+    "language": {
+      "title": "Language",
+      "change": "Change language"
+    }
   }
 }
