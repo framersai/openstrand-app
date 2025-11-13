@@ -210,7 +210,7 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
     if (!initialStrandId || !editor) {
       setLoadingExisting(false);
       // If creating a new strand and a template body is provided, seed the editor.
-      if (!initialStrandId && initialContentHtml) {
+      if (!initialStrandId && initialContentHtml && editor) {
         try {
           editor.commands.setContent(initialContentHtml, true);
         } catch {
