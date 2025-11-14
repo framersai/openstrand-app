@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Brain, Sparkles, Clock, Zap, Info, AlertCircle } from 'lucide-react';
+import { Brain, Sparkles, Clock, Zap, Info, AlertCircle, MessageSquare } from 'lucide-react';
 import { PageLayout } from '@/components/layouts/PageLayout';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -21,6 +21,15 @@ interface DataIntelligenceSettings {
   llmProvider?: 'openai' | 'anthropic' | 'ollama';
   cacheTTLMinutes: number;
   maxConcurrentJobs: number;
+  
+  // RAG settings
+  ragEnabled: boolean;
+  ragEmbeddingProvider: 'local' | 'openai';
+  ragLlmProvider: 'local' | 'openai' | 'anthropic';
+  ragLocalEndpoint?: string;
+  ragAutoEmbed: boolean;
+  ragTopK: number;
+  ragMinScore: number;
 }
 
 /**
@@ -40,6 +49,15 @@ export default function DataIntelligenceSettingsPage() {
     llmProvider: 'openai',
     cacheTTLMinutes: 60,
     maxConcurrentJobs: 5,
+    
+    // RAG defaults
+    ragEnabled: false,
+    ragEmbeddingProvider: 'local',
+    ragLlmProvider: 'local',
+    ragLocalEndpoint: 'http://localhost:11434',
+    ragAutoEmbed: false,
+    ragTopK: 5,
+    ragMinScore: 0.5,
   });
   
   const [loading, setLoading] = useState(true);
@@ -411,6 +429,146 @@ export default function DataIntelligenceSettingsPage() {
             </div>
           </>
         )}
+
+        {/* RAG Settings (Both Editions) */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MessageSquare className="h-5 w-5" />
+              RAG & Semantic Search
+              <Badge variant="outline" className="ml-auto text-[10px]">
+                {isTeamEdition ? 'Teams' : 'Community'}
+              </Badge>
+            </CardTitle>
+            <CardDescription>
+              Ask questions and get answers from your knowledge base
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="rag-enabled">Enable RAG</Label>
+                <p className="text-sm text-muted-foreground">
+                  Semantic search and question answering
+                </p>
+              </div>
+              <Switch
+                id="rag-enabled"
+                checked={settings.ragEnabled}
+                onCheckedChange={(checked) => updateSetting('ragEnabled', checked)}
+                disabled={loading}
+              />
+            </div>
+
+            {settings.ragEnabled && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="rag-embedding">Embedding Provider</Label>
+                  <Select
+                    value={settings.ragEmbeddingProvider}
+                    onValueChange={(value: 'local' | 'openai') =>
+                      updateSetting('ragEmbeddingProvider', value)
+                    }
+                    disabled={loading}
+                  >
+                    <SelectTrigger id="rag-embedding">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="local">Local (Ollama)</SelectItem>
+                      <SelectItem value="openai">OpenAI</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    {settings.ragEmbeddingProvider === 'local'
+                      ? 'Free, requires Ollama running locally'
+                      : 'Costs ~$0.00002 per 1K tokens'}
+                  </p>
+                </div>
+
+                {settings.ragEmbeddingProvider === 'local' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="rag-endpoint">Local Endpoint</Label>
+                    <Input
+                      id="rag-endpoint"
+                      type="url"
+                      value={settings.ragLocalEndpoint}
+                      onChange={(e) => updateSetting('ragLocalEndpoint', e.target.value)}
+                      placeholder="http://localhost:11434"
+                      disabled={loading}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Ollama API endpoint (default: http://localhost:11434)
+                    </p>
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="rag-llm">LLM Provider</Label>
+                  <Select
+                    value={settings.ragLlmProvider}
+                    onValueChange={(value: 'local' | 'openai' | 'anthropic') =>
+                      updateSetting('ragLlmProvider', value)
+                    }
+                    disabled={loading}
+                  >
+                    <SelectTrigger id="rag-llm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="local">Local (Ollama)</SelectItem>
+                      <SelectItem value="openai">OpenAI</SelectItem>
+                      {isTeamEdition && <SelectItem value="anthropic">Anthropic</SelectItem>}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="rag-auto-embed">Auto-embed new strands</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Automatically generate embeddings when creating strands
+                    </p>
+                  </div>
+                  <Switch
+                    id="rag-auto-embed"
+                    checked={settings.ragAutoEmbed}
+                    onCheckedChange={(checked) => updateSetting('ragAutoEmbed', checked)}
+                    disabled={loading}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="rag-top-k">Top K Results</Label>
+                    <Input
+                      id="rag-top-k"
+                      type="number"
+                      min={1}
+                      max={20}
+                      value={settings.ragTopK}
+                      onChange={(e) => updateSetting('ragTopK', parseInt(e.target.value))}
+                      disabled={loading}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="rag-min-score">Min Score</Label>
+                    <Input
+                      id="rag-min-score"
+                      type="number"
+                      min={0}
+                      max={1}
+                      step={0.1}
+                      value={settings.ragMinScore}
+                      onChange={(e) => updateSetting('ragMinScore', parseFloat(e.target.value))}
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Community Edition: Upgrade CTA */}
         {!isTeamEdition && (

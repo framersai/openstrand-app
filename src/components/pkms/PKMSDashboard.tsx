@@ -37,6 +37,8 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/comp
 import { WeavePreviewCard } from '@/components/pkms/WeavePreviewCard';
 import { LoomsPanel } from '@/components/pkms/LoomsPanel';
 import { LoomSwitcher } from '@/components/pkms/LoomSwitcher';
+import { AskBar } from '@/components/rag/AskBar';
+import { ChatPanel } from '@/components/rag/ChatPanel';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { StrandDeleteButton } from '@/components/pkms/StrandDeleteButton';
 
@@ -55,6 +57,10 @@ export function PKMSDashboard() {
   // Quick create / templates
   const [showComposer, setShowComposer] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
+  
+  // RAG chat
+  const [showChat, setShowChat] = useState(false);
+  const [recentQuestions, setRecentQuestions] = useState<string[]>([]);
   const [composeKey, setComposeKey] = useState<number>(0);
   const [templatePrefill, setTemplatePrefill] = useState<{
     title?: string;
@@ -131,6 +137,13 @@ export function PKMSDashboard() {
       <PKMSWelcomeModal triggerOpen={aboutOpen} onOpenChange={setAboutOpen} />
       <PKMSHelpModal open={helpOpen} onOpenChange={setHelpOpen} />
       <PKMSPreferencesModal open={prefsOpen} onOpenChange={setPrefsOpen} />
+      
+      {/* Chat Panel */}
+      {showChat && (
+        <div className="fixed bottom-4 right-4 z-50 h-[600px] w-[400px]">
+          <ChatPanel loomId={activeLoomId} onClose={() => setShowChat(false)} />
+        </div>
+      )}
 
       <section className="border-b border-border/40 bg-gradient-to-b from-background to-primary/5">
         <div className="container mx-auto px-4 py-8">
@@ -188,6 +201,18 @@ export function PKMSDashboard() {
       </section>
 
       <section className="container mx-auto px-4 py-8">
+        {/* Ask Bar */}
+        <div className="mb-6">
+          <AskBar
+            loomId={activeLoomId}
+            onSubmit={(question) => {
+              setRecentQuestions(prev => [question, ...prev.slice(0, 4)]);
+              setShowChat(true);
+            }}
+            recentQuestions={recentQuestions}
+          />
+        </div>
+
         {/* Quick actions */}
         <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <div className="sm:col-span-2 lg:col-span-3">
