@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Keyboard, X } from 'lucide-react';
 import {
   Dialog,
@@ -22,7 +23,7 @@ interface ShortcutGroup {
   title: string;
   shortcuts: Array<{
     keys: string | string[];
-    description: string;
+    descriptionKey: string;
   }>;
 }
 
@@ -30,45 +31,47 @@ const SHORTCUT_GROUPS: ShortcutGroup[] = [
   {
     title: 'Universal',
     shortcuts: [
-      { keys: ['/'], description: 'Open command palette (quick)' },
-      { keys: ['Cmd', 'K'], description: 'Open command palette' },
-      { keys: ['Esc'], description: 'Close/Cancel' },
-      { keys: ['?'], description: 'Show this help' },
+      { keys: ['/'], descriptionKey: 'openPalette' },
+      { keys: ['Cmd', 'K'], descriptionKey: 'openPaletteFull' },
+      { keys: ['Esc'], descriptionKey: 'closeCancel' },
+      { keys: ['?'], descriptionKey: 'showHelp' },
     ],
   },
   {
     title: 'Navigation',
     shortcuts: [
-      { keys: ['G', 'H'], description: 'Go to Home' },
-      { keys: ['G', 'D'], description: 'Go to Dashboard' },
-      { keys: ['G', 'S'], description: 'Go to Strands' },
-      { keys: ['G', 'T'], description: 'Go to Tutorials' },
-      { keys: ['G', 'P'], description: 'Go to Profile' },
+      { keys: ['G', 'H'], descriptionKey: 'home' },
+      { keys: ['G', 'D'], descriptionKey: 'dashboard' },
+      { keys: ['G', 'S'], descriptionKey: 'strands' },
+      { keys: ['G', 'T'], descriptionKey: 'tutorials' },
+      { keys: ['G', 'P'], descriptionKey: 'profile' },
     ],
   },
   {
     title: 'Actions',
     shortcuts: [
-      { keys: ['C'], description: 'Create new strand' },
-      { keys: ['I'], description: 'Import data' },
-      { keys: ['E'], description: 'Export data' },
-      { keys: ['A'], description: 'AI Assistant' },
-      { keys: ['T'], description: 'Toggle theme' },
+      { keys: ['C'], descriptionKey: 'create' },
+      { keys: ['I'], descriptionKey: 'import' },
+      { keys: ['E'], descriptionKey: 'export' },
+      { keys: ['A'], descriptionKey: 'aiAssistant' },
+      { keys: ['T'], descriptionKey: 'toggleTheme' },
     ],
   },
   {
     title: 'Editing',
     shortcuts: [
-      { keys: ['Cmd', 'S'], description: 'Save' },
-      { keys: ['Cmd', 'B'], description: 'Bold' },
-      { keys: ['Cmd', 'I'], description: 'Italic' },
-      { keys: ['Cmd', 'Z'], description: 'Undo' },
-      { keys: ['Cmd', 'Shift', 'Z'], description: 'Redo' },
+      { keys: ['Cmd', 'S'], descriptionKey: 'save' },
+      { keys: ['Cmd', 'B'], descriptionKey: 'bold' },
+      { keys: ['Cmd', 'I'], descriptionKey: 'italic' },
+      { keys: ['Cmd', 'Z'], descriptionKey: 'undo' },
+      { keys: ['Cmd', 'Shift', 'Z'], descriptionKey: 'redo' },
     ],
   },
 ];
 
 export function ShortcutsHelp() {
+  const t = useTranslations('keyboard.shortcuts.help');
+  const tGroups = useTranslations('keyboard.shortcuts.groups');
   const [open, setOpen] = useState(false);
 
   // Listen for "?" key to open
@@ -101,10 +104,10 @@ export function ShortcutsHelp() {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Keyboard className="h-5 w-5" />
-            Keyboard Shortcuts
+            {t('title')}
           </DialogTitle>
           <DialogDescription>
-            Master OpenStrand with these keyboard shortcuts
+            {t('description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -112,7 +115,7 @@ export function ShortcutsHelp() {
           {SHORTCUT_GROUPS.map((group, index) => (
             <div key={group.title}>
               <h3 className="font-semibold text-sm text-foreground mb-3">
-                {group.title}
+                {tGroups(`${group.title.toLowerCase()}.title`)}
               </h3>
               
               <div className="space-y-2">
@@ -122,7 +125,7 @@ export function ShortcutsHelp() {
                     className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors"
                   >
                     <span className="text-sm text-muted-foreground">
-                      {shortcut.description}
+                      {tGroups(`${group.title.toLowerCase()}.${shortcut.descriptionKey}`)}
                     </span>
                     <KeyboardShortcut keys={adaptShortcut(shortcut.keys)} />
                   </div>
@@ -142,11 +145,13 @@ export function ShortcutsHelp() {
                 <Keyboard className="h-4 w-4 text-primary" />
               </div>
               <div className="flex-1 space-y-1">
-                <div className="font-semibold text-sm">Pro Tip</div>
+                <div className="font-semibold text-sm">{t('proTip')}</div>
                 <p className="text-xs text-muted-foreground">
-                  Don't remember a shortcut? Just press{' '}
-                  <KeyboardShortcut keys="/" className="inline-flex" />
-                  {' '}and type what you want to do. The command palette will find it for you!
+                  {t.rich('proTipDescription', {
+                    slash: () => (
+                      <KeyboardShortcut keys="/" className="inline-flex" />
+                    ),
+                  })}
                 </p>
               </div>
             </div>
@@ -159,11 +164,11 @@ export function ShortcutsHelp() {
             size="sm"
             onClick={() => window.open('/docs/keyboard-shortcuts', '_blank')}
           >
-            View Full Guide →
+            {t('viewFullGuide')} →
           </Button>
           
           <Button variant="outline" size="sm" onClick={() => setOpen(false)}>
-            Close
+            {t('close')}
           </Button>
         </div>
       </DialogContent>

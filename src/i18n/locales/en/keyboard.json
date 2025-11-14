@@ -1,0 +1,141 @@
+{
+  "commandPalette": {
+    "title": "Command Palette",
+    "placeholder": "Search commands, pages, and data...",
+    "noResults": "No results found",
+    "tryDifferentKeywords": "Try different keywords",
+    "commandsCount": "{count} commands",
+    "searchHint": "Type to search anything",
+    "footer": {
+      "navigate": "Navigate",
+      "select": "Select",
+      "close": "Close"
+    }
+  },
+  "categories": {
+    "navigation": "Navigation",
+    "actions": "Actions",
+    "recent": "Recent",
+    "settings": "Settings",
+    "help": "Help",
+    "data": "Data"
+  },
+  "commands": {
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Go to main dashboard"
+    },
+    "strands": {
+      "title": "Strands",
+      "subtitle": "View your strands"
+    },
+    "tutorials": {
+      "title": "Tutorials",
+      "subtitle": "Learn OpenStrand"
+    },
+    "profile": {
+      "title": "Profile",
+      "subtitle": "View your profile"
+    },
+    "weave": {
+      "title": "Weave",
+      "subtitle": "View knowledge graph"
+    },
+    "createStrand": {
+      "title": "Create New Strand",
+      "subtitle": "Start a new knowledge strand"
+    },
+    "import": {
+      "title": "Import Data",
+      "subtitle": "Import data from file"
+    },
+    "export": {
+      "title": "Export Data",
+      "subtitle": "Export your data"
+    },
+    "search": {
+      "title": "Search",
+      "subtitle": "Search through content"
+    },
+    "aiAssistant": {
+      "title": "AI Assistant",
+      "subtitle": "Open AI assistant"
+    },
+    "preferences": {
+      "title": "Preferences",
+      "subtitle": "Manage your preferences"
+    },
+    "documentation": {
+      "title": "Documentation",
+      "subtitle": "Read the docs"
+    },
+    "toggleTheme": {
+      "title": "Switch to {mode} Mode",
+      "subtitle": "Toggle between light and dark theme"
+    },
+    "shortcuts": {
+      "title": "Keyboard Shortcuts",
+      "subtitle": "View all keyboard shortcuts"
+    },
+    "logout": {
+      "title": "Log Out",
+      "subtitle": "Sign out of your account"
+    }
+  },
+  "shortcuts": {
+    "hint": {
+      "title": "Pro Tip: Keyboard Shortcuts!",
+      "description": "Press {slash} or {cmdK} to open the command palette and navigate anywhere instantly.",
+      "tryNow": "Try it now",
+      "gotIt": "Got it"
+    },
+    "help": {
+      "title": "Keyboard Shortcuts",
+      "description": "Master OpenStrand with these keyboard shortcuts",
+      "viewFullGuide": "View Full Guide",
+      "close": "Close",
+      "proTip": "Pro Tip",
+      "proTipDescription": "Don't remember a shortcut? Just press {slash} and type what you want to do. The command palette will find it for you!"
+    },
+    "groups": {
+      "universal": {
+        "title": "Universal",
+        "openPalette": "Open command palette (quick)",
+        "openPaletteFull": "Open command palette",
+        "closeCancel": "Close/Cancel",
+        "showHelp": "Show this help"
+      },
+      "navigation": {
+        "title": "Navigation",
+        "home": "Go to Home",
+        "dashboard": "Go to Dashboard",
+        "strands": "Go to Strands",
+        "tutorials": "Go to Tutorials",
+        "profile": "Go to Profile"
+      },
+      "actions": {
+        "title": "Actions",
+        "create": "Create new strand",
+        "import": "Import data",
+        "export": "Export data",
+        "aiAssistant": "AI Assistant",
+        "toggleTheme": "Toggle theme"
+      },
+      "editing": {
+        "title": "Editing",
+        "save": "Save",
+        "bold": "Bold",
+        "italic": "Italic",
+        "undo": "Undo",
+        "redo": "Redo"
+      }
+    }
+  },
+  "tour": {
+    "keyboardStep": {
+      "title": "Keyboard Power User",
+      "content": "Press {slash} or {cmdK} ({ctrlK} on Windows) to open the command palette. Navigate anywhere, trigger any action, and search everything—all from your keyboard!"
+    }
+  }
+}
+

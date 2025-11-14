@@ -1,0 +1,141 @@
+{
+  "commandPalette": {
+    "title": "コマンドパレット",
+    "placeholder": "コマンド、ページ、データを検索...",
+    "noResults": "結果が見つかりません",
+    "tryDifferentKeywords": "別のキーワードを試してください",
+    "commandsCount": "{count}個のコマンド",
+    "searchHint": "入力して検索",
+    "footer": {
+      "navigate": "ナビゲート",
+      "select": "選択",
+      "close": "閉じる"
+    }
+  },
+  "categories": {
+    "navigation": "ナビゲーション",
+    "actions": "アクション",
+    "recent": "最近",
+    "settings": "設定",
+    "help": "ヘルプ",
+    "data": "データ"
+  },
+  "commands": {
+    "dashboard": {
+      "title": "ダッシュボード",
+      "subtitle": "メインダッシュボードに移動"
+    },
+    "strands": {
+      "title": "ストランド",
+      "subtitle": "ストランドを表示"
+    },
+    "tutorials": {
+      "title": "チュートリアル",
+      "subtitle": "OpenStrandを学ぶ"
+    },
+    "profile": {
+      "title": "プロフィール",
+      "subtitle": "プロフィールを表示"
+    },
+    "weave": {
+      "title": "ウィーブ",
+      "subtitle": "ナレッジグラフを表示"
+    },
+    "createStrand": {
+      "title": "新しいストランドを作成",
+      "subtitle": "新しいナレッジストランドを開始"
+    },
+    "import": {
+      "title": "データをインポート",
+      "subtitle": "ファイルからデータをインポート"
+    },
+    "export": {
+      "title": "データをエクスポート",
+      "subtitle": "データをエクスポート"
+    },
+    "search": {
+      "title": "検索",
+      "subtitle": "コンテンツを検索"
+    },
+    "aiAssistant": {
+      "title": "AIアシスタント",
+      "subtitle": "AIアシスタントを開く"
+    },
+    "preferences": {
+      "title": "環境設定",
+      "subtitle": "環境設定を管理"
+    },
+    "documentation": {
+      "title": "ドキュメント",
+      "subtitle": "ドキュメントを読む"
+    },
+    "toggleTheme": {
+      "title": "{mode}モードに切り替え",
+      "subtitle": "ライトテーマとダークテーマを切り替える"
+    },
+    "shortcuts": {
+      "title": "キーボードショートカット",
+      "subtitle": "すべてのキーボードショートカットを表示"
+    },
+    "logout": {
+      "title": "ログアウト",
+      "subtitle": "アカウントからサインアウト"
+    }
+  },
+  "shortcuts": {
+    "hint": {
+      "title": "プロのヒント：キーボードショートカット！",
+      "description": "{slash}または{cmdK}を押してコマンドパレットを開き、どこにでも即座に移動できます。",
+      "tryNow": "今すぐ試す",
+      "gotIt": "了解"
+    },
+    "help": {
+      "title": "キーボードショートカット",
+      "description": "これらのキーボードショートカットでOpenStrandをマスターしよう",
+      "viewFullGuide": "完全ガイドを表示",
+      "close": "閉じる",
+      "proTip": "プロのヒント",
+      "proTipDescription": "ショートカットを覚えていない？{slash}を押して、やりたいことを入力するだけ。コマンドパレットが見つけてくれます！"
+    },
+    "groups": {
+      "universal": {
+        "title": "ユニバーサル",
+        "openPalette": "コマンドパレットを開く（クイック）",
+        "openPaletteFull": "コマンドパレットを開く",
+        "closeCancel": "閉じる/キャンセル",
+        "showHelp": "このヘルプを表示"
+      },
+      "navigation": {
+        "title": "ナビゲーション",
+        "home": "ホームに移動",
+        "dashboard": "ダッシュボードに移動",
+        "strands": "ストランドに移動",
+        "tutorials": "チュートリアルに移動",
+        "profile": "プロフィールに移動"
+      },
+      "actions": {
+        "title": "アクション",
+        "create": "新しいストランドを作成",
+        "import": "データをインポート",
+        "export": "データをエクスポート",
+        "aiAssistant": "AIアシスタント",
+        "toggleTheme": "テーマを切り替え"
+      },
+      "editing": {
+        "title": "編集",
+        "save": "保存",
+        "bold": "太字",
+        "italic": "斜体",
+        "undo": "元に戻す",
+        "redo": "やり直す"
+      }
+    }
+  },
+  "tour": {
+    "keyboardStep": {
+      "title": "キーボードパワーユーザー",
+      "content": "{slash}または{cmdK}（Windowsでは{ctrlK}）を押してコマンドパレットを開きます。どこにでも移動し、あらゆるアクションをトリガーし、すべてをキーボードから検索できます！"
+    }
+  }
+}
+

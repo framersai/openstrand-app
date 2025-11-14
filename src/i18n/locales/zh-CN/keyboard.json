@@ -1,0 +1,141 @@
+{
+  "commandPalette": {
+    "title": "命令面板",
+    "placeholder": "搜索命令、页面和数据...",
+    "noResults": "未找到结果",
+    "tryDifferentKeywords": "尝试不同的关键词",
+    "commandsCount": "{count}个命令",
+    "searchHint": "输入以搜索",
+    "footer": {
+      "navigate": "导航",
+      "select": "选择",
+      "close": "关闭"
+    }
+  },
+  "categories": {
+    "navigation": "导航",
+    "actions": "操作",
+    "recent": "最近",
+    "settings": "设置",
+    "help": "帮助",
+    "data": "数据"
+  },
+  "commands": {
+    "dashboard": {
+      "title": "仪表板",
+      "subtitle": "转到主仪表板"
+    },
+    "strands": {
+      "title": "线索",
+      "subtitle": "查看您的线索"
+    },
+    "tutorials": {
+      "title": "教程",
+      "subtitle": "学习OpenStrand"
+    },
+    "profile": {
+      "title": "个人资料",
+      "subtitle": "查看您的个人资料"
+    },
+    "weave": {
+      "title": "编织",
+      "subtitle": "查看知识图谱"
+    },
+    "createStrand": {
+      "title": "创建新线索",
+      "subtitle": "开始一个新的知识线索"
+    },
+    "import": {
+      "title": "导入数据",
+      "subtitle": "从文件导入数据"
+    },
+    "export": {
+      "title": "导出数据",
+      "subtitle": "导出您的数据"
+    },
+    "search": {
+      "title": "搜索",
+      "subtitle": "搜索内容"
+    },
+    "aiAssistant": {
+      "title": "AI助手",
+      "subtitle": "打开AI助手"
+    },
+    "preferences": {
+      "title": "偏好设置",
+      "subtitle": "管理您的偏好设置"
+    },
+    "documentation": {
+      "title": "文档",
+      "subtitle": "阅读文档"
+    },
+    "toggleTheme": {
+      "title": "切换到{mode}模式",
+      "subtitle": "在浅色和深色主题之间切换"
+    },
+    "shortcuts": {
+      "title": "键盘快捷键",
+      "subtitle": "查看所有键盘快捷键"
+    },
+    "logout": {
+      "title": "登出",
+      "subtitle": "退出您的帐户"
+    }
+  },
+  "shortcuts": {
+    "hint": {
+      "title": "专业提示：键盘快捷键！",
+      "description": "按{slash}或{cmdK}打开命令面板，立即导航到任何地方。",
+      "tryNow": "立即尝试",
+      "gotIt": "知道了"
+    },
+    "help": {
+      "title": "键盘快捷键",
+      "description": "使用这些键盘快捷键掌握OpenStrand",
+      "viewFullGuide": "查看完整指南",
+      "close": "关闭",
+      "proTip": "专业提示",
+      "proTipDescription": "不记得快捷键了？只需按{slash}并输入您想做的事情。命令面板会为您找到它！"
+    },
+    "groups": {
+      "universal": {
+        "title": "通用",
+        "openPalette": "打开命令面板（快速）",
+        "openPaletteFull": "打开命令面板",
+        "closeCancel": "关闭/取消",
+        "showHelp": "显示此帮助"
+      },
+      "navigation": {
+        "title": "导航",
+        "home": "转到主页",
+        "dashboard": "转到仪表板",
+        "strands": "转到线索",
+        "tutorials": "转到教程",
+        "profile": "转到个人资料"
+      },
+      "actions": {
+        "title": "操作",
+        "create": "创建新线索",
+        "import": "导入数据",
+        "export": "导出数据",
+        "aiAssistant": "AI助手",
+        "toggleTheme": "切换主题"
+      },
+      "editing": {
+        "title": "编辑",
+        "save": "保存",
+        "bold": "粗体",
+        "italic": "斜体",
+        "undo": "撤销",
+        "redo": "重做"
+      }
+    }
+  },
+  "tour": {
+    "keyboardStep": {
+      "title": "键盘高级用户",
+      "content": "按{slash}或{cmdK}（Windows上为{ctrlK}）打开命令面板。从键盘导航到任何地方、触发任何操作并搜索所有内容！"
+    }
+  }
+}
+

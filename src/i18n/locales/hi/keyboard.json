@@ -1,0 +1,141 @@
+{
+  "commandPalette": {
+    "title": "कमांड पैलेट",
+    "placeholder": "कमांड, पेज और डेटा खोजें...",
+    "noResults": "कोई परिणाम नहीं मिला",
+    "tryDifferentKeywords": "विभिन्न कीवर्ड आज़माएं",
+    "commandsCount": "{count} कमांड",
+    "searchHint": "खोजने के लिए टाइप करें",
+    "footer": {
+      "navigate": "नेविगेट करें",
+      "select": "चुनें",
+      "close": "बंद करें"
+    }
+  },
+  "categories": {
+    "navigation": "नेविगेशन",
+    "actions": "कार्य",
+    "recent": "हाल ही में",
+    "settings": "सेटिंग्स",
+    "help": "मदद",
+    "data": "डेटा"
+  },
+  "commands": {
+    "dashboard": {
+      "title": "डैशबोर्ड",
+      "subtitle": "मुख्य डैशबोर्ड पर जाएं"
+    },
+    "strands": {
+      "title": "स्ट्रैंड्स",
+      "subtitle": "अपने स्ट्रैंड्स देखें"
+    },
+    "tutorials": {
+      "title": "ट्यूटोरियल",
+      "subtitle": "OpenStrand सीखें"
+    },
+    "profile": {
+      "title": "प्रोफ़ाइल",
+      "subtitle": "अपनी प्रोफ़ाइल देखें"
+    },
+    "weave": {
+      "title": "बुनाई",
+      "subtitle": "ज्ञान ग्राफ देखें"
+    },
+    "createStrand": {
+      "title": "नया स्ट्रैंड बनाएं",
+      "subtitle": "एक नया ज्ञान स्ट्रैंड शुरू करें"
+    },
+    "import": {
+      "title": "डेटा आयात करें",
+      "subtitle": "फ़ाइल से डेटा आयात करें"
+    },
+    "export": {
+      "title": "डेटा निर्यात करें",
+      "subtitle": "अपना डेटा निर्यात करें"
+    },
+    "search": {
+      "title": "खोजें",
+      "subtitle": "सामग्री में खोजें"
+    },
+    "aiAssistant": {
+      "title": "AI सहायक",
+      "subtitle": "AI सहायक खोलें"
+    },
+    "preferences": {
+      "title": "प्राथमिकताएं",
+      "subtitle": "अपनी प्राथमिकताओं को प्रबंधित करें"
+    },
+    "documentation": {
+      "title": "दस्तावेज़ीकरण",
+      "subtitle": "दस्तावेज़ पढ़ें"
+    },
+    "toggleTheme": {
+      "title": "{mode} मोड पर स्विच करें",
+      "subtitle": "हल्की और गहरी थीम के बीच टॉगल करें"
+    },
+    "shortcuts": {
+      "title": "कीबोर्ड शॉर्टकट",
+      "subtitle": "सभी कीबोर्ड शॉर्टकट देखें"
+    },
+    "logout": {
+      "title": "लॉग आउट",
+      "subtitle": "अपने खाते से साइन आउट करें"
+    }
+  },
+  "shortcuts": {
+    "hint": {
+      "title": "प्रो टिप: कीबोर्ड शॉर्टकट!",
+      "description": "कमांड पैलेट खोलने और तुरंत कहीं भी नेविगेट करने के लिए {slash} या {cmdK} दबाएं।",
+      "tryNow": "अभी आज़माएं",
+      "gotIt": "समझ गया"
+    },
+    "help": {
+      "title": "कीबोर्ड शॉर्टकट",
+      "description": "इन कीबोर्ड शॉर्टकट के साथ OpenStrand में महारत हासिल करें",
+      "viewFullGuide": "पूर्ण गाइड देखें",
+      "close": "बंद करें",
+      "proTip": "प्रो टिप",
+      "proTipDescription": "शॉर्टकट याद नहीं है? बस {slash} दबाएं और जो करना चाहते हैं वह टाइप करें। कमांड पैलेट इसे आपके लिए ढूंढ लेगा!"
+    },
+    "groups": {
+      "universal": {
+        "title": "सार्वभौमिक",
+        "openPalette": "कमांड पैलेट खोलें (त्वरित)",
+        "openPaletteFull": "कमांड पैलेट खोलें",
+        "closeCancel": "बंद करें/रद्द करें",
+        "showHelp": "यह मदद दिखाएं"
+      },
+      "navigation": {
+        "title": "नेविगेशन",
+        "home": "होम पर जाएं",
+        "dashboard": "डैशबोर्ड पर जाएं",
+        "strands": "स्ट्रैंड्स पर जाएं",
+        "tutorials": "ट्यूटोरियल पर जाएं",
+        "profile": "प्रोफ़ाइल पर जाएं"
+      },
+      "actions": {
+        "title": "कार्य",
+        "create": "नया स्ट्रैंड बनाएं",
+        "import": "डेटा आयात करें",
+        "export": "डेटा निर्यात करें",
+        "aiAssistant": "AI सहायक",
+        "toggleTheme": "थीम टॉगल करें"
+      },
+      "editing": {
+        "title": "संपादन",
+        "save": "सहेजें",
+        "bold": "बोल्ड",
+        "italic": "इटैलिक",
+        "undo": "पूर्ववत करें",
+        "redo": "फिर से करें"
+      }
+    }
+  },
+  "tour": {
+    "keyboardStep": {
+      "title": "कीबोर्ड पावर यूज़र",
+      "content": "कमांड पैलेट खोलने के लिए {slash} या {cmdK} ({ctrlK} Windows पर) दबाएं। अपने कीबोर्ड से कहीं भी नेविगेट करें, कोई भी क्रिया ट्रिगर करें और सब कुछ खोजें!"
+    }
+  }
+}
+

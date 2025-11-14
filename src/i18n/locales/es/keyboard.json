@@ -1,0 +1,141 @@
+{
+  "commandPalette": {
+    "title": "Paleta de comandos",
+    "placeholder": "Buscar comandos, páginas y datos...",
+    "noResults": "No se encontraron resultados",
+    "tryDifferentKeywords": "Prueba con palabras clave diferentes",
+    "commandsCount": "{count, plural, =1 {1 comando} other {# comandos}}",
+    "searchHint": "Escribe para buscar",
+    "footer": {
+      "navigate": "Navegar",
+      "select": "Seleccionar",
+      "close": "Cerrar"
+    }
+  },
+  "categories": {
+    "navigation": "Navegación",
+    "actions": "Acciones",
+    "recent": "Recientes",
+    "settings": "Configuración",
+    "help": "Ayuda",
+    "data": "Datos"
+  },
+  "commands": {
+    "dashboard": {
+      "title": "Panel",
+      "subtitle": "Ir al panel principal"
+    },
+    "strands": {
+      "title": "Hilos",
+      "subtitle": "Ver tus hilos"
+    },
+    "tutorials": {
+      "title": "Tutoriales",
+      "subtitle": "Aprender OpenStrand"
+    },
+    "profile": {
+      "title": "Perfil",
+      "subtitle": "Ver tu perfil"
+    },
+    "weave": {
+      "title": "Tejer",
+      "subtitle": "Ver grafo de conocimiento"
+    },
+    "createStrand": {
+      "title": "Crear nuevo hilo",
+      "subtitle": "Iniciar un nuevo hilo de conocimiento"
+    },
+    "import": {
+      "title": "Importar datos",
+      "subtitle": "Importar datos desde archivo"
+    },
+    "export": {
+      "title": "Exportar datos",
+      "subtitle": "Exportar tus datos"
+    },
+    "search": {
+      "title": "Buscar",
+      "subtitle": "Buscar en el contenido"
+    },
+    "aiAssistant": {
+      "title": "Asistente de IA",
+      "subtitle": "Abrir asistente de IA"
+    },
+    "preferences": {
+      "title": "Preferencias",
+      "subtitle": "Gestionar tus preferencias"
+    },
+    "documentation": {
+      "title": "Documentación",
+      "subtitle": "Leer la documentación"
+    },
+    "toggleTheme": {
+      "title": "Cambiar a modo {mode}",
+      "subtitle": "Alternar entre tema claro y oscuro"
+    },
+    "shortcuts": {
+      "title": "Atajos de teclado",
+      "subtitle": "Ver todos los atajos de teclado"
+    },
+    "logout": {
+      "title": "Cerrar sesión",
+      "subtitle": "Salir de tu cuenta"
+    }
+  },
+  "shortcuts": {
+    "hint": {
+      "title": "Consejo: ¡Atajos de teclado!",
+      "description": "Presiona {slash} o {cmdK} para abrir la paleta de comandos y navegar instantáneamente a cualquier lugar.",
+      "tryNow": "Probar ahora",
+      "gotIt": "Entendido"
+    },
+    "help": {
+      "title": "Atajos de teclado",
+      "description": "Domina OpenStrand con estos atajos de teclado",
+      "viewFullGuide": "Ver guía completa",
+      "close": "Cerrar",
+      "proTip": "Consejo profesional",
+      "proTipDescription": "¿No recuerdas un atajo? Simplemente presiona {slash} y escribe lo que quieres hacer. ¡La paleta de comandos lo encontrará por ti!"
+    },
+    "groups": {
+      "universal": {
+        "title": "Universal",
+        "openPalette": "Abrir paleta de comandos (rápido)",
+        "openPaletteFull": "Abrir paleta de comandos",
+        "closeCancel": "Cerrar/Cancelar",
+        "showHelp": "Mostrar esta ayuda"
+      },
+      "navigation": {
+        "title": "Navegación",
+        "home": "Ir a Inicio",
+        "dashboard": "Ir al Panel",
+        "strands": "Ir a Hilos",
+        "tutorials": "Ir a Tutoriales",
+        "profile": "Ir al Perfil"
+      },
+      "actions": {
+        "title": "Acciones",
+        "create": "Crear nuevo hilo",
+        "import": "Importar datos",
+        "export": "Exportar datos",
+        "aiAssistant": "Asistente IA",
+        "toggleTheme": "Alternar tema"
+      },
+      "editing": {
+        "title": "Edición",
+        "save": "Guardar",
+        "bold": "Negrita",
+        "italic": "Cursiva",
+        "undo": "Deshacer",
+        "redo": "Rehacer"
+      }
+    }
+  },
+  "tour": {
+    "keyboardStep": {
+      "title": "Usuario avanzado de teclado",
+      "content": "Presiona {slash} o {cmdK} ({ctrlK} en Windows) para abrir la paleta de comandos. ¡Navega a cualquier lugar, activa cualquier acción y busca todo desde tu teclado!"
+    }
+  }
+}
+

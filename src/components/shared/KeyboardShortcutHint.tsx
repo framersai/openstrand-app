@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { Command, X, Keyboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -22,6 +23,7 @@ export function KeyboardShortcutHint({
   className,
   autoDismissAfter,
 }: KeyboardShortcutHintProps) {
+  const t = useTranslations('keyboard.shortcuts.hint');
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
@@ -86,19 +88,22 @@ export function KeyboardShortcutHint({
 
         <div className="flex-1 space-y-2">
           <div className="font-semibold text-foreground">
-            Pro Tip: Keyboard Shortcuts!
+            {t('title')}
           </div>
           
           <p className="text-sm text-muted-foreground">
-            Press{' '}
-            <kbd className="px-2 py-1 bg-muted rounded font-mono text-xs">
-              /
-            </kbd>
-            {' '}or{' '}
-            <kbd className="px-2 py-1 bg-muted rounded font-mono text-xs">
-              {isMac ? '⌘' : 'Ctrl'}+K
-            </kbd>
-            {' '}to open the command palette and navigate anywhere instantly.
+            {t.rich('description', {
+              slash: () => (
+                <kbd className="px-2 py-1 bg-muted rounded font-mono text-xs">
+                  /
+                </kbd>
+              ),
+              cmdK: () => (
+                <kbd className="px-2 py-1 bg-muted rounded font-mono text-xs">
+                  {isMac ? '⌘' : 'Ctrl'}+K
+                </kbd>
+              ),
+            })}
           </p>
 
           <div className="flex items-center gap-2 pt-2">
@@ -118,7 +123,7 @@ export function KeyboardShortcutHint({
               className="h-8 text-xs"
             >
               <Command className="h-3 w-3 mr-1" />
-              Try it now
+              {t('tryNow')}
             </Button>
             
             <Button
@@ -127,7 +132,7 @@ export function KeyboardShortcutHint({
               onClick={handleDismiss}
               className="h-8 text-xs"
             >
-              Got it
+              {t('gotIt')}
             </Button>
           </div>
         </div>

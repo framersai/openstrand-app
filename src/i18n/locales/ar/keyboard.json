@@ -1,0 +1,141 @@
+{
+  "commandPalette": {
+    "title": "لوحة الأوامر",
+    "placeholder": "البحث عن الأوامر والصفحات والبيانات...",
+    "noResults": "لم يتم العثور على نتائج",
+    "tryDifferentKeywords": "جرب كلمات مفتاحية مختلفة",
+    "commandsCount": "{count} أمر",
+    "searchHint": "اكتب للبحث",
+    "footer": {
+      "navigate": "التنقل",
+      "select": "تحديد",
+      "close": "إغلاق"
+    }
+  },
+  "categories": {
+    "navigation": "التنقل",
+    "actions": "الإجراءات",
+    "recent": "الأخيرة",
+    "settings": "الإعدادات",
+    "help": "المساعدة",
+    "data": "البيانات"
+  },
+  "commands": {
+    "dashboard": {
+      "title": "لوحة المعلومات",
+      "subtitle": "الانتقال إلى لوحة المعلومات الرئيسية"
+    },
+    "strands": {
+      "title": "الخيوط",
+      "subtitle": "عرض خيوطك"
+    },
+    "tutorials": {
+      "title": "البرامج التعليمية",
+      "subtitle": "تعلم OpenStrand"
+    },
+    "profile": {
+      "title": "الملف الشخصي",
+      "subtitle": "عرض ملفك الشخصي"
+    },
+    "weave": {
+      "title": "النسيج",
+      "subtitle": "عرض رسم المعرفة"
+    },
+    "createStrand": {
+      "title": "إنشاء خيط جديد",
+      "subtitle": "بدء خيط معرفة جديد"
+    },
+    "import": {
+      "title": "استيراد البيانات",
+      "subtitle": "استيراد البيانات من ملف"
+    },
+    "export": {
+      "title": "تصدير البيانات",
+      "subtitle": "تصدير بياناتك"
+    },
+    "search": {
+      "title": "بحث",
+      "subtitle": "البحث في المحتوى"
+    },
+    "aiAssistant": {
+      "title": "مساعد الذكاء الاصطناعي",
+      "subtitle": "فتح مساعد الذكاء الاصطناعي"
+    },
+    "preferences": {
+      "title": "التفضيلات",
+      "subtitle": "إدارة تفضيلاتك"
+    },
+    "documentation": {
+      "title": "التوثيق",
+      "subtitle": "قراءة التوثيق"
+    },
+    "toggleTheme": {
+      "title": "التبديل إلى وضع {mode}",
+      "subtitle": "التبديل بين السمة الفاتحة والداكنة"
+    },
+    "shortcuts": {
+      "title": "اختصارات لوحة المفاتيح",
+      "subtitle": "عرض جميع اختصارات لوحة المفاتيح"
+    },
+    "logout": {
+      "title": "تسجيل الخروج",
+      "subtitle": "الخروج من حسابك"
+    }
+  },
+  "shortcuts": {
+    "hint": {
+      "title": "نصيحة محترف: اختصارات لوحة المفاتيح!",
+      "description": "اضغط على {slash} أو {cmdK} لفتح لوحة الأوامر والتنقل فوراً إلى أي مكان.",
+      "tryNow": "جربها الآن",
+      "gotIt": "فهمت"
+    },
+    "help": {
+      "title": "اختصارات لوحة المفاتيح",
+      "description": "أتقن OpenStrand بهذه الاختصارات",
+      "viewFullGuide": "عرض الدليل الكامل",
+      "close": "إغلاق",
+      "proTip": "نصيحة محترف",
+      "proTipDescription": "لا تتذكر اختصاراً؟ فقط اضغط على {slash} واكتب ما تريد فعله. ستجده لوحة الأوامر لك!"
+    },
+    "groups": {
+      "universal": {
+        "title": "عام",
+        "openPalette": "فتح لوحة الأوامر (سريع)",
+        "openPaletteFull": "فتح لوحة الأوامر",
+        "closeCancel": "إغلاق/إلغاء",
+        "showHelp": "إظهار هذه المساعدة"
+      },
+      "navigation": {
+        "title": "التنقل",
+        "home": "الانتقال إلى الصفحة الرئيسية",
+        "dashboard": "الانتقال إلى لوحة المعلومات",
+        "strands": "الانتقال إلى الخيوط",
+        "tutorials": "الانتقال إلى البرامج التعليمية",
+        "profile": "الانتقال إلى الملف الشخصي"
+      },
+      "actions": {
+        "title": "الإجراءات",
+        "create": "إنشاء خيط جديد",
+        "import": "استيراد البيانات",
+        "export": "تصدير البيانات",
+        "aiAssistant": "مساعد الذكاء الاصطناعي",
+        "toggleTheme": "تبديل السمة"
+      },
+      "editing": {
+        "title": "التحرير",
+        "save": "حفظ",
+        "bold": "عريض",
+        "italic": "مائل",
+        "undo": "تراجع",
+        "redo": "إعادة"
+      }
+    }
+  },
+  "tour": {
+    "keyboardStep": {
+      "title": "مستخدم لوحة المفاتيح المتقدم",
+      "content": "اضغط على {slash} أو {cmdK} ({ctrlK} على Windows) لفتح لوحة الأوامر. تنقل في أي مكان، وقم بتنشيط أي إجراء، وابحث عن كل شيء من لوحة المفاتيح الخاصة بك!"
+    }
+  }
+}
+

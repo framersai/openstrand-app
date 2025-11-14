@@ -1,0 +1,141 @@
+{
+  "commandPalette": {
+    "title": "Palette de commandes",
+    "placeholder": "Rechercher des commandes, pages et données...",
+    "noResults": "Aucun résultat trouvé",
+    "tryDifferentKeywords": "Essayez des mots-clés différents",
+    "commandsCount": "{count, plural, =1 {1 commande} other {# commandes}}",
+    "searchHint": "Tapez pour rechercher",
+    "footer": {
+      "navigate": "Naviguer",
+      "select": "Sélectionner",
+      "close": "Fermer"
+    }
+  },
+  "categories": {
+    "navigation": "Navigation",
+    "actions": "Actions",
+    "recent": "Récent",
+    "settings": "Paramètres",
+    "help": "Aide",
+    "data": "Données"
+  },
+  "commands": {
+    "dashboard": {
+      "title": "Tableau de bord",
+      "subtitle": "Aller au tableau de bord principal"
+    },
+    "strands": {
+      "title": "Fils",
+      "subtitle": "Voir vos fils"
+    },
+    "tutorials": {
+      "title": "Tutoriels",
+      "subtitle": "Apprendre OpenStrand"
+    },
+    "profile": {
+      "title": "Profil",
+      "subtitle": "Voir votre profil"
+    },
+    "weave": {
+      "title": "Tisser",
+      "subtitle": "Voir le graphe de connaissances"
+    },
+    "createStrand": {
+      "title": "Créer un nouveau fil",
+      "subtitle": "Commencer un nouveau fil de connaissances"
+    },
+    "import": {
+      "title": "Importer des données",
+      "subtitle": "Importer des données depuis un fichier"
+    },
+    "export": {
+      "title": "Exporter des données",
+      "subtitle": "Exporter vos données"
+    },
+    "search": {
+      "title": "Rechercher",
+      "subtitle": "Rechercher dans le contenu"
+    },
+    "aiAssistant": {
+      "title": "Assistant IA",
+      "subtitle": "Ouvrir l'assistant IA"
+    },
+    "preferences": {
+      "title": "Préférences",
+      "subtitle": "Gérer vos préférences"
+    },
+    "documentation": {
+      "title": "Documentation",
+      "subtitle": "Lire la documentation"
+    },
+    "toggleTheme": {
+      "title": "Passer en mode {mode}",
+      "subtitle": "Basculer entre le thème clair et sombre"
+    },
+    "shortcuts": {
+      "title": "Raccourcis clavier",
+      "subtitle": "Voir tous les raccourcis clavier"
+    },
+    "logout": {
+      "title": "Se déconnecter",
+      "subtitle": "Se déconnecter de votre compte"
+    }
+  },
+  "shortcuts": {
+    "hint": {
+      "title": "Astuce : Raccourcis clavier !",
+      "description": "Appuyez sur {slash} ou {cmdK} pour ouvrir la palette de commandes et naviguer instantanément n'importe où.",
+      "tryNow": "Essayer maintenant",
+      "gotIt": "Compris"
+    },
+    "help": {
+      "title": "Raccourcis clavier",
+      "description": "Maîtrisez OpenStrand avec ces raccourcis clavier",
+      "viewFullGuide": "Voir le guide complet",
+      "close": "Fermer",
+      "proTip": "Astuce professionnelle",
+      "proTipDescription": "Vous ne vous souvenez pas d'un raccourci ? Appuyez simplement sur {slash} et tapez ce que vous voulez faire. La palette de commandes le trouvera pour vous !"
+    },
+    "groups": {
+      "universal": {
+        "title": "Universel",
+        "openPalette": "Ouvrir la palette de commandes (rapide)",
+        "openPaletteFull": "Ouvrir la palette de commandes",
+        "closeCancel": "Fermer/Annuler",
+        "showHelp": "Afficher cette aide"
+      },
+      "navigation": {
+        "title": "Navigation",
+        "home": "Aller à l'accueil",
+        "dashboard": "Aller au tableau de bord",
+        "strands": "Aller aux fils",
+        "tutorials": "Aller aux tutoriels",
+        "profile": "Aller au profil"
+      },
+      "actions": {
+        "title": "Actions",
+        "create": "Créer un nouveau fil",
+        "import": "Importer des données",
+        "export": "Exporter des données",
+        "aiAssistant": "Assistant IA",
+        "toggleTheme": "Basculer le thème"
+      },
+      "editing": {
+        "title": "Édition",
+        "save": "Enregistrer",
+        "bold": "Gras",
+        "italic": "Italique",
+        "undo": "Annuler",
+        "redo": "Rétablir"
+      }
+    }
+  },
+  "tour": {
+    "keyboardStep": {
+      "title": "Utilisateur avancé du clavier",
+      "content": "Appuyez sur {slash} ou {cmdK} ({ctrlK} sur Windows) pour ouvrir la palette de commandes. Naviguez n'importe où, déclenchez n'importe quelle action et recherchez tout depuis votre clavier !"
+    }
+  }
+}
+

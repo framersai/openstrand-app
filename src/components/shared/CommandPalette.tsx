@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   Search,
   FileText,
@@ -136,6 +137,9 @@ export function CommandPalette({
   customCommands = [],
 }: CommandPaletteProps) {
   const router = useRouter();
+  const t = useTranslations('keyboard');
+  const tCommands = useTranslations('keyboard.commands');
+  const tCategories = useTranslations('keyboard.categories');
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [recentCommands, setRecentCommands] = useState<string[]>([]);
@@ -148,9 +152,9 @@ export function CommandPalette({
     // Navigation
     {
       id: 'nav-dashboard',
-      title: 'Dashboard',
-      subtitle: 'Go to main dashboard',
-      description: 'Jump to the analytics dashboard to monitor activity and usage.',
+      title: tCommands('dashboard.title'),
+      subtitle: tCommands('dashboard.subtitle'),
+      description: tCommands('dashboard.subtitle'),
       icon: BarChart3,
       action: () => router.push('/'),
       category: 'navigation',
@@ -160,9 +164,9 @@ export function CommandPalette({
     },
     {
       id: 'nav-strands',
-      title: 'Strands',
-      subtitle: 'View your strands',
-      description: 'Browse, search, and manage every strand in your workspace.',
+      title: tCommands('strands.title'),
+      subtitle: tCommands('strands.subtitle'),
+      description: tCommands('strands.subtitle'),
       icon: FileText,
       action: () => router.push('/pkms/strands'),
       category: 'navigation',
@@ -172,9 +176,9 @@ export function CommandPalette({
     },
     {
       id: 'nav-tutorials',
-      title: 'Tutorials',
-      subtitle: 'Learn OpenStrand',
-      description: 'Open the interactive tutorial library to learn new workflows.',
+      title: tCommands('tutorials.title'),
+      subtitle: tCommands('tutorials.subtitle'),
+      description: tCommands('tutorials.subtitle'),
       icon: Book,
       action: () => router.push('/tutorials'),
       category: 'navigation',
@@ -184,9 +188,9 @@ export function CommandPalette({
     },
     {
       id: 'nav-profile',
-      title: 'Profile',
-      subtitle: 'View your profile',
-      description: 'Edit your public details, preferences, and connected apps.',
+      title: tCommands('profile.title'),
+      subtitle: tCommands('profile.subtitle'),
+      description: tCommands('profile.subtitle'),
       icon: Users,
       action: () => router.push('/profile'),
       category: 'navigation',
@@ -198,9 +202,9 @@ export function CommandPalette({
     // Actions
     {
       id: 'action-new-strand',
-      title: 'Create New Strand',
-      subtitle: 'Start a new knowledge strand',
-      description: 'Opens the composer so you can capture a new strand instantly.',
+      title: tCommands('createStrand.title'),
+      subtitle: tCommands('createStrand.subtitle'),
+      description: tCommands('createStrand.subtitle'),
       icon: Sparkles,
       action: () => {
         router.push('/pkms/strands');
@@ -215,9 +219,9 @@ export function CommandPalette({
     // Settings
     {
       id: 'settings-preferences',
-      title: 'Preferences',
-      subtitle: 'Manage your preferences',
-      description: 'Open the preferences panel for theme, keyboard shortcuts, and more.',
+      title: tCommands('preferences.title'),
+      subtitle: tCommands('preferences.subtitle'),
+      description: tCommands('preferences.subtitle'),
       icon: Settings,
       action: () => router.push('/profile?tab=preferences'),
       category: 'settings',
@@ -228,9 +232,9 @@ export function CommandPalette({
     // Help
     {
       id: 'help-docs',
-      title: 'Documentation',
-      subtitle: 'Read the docs',
-      description: 'Open the documentation site in a new tab.',
+      title: tCommands('documentation.title'),
+      subtitle: tCommands('documentation.subtitle'),
+      description: tCommands('documentation.subtitle'),
       icon: HelpCircle,
       action: () => window.open('https://docs.openstrand.ai', '_blank'),
       category: 'help',
@@ -238,7 +242,7 @@ export function CommandPalette({
       shortcut: '?',
       tags: ['support'],
     },
-  ], [router]);
+  ], [router, tCommands]);
 
   /**
    * Combine default and custom commands
@@ -409,14 +413,14 @@ export function CommandPalette({
             <Search className="h-5 w-5 text-muted-foreground mr-3 shrink-0" />
             <Input
               ref={searchInputRef}
-              placeholder="Search commands, data, and controls..."
+              placeholder={t('commandPalette.placeholder')}
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
                 setSelectedIndex(0);
               }}
               className="border-0 shadow-none focus-visible:ring-0 text-base"
-              aria-label="Search commands"
+              aria-label={t('commandPalette.placeholder')}
             />
             <kbd className="hidden sm:flex h-6 items-center gap-1 rounded border bg-muted px-2 font-mono text-xs text-muted-foreground">
               <span>ESC</span>
@@ -429,19 +433,19 @@ export function CommandPalette({
             <div className="max-h-[26rem] overflow-y-auto p-2">
               {filteredCommands.length === 0 ? (
                 <div className="py-12 text-center">
-                  <p className="text-sm text-muted-foreground">No results found</p>
+                  <p className="text-sm text-muted-foreground">{t('commandPalette.noResults')}</p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Try different keywords or filter terms
+                    {t('commandPalette.tryDifferentKeywords')}
                   </p>
                 </div>
               ) : (
                 groupedCommands.map(({ category, commands }, groupIndex) => (
                   <div key={category.id} className={groupIndex > 0 ? 'mt-4' : ''}>
-                    {/* Category Header */}
-                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                      {category.icon && <category.icon className="h-3 w-3" />}
-                      {category.label}
-                    </div>
+                {/* Category Header */}
+                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                  {category.icon && <category.icon className="h-3 w-3" />}
+                  {tCategories(category.id)}
+                </div>
 
                     {/* Commands in this category */}
                     <div className="mt-1 space-y-1">
@@ -541,23 +545,23 @@ export function CommandPalette({
               <div className="flex flex-wrap items-center gap-3">
                 <span className="flex items-center gap-1">
                   <kbd className="h-4 rounded border bg-muted px-1 font-mono">↑↓</kbd>
-                  Navigate
+                  {t('commandPalette.footer.navigate')}
                 </span>
                 <span className="flex items-center gap-1">
                   <kbd className="h-4 rounded border bg-muted px-1 font-mono">↵</kbd>
-                  Select
+                  {t('commandPalette.footer.select')}
                 </span>
                 <span className="flex items-center gap-1">
                   <kbd className="h-4 rounded border bg-muted px-1 font-mono">ESC</kbd>
-                  Close
+                  {t('commandPalette.footer.close')}
                 </span>
                 <span className="flex items-center gap-1">
                   <kbd className="h-4 rounded border bg-muted px-1 font-mono">/</kbd>
-                  Quick search
+                  {t('commandPalette.searchHint')}
                 </span>
               </div>
               <span className="hidden sm:block">
-                {filteredCommands.length} command{filteredCommands.length !== 1 ? 's' : ''}
+                {t('commandPalette.commandsCount', { count: filteredCommands.length })}
               </span>
             </div>
           </div>
