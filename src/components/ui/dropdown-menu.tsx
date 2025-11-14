@@ -6,8 +6,33 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
+function normalizeSlotChild(child: React.ReactNode) {
+  if (!React.isValidElement(child)) {
+    return child;
+  }
+
+  const content = child.props?.children;
+  if (React.Children.count(content) <= 1) {
+    return child;
+  }
+
+  return React.cloneElement(
+    child,
+    undefined,
+    <span className="inline-flex items-center gap-2">{content}</span>
+  );
+}
+
 const DropdownMenu = DropdownMenuPrimitive.Root;
-const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
+const DropdownMenuTrigger = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
+>(({ children, ...props }, ref) => (
+  <DropdownMenuPrimitive.Trigger ref={ref} {...props}>
+    {props.asChild ? normalizeSlotChild(children) : children}
+  </DropdownMenuPrimitive.Trigger>
+));
+DropdownMenuTrigger.displayName = DropdownMenuPrimitive.Trigger.displayName;
 const DropdownMenuGroup = DropdownMenuPrimitive.Group;
 const DropdownMenuPortal = DropdownMenuPrimitive.Portal;
 const DropdownMenuSub = DropdownMenuPrimitive.Sub;

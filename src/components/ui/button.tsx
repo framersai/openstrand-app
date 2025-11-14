@@ -56,6 +56,29 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, loading, leftIcon, rightIcon, children, disabled, ...props }, ref) => {
+    let slottableChild = children;
+
+    if (asChild) {
+      if (!React.isValidElement(slottableChild)) {
+        throw new Error('[Button] asChild requires a valid React element as its only child.');
+      }
+
+      const childContent = slottableChild.props?.children;
+      const childContentCount = React.Children.count(childContent);
+
+      if (childContentCount === 0) {
+        throw new Error('[Button] asChild requires the provided element to have child content.');
+      }
+
+      if (childContentCount > 1) {
+        slottableChild = React.cloneElement(
+          slottableChild,
+          undefined,
+          <span className="inline-flex items-center gap-2">{childContent}</span>
+        );
+      }
+    }
+
     const Comp = asChild ? Slot : 'button';
     return (
       <Comp
@@ -89,7 +112,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           </svg>
         )}
         {!loading && leftIcon && <span className="mr-2">{leftIcon}</span>}
-        {children}
+        {asChild ? slottableChild : children}
         {!loading && rightIcon && <span className="ml-2">{rightIcon}</span>}
       </Comp>
     );

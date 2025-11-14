@@ -284,8 +284,10 @@ export default function CatalogPage() {
               {isAuthenticated ? (
                 <Button asChild size="sm">
                   <Link href={submitDatasetUrl}>
-                    <Upload className="mr-2 h-4 w-4" />
-                    Submit Dataset
+                    <span className="inline-flex items-center gap-2">
+                      <Upload className="h-4 w-4" />
+                      Submit Dataset
+                    </span>
                   </Link>
                 </Button>
               ) : (

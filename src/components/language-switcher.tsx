@@ -149,8 +149,10 @@ export function LanguageSwitcher({
             )}
             aria-label={tLanguage('change')}
           >
-            <span className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-            <LanguageGlyph className={cn(isChanging ? 'animate-spin' : '')} />
+            <span className="relative">
+              <span className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              <LanguageGlyph className={cn(isChanging ? 'animate-spin' : '')} />
+            </span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
@@ -185,21 +187,23 @@ export function LanguageSwitcher({
             isChanging && 'pointer-events-none opacity-60'
           )}
         >
-          <span className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5">
-              {showFlag && <span className="text-lg drop-shadow-sm">{currentLanguage.flag}</span>}
-              <div className="relative flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary/70">
-                <LanguageGlyph className={cn('h-3.5 w-3.5')} />
-              </div>
-            </div>
-            {showName && (
-              <span className="text-sm">
-                {currentLanguage.nativeName}
+          <span className="relative inline-flex w-full items-center gap-2 justify-between">
+            <span className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            <span className="flex items-center gap-2">
+              <span className="flex items-center gap-1.5">
+                {showFlag && <span className="text-lg drop-shadow-sm">{currentLanguage.flag}</span>}
+                <span className="relative flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary/70">
+                  <LanguageGlyph className={cn('h-3.5 w-3.5')} />
+                </span>
               </span>
-            )}
-          </div>
-          <ChevronDown className="h-4 w-4 opacity-50" />
+              {showName && (
+                <span className="text-sm">
+                  {currentLanguage.nativeName}
+                </span>
+              )}
+            </span>
+            <ChevronDown className="h-4 w-4 opacity-50" />
+          </span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[240px]">

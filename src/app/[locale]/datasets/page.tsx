@@ -89,9 +89,11 @@ export default function DatasetCatalogPage() {
             </div>
             {isAuthenticated ? (
               <Button asChild size="sm">
-                <Link href={submitDatasetUrl} className="inline-flex items-center gap-2">
-                  <Upload className="h-4 w-4" />
-                  Submit dataset
+                <Link href={submitDatasetUrl}>
+                  <span className="inline-flex items-center gap-2">
+                    <Upload className="h-4 w-4" />
+                    Submit dataset
+                  </span>
                 </Link>
               </Button>
             ) : (

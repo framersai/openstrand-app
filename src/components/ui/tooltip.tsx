@@ -5,11 +5,35 @@ import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 
 import { cn } from '@/lib/utils';
 
+function normalizeSlotChild(child: React.ReactNode) {
+  if (!React.isValidElement(child)) {
+    return child;
+  }
+  const content = child.props?.children;
+  if (React.Children.count(content) <= 1) {
+    return child;
+  }
+
+  return React.cloneElement(
+    child,
+    undefined,
+    <span className="inline-flex items-center gap-2">{content}</span>
+  );
+}
+
 const TooltipProvider = TooltipPrimitive.Provider;
 
 const Tooltip = TooltipPrimitive.Root;
 
-const TooltipTrigger = TooltipPrimitive.Trigger;
+const TooltipTrigger = React.forwardRef<
+  React.ElementRef<typeof TooltipPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Trigger>
+>(({ children, ...props }, ref) => (
+  <TooltipPrimitive.Trigger ref={ref} {...props}>
+    {props.asChild ? normalizeSlotChild(children) : children}
+  </TooltipPrimitive.Trigger>
+));
+TooltipTrigger.displayName = TooltipPrimitive.Trigger.displayName;
 
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,

@@ -220,20 +220,20 @@ export function FactCheckButton({ content, onVerified, className }: FactCheckBut
               className="gap-2"
             >
               {isChecking ? (
-                <>
+                <span className="inline-flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Checking...
-                </>
+                </span>
               ) : result ? (
-                <>
+                <span className="inline-flex items-center gap-2">
                   {getVerdictIcon()}
                   Verified
-                </>
+                </span>
               ) : (
-                <>
+                <span className="inline-flex items-center gap-2">
                   <ShieldCheck className="h-4 w-4" />
                   Fact-Check
-                </>
+                </span>
               )}
             </Button>
           </TooltipTrigger>

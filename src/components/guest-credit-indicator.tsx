@@ -72,19 +72,22 @@ export function GuestCreditIndicator({
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Link href="/profile">
-              <Button
-                variant="outline"
-                size="sm"
-                className={`h-8 px-2 border-amber-200 dark:border-amber-800 ${className}`}
-              >
-                <User className="h-3 w-3 mr-1" />
-                <span className="text-xs font-medium">Guest</span>
-                <Badge variant="secondary" className="ml-2 px-1 text-xs">
-                  {totalRemaining}/{totalLimit}
-                </Badge>
-              </Button>
-            </Link>
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className={`h-8 px-2 border-amber-200 dark:border-amber-800 ${className}`}
+            >
+              <Link href="/profile">
+                <span className="inline-flex items-center gap-1">
+                  <User className="h-3 w-3" />
+                  <span className="text-xs font-medium">Guest</span>
+                  <Badge variant="secondary" className="ml-2 px-1 text-xs">
+                    {totalRemaining}/{totalLimit}
+                  </Badge>
+                </span>
+              </Link>
+            </Button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="w-64">
             <div className="space-y-2">

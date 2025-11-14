@@ -166,8 +166,10 @@ export function LandingHeader({ onOpenSettings }: LandingHeaderProps) {
             <>
               <Button asChild variant="ghost" size="sm">
                 <a href="https://github.com/framersai/openstrand" target="_blank" rel="noopener noreferrer">
-                  <Github className="mr-2 h-4 w-4" />
-                  Star on GitHub
+                  <span className="inline-flex items-center gap-2">
+                    <Github className="h-4 w-4" />
+                    Star on GitHub
+                  </span>
                 </a>
               </Button>
               <Button asChild size="sm" className="btn-gradient-border">
@@ -261,8 +263,10 @@ export function LandingHeader({ onOpenSettings }: LandingHeaderProps) {
                   <>
                     <Button asChild variant="outline" size="lg" className="w-full">
                       <a href="https://github.com/framersai/openstrand" target="_blank" rel="noopener noreferrer">
-                        <Github className="mr-2 h-4 w-4" />
-                        View on GitHub
+                        <span className="inline-flex items-center gap-2">
+                          <Github className="h-4 w-4" />
+                          View on GitHub
+                        </span>
                       </a>
                     </Button>
                     <Button asChild size="lg" className="btn-gradient-border w-full">

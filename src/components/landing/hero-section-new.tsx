@@ -128,9 +128,11 @@ export function HeroSection({ id, className }: HeroSectionProps) {
               asChild
             >
               <Link href={localizePath('/auth?view=sign-up')} className="group">
-                <InfinityIcon className="h-4 w-4" />
-                {tHero('cta.primary')}
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <span className="inline-flex items-center gap-2">
+                  <InfinityIcon className="h-4 w-4" />
+                  {tHero('cta.primary')}
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </span>
               </Link>
             </Button>
             <Button
@@ -151,8 +153,10 @@ export function HeroSection({ id, className }: HeroSectionProps) {
               asChild
             >
               <Link href={localizePath('/auth?view=sign-in')} className="group">
-                <LogIn className="h-4 w-4" />
-                {tHero('cta.manage')}
+                <span className="inline-flex items-center gap-2">
+                  <LogIn className="h-4 w-4" />
+                  {tHero('cta.manage')}
+                </span>
               </Link>
             </Button>
           </div>

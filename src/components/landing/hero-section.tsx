@@ -79,8 +79,10 @@ export function HeroSection({ id, className }: HeroSectionProps) {
               asChild
             >
               <a href="/" className="group">
-                Start Free Forever
-                <ExternalLink className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                <span className="inline-flex items-center gap-2">
+                  Start Free Forever
+                  <ExternalLink className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </span>
               </a>
             </Button>
             <Button
@@ -90,8 +92,10 @@ export function HeroSection({ id, className }: HeroSectionProps) {
               asChild
             >
               <a href="https://github.com/framersai/openstrand" target="_blank" rel="noopener noreferrer">
-                <Github className="h-5 w-5" />
-                View on GitHub
+                <span className="inline-flex items-center gap-2">
+                  <Github className="h-5 w-5" />
+                  View on GitHub
+                </span>
               </a>
             </Button>
           </div>

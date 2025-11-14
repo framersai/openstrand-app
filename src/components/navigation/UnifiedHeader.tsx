@@ -249,10 +249,10 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
           >
             <Link href={isLandingPage ? openDashboardLink : importLink}>
               {isLandingPage ? tCommon('actions.openDashboard') : (
-                <>
-                  <Plus className="mr-2 h-4 w-4" />
+                <span className="inline-flex items-center gap-2">
+                  <Plus className="h-4 w-4" />
                   {tCommon('actions.import')}
-                </>
+                </span>
               )}
             </Link>
           </Button>

@@ -171,19 +171,21 @@ function reducer(state: WizardState, action: Action): WizardState {
   }
 }
 
-// Separate render component to avoid SWC parser bug
-function StrandUploadWizardContent(props: {
+type StrandUploadWizardContentProps = {
   state: WizardState;
   dispatch: React.Dispatch<Action>;
   stepIndex: number;
-  currentStep: typeof STEPS[number];
+  currentStep: (typeof STEPS)[number];
   canBack: boolean;
   policyNote: string;
   datasetHint: boolean;
   handleNext: () => void;
   handleBack: () => void;
   handlePublish: () => Promise<void>;
-}) {
+};
+
+// Separate render component to avoid SWC parser bug
+function StrandUploadWizardContent(props: StrandUploadWizardContentProps) {
   const {
     state,
     dispatch,

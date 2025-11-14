@@ -41,17 +41,22 @@ export function LoomSwitcher({ value, onChange, className }: LoomSwitcherProps) 
     const loadLooms = async () => {
       setLoading(true);
       try {
-        // TODO: Implement /api/v1/looms endpoint
-        // For now, mock data
-        const mockLooms: Loom[] = [
-          { id: 'global', name: 'Global Workspace', strandCount: 42 },
-          { id: 'story-1', name: 'Novel: The Last Archive', useCase: 'storytelling', strandCount: 156 },
-          { id: 'world-1', name: 'Worldbuilding: Aetheria', useCase: 'worldbuilding', strandCount: 89 },
-          { id: 'research-1', name: 'PhD Research Notes', useCase: 'research', strandCount: 234 },
-        ];
-        setLooms(mockLooms);
+        const response = await fetch('/api/v1/looms', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to load looms');
+        }
+
+        const data = await response.json();
+        setLooms(data);
       } catch (error) {
         console.error('Failed to load looms:', error);
+        // Fallback to empty list
+        setLooms([]);
       } finally {
         setLoading(false);
       }

@@ -49,10 +49,27 @@ export default function DataIntelligenceSettingsPage() {
     const loadSettings = async () => {
       setLoading(true);
       try {
-        // TODO: Load from backend API /api/v1/settings/data-intelligence
-        // For now, use defaults
-        await new Promise(resolve => setTimeout(resolve, 500));
+        const response = await fetch('/api/v1/settings/data-intelligence', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to load settings');
+        }
+        
+        const data = await response.json();
+        setSettings({
+          analysisTrigger: data.analysisTrigger,
+          batchWindowMinutes: data.batchWindowMinutes,
+          enableLLMVerification: data.enableLLMVerification,
+          llmProvider: data.llmProvider,
+          cacheTTLMinutes: data.cacheTTLMinutes,
+          maxConcurrentJobs: data.maxConcurrentJobs,
+        });
       } catch (error) {
+        console.error('Failed to load settings:', error);
         toast({
           title: 'Failed to load settings',
           description: 'Using default configuration',
@@ -69,8 +86,19 @@ export default function DataIntelligenceSettingsPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // TODO: Save to backend API /api/v1/settings/data-intelligence
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch('/api/v1/settings/data-intelligence', {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(settings),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to save settings');
+      }
       
       toast({
         title: 'Settings saved',

@@ -310,20 +310,26 @@ export function InteractiveExamples({ id, className }: InteractiveExamplesProps)
               <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
                 <Button variant="outline" size="sm" className="gap-2" asChild>
                   <a href="https://npmjs.com/package/@framers/openstrand-sdk" target="_blank" rel="noopener noreferrer">
-                    <Image className="h-4 w-4" />
-                    npm Package
+                    <span className="inline-flex items-center gap-2">
+                      <Image className="h-4 w-4" />
+                      npm Package
+                    </span>
                   </a>
                 </Button>
                 <Button variant="outline" size="sm" className="gap-2" asChild>
                   <a href="https://pypi.org/project/openstrand/" target="_blank" rel="noopener noreferrer">
-                    <Image className="h-4 w-4" />
-                    PyPI Package
+                    <span className="inline-flex items-center gap-2">
+                      <Image className="h-4 w-4" />
+                      PyPI Package
+                    </span>
                   </a>
                 </Button>
                 <Button variant="outline" size="sm" className="gap-2" asChild>
                   <a href="/docs/api" target="_blank" rel="noopener noreferrer">
-                    <FileText className="h-4 w-4" />
-                    API Docs
+                    <span className="inline-flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      API Docs
+                    </span>
                   </a>
                 </Button>
               </div>

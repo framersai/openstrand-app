@@ -144,12 +144,11 @@ function reducer(state: WizardState, action: WizardAction): WizardState {
   }
 }
 
-// Separate render component to avoid SWC parser bug
-function DatasetSubmissionWizardContent(props: {
+type DatasetSubmissionWizardContentProps = {
   state: WizardState;
   dispatch: React.Dispatch<WizardAction>;
   stepIndex: number;
-  currentStep: typeof STEPS[number];
+  currentStep: (typeof STEPS)[number];
   canBack: boolean;
   policyNote: string;
   handleNext: () => Promise<void>;
@@ -157,7 +156,10 @@ function DatasetSubmissionWizardContent(props: {
   handleUpload: () => Promise<void>;
   runVerification: () => Promise<void>;
   setStepIndex: React.Dispatch<React.SetStateAction<number>>;
-}) {
+};
+
+// Separate render component to avoid SWC parser bug
+function DatasetSubmissionWizardContent(props: DatasetSubmissionWizardContentProps) {
   const {
     state,
     dispatch,

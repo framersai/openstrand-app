@@ -36,14 +36,18 @@ export function CTASection({ id, className }: CTASectionProps) {
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button size="lg" className="btn-gradient-border gap-2" asChild>
                 <a href={t('primaryCta.href')}>
-                  <Send className="h-5 w-5" />
-                  {t('primaryCta.label')}
+                  <span className="inline-flex items-center gap-2">
+                    <Send className="h-5 w-5" />
+                    {t('primaryCta.label')}
+                  </span>
                 </a>
               </Button>
               <Button size="lg" variant="secondary" className="gap-2" asChild>
                 <a href={t('secondaryCta.href')}>
-                  <FileText className="h-5 w-5" />
-                  {t('secondaryCta.label')}
+                  <span className="inline-flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    {t('secondaryCta.label')}
+                  </span>
                 </a>
               </Button>
             </div>
