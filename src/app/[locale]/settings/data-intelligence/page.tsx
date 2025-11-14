@@ -507,7 +507,7 @@ export default function DataIntelligenceSettingsPage() {
                   <Label htmlFor="rag-llm">LLM Provider</Label>
                   <Select
                     value={settings.ragLlmProvider}
-                    onValueChange={(value: 'local' | 'openai' | 'anthropic') =>
+                    onValueChange={(value: any) =>
                       updateSetting('ragLlmProvider', value)
                     }
                     disabled={loading}
@@ -516,11 +516,38 @@ export default function DataIntelligenceSettingsPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="local">Local (Ollama)</SelectItem>
+                      <SelectItem value="local">
+                        <div className="flex items-center gap-2">
+                          Local (Ollama)
+                          <Badge variant="outline" className="text-[9px]">Uncensored</Badge>
+                        </div>
+                      </SelectItem>
                       <SelectItem value="openai">OpenAI</SelectItem>
-                      {isTeamEdition && <SelectItem value="anthropic">Anthropic</SelectItem>}
+                      {isTeamEdition && (
+                        <>
+                          <SelectItem value="anthropic">Anthropic (Claude)</SelectItem>
+                          <SelectItem value="mistral">
+                            <div className="flex items-center gap-2">
+                              Mistral
+                              <Badge variant="outline" className="text-[9px]">Uncensored</Badge>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="openrouter">
+                            <div className="flex items-center gap-2">
+                              OpenRouter
+                              <Badge variant="outline" className="text-[9px]">Uncensored</Badge>
+                            </div>
+                          </SelectItem>
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground">
+                    {settings.ragLlmProvider === 'local' && 'Free, uncensored, requires Ollama'}
+                    {settings.ragLlmProvider === 'openai' && 'Moderated content, best quality'}
+                    {settings.ragLlmProvider === 'mistral' && 'European data residency, uncensored'}
+                    {settings.ragLlmProvider === 'openrouter' && 'Access to 100+ models, many uncensored'}
+                  </p>
                 </div>
 
                 <div className="flex items-center justify-between">
