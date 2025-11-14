@@ -13,6 +13,8 @@ import {
   Code2,
   FolderPlus,
   HardDrive,
+  Brain,
+  Network,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -70,6 +72,20 @@ export function FeaturesSection({ id, className }: FeaturesSectionProps) {
         title: t('items.analytics.title'),
         description: t('items.analytics.description'),
         badge: 'pro',
+      },
+      {
+        icon: Brain,
+        title: 'Data Intelligence',
+        description:
+          'Build vocabularies, extract entities, and summarize content with deterministic NLP. Works offline with TF/IDF, NER, and TextRank. Teams can add optional LLM verification.',
+        badge: 'core',
+      },
+      {
+        icon: Network,
+        title: 'Multi-Loom Workspaces',
+        description:
+          'Teams Edition: Create unlimited project workspaces (Looms) for storytelling, world-building, research, or custom use cases. Community: One powerful global Loom.',
+        badge: 'team',
       },
       {
         icon: FileSpreadsheet,

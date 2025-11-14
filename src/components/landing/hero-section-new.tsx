@@ -32,6 +32,7 @@ const HERO_HIGHLIGHT_CONFIG = [
   { key: 'offline', icon: LocalFirstIcon },
   { key: 'api', icon: SchemaIntelligenceIcon },
   { key: 'sdk', icon: NeuralStrandIcon },
+  { key: 'nlp', icon: SchemaIntelligenceIcon, new: true },
 ] as const;
 
 const HERO_DATA_FLOW_CONFIG = [

@@ -119,6 +119,13 @@ export function SmartOnboardingWizard() {
       component: TemplateSelector as any,
     },
     {
+      id: 'data-intelligence',
+      title: 'Configure Data Intelligence',
+      description: 'Set up vocabulary extraction and summarization',
+      icon: Sparkles,
+      condition: (ctx) => true, // Available for all editions
+    },
+    {
       id: 'work-email',
       title: 'Company Enrichment',
       description: 'Auto-populate with company info',

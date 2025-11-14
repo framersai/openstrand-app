@@ -31,6 +31,9 @@ import {
   Circle,
   ArrowRight,
   MousePointer,
+  Brain,
+  Network,
+  FileText,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -128,6 +131,68 @@ const ALL_TOUR_STEPS: TourStep[] = [
     ],
     category: 'Layout',
     difficulty: 'beginner',
+  },
+
+  // Data Intelligence
+  {
+    id: 'vocabulary-builder',
+    type: 'interactive',
+    target: '.data-intelligence-button',
+    title: 'Vocabulary Builder',
+    content: 'Build deterministic vocabularies from your strands using TF/IDF term ranking, bigram extraction, and named entity recognition. Works 100% offline!',
+    position: 'bottom',
+    icon: <Brain className="h-5 w-5" />,
+    action: {
+      label: 'Try Vocabulary Analysis',
+      handler: () => {
+        const btn = document.querySelector('.data-intelligence-button');
+        if (btn) (btn as HTMLElement).click();
+      },
+    },
+    tips: [
+      'Extracts key terms using TF/IDF scoring',
+      'Finds people, organizations, locations automatically',
+      'Works offline - no LLM required',
+      'Teams can add optional LLM verification',
+    ],
+    category: 'Data Intelligence',
+    difficulty: 'intermediate',
+  },
+
+  {
+    id: 'extractive-summary',
+    type: 'info',
+    title: 'Smart Summarization',
+    content: (
+      <div className="space-y-3">
+        <p>Use TextRank algorithm to extract the most important sentences from your documents.</p>
+        <div className="bg-primary/10 p-3 rounded">
+          <strong>Example:</strong> Select any strand and click "Summarize" to see the top 5 sentences ranked by importance.
+        </div>
+      </div>
+    ),
+    position: 'center',
+    icon: <FileText className="h-5 w-5" />,
+    category: 'Data Intelligence',
+    difficulty: 'intermediate',
+  },
+
+  {
+    id: 'loom-workspaces',
+    type: 'interactive',
+    target: '.loom-switcher',
+    title: 'Project Workspaces (Looms)',
+    content: 'Teams Edition: Create unlimited project workspaces for different use cases. Community Edition: Everything in one powerful global Loom.',
+    position: 'bottom',
+    icon: <Network className="h-5 w-5" />,
+    tips: [
+      'Storytelling: Novel projects, screenplays',
+      'World-building: Fantasy/sci-fi universes',
+      'Research: Academic papers, citations',
+      'Custom: Your own workflow',
+    ],
+    category: 'Teams Features',
+    difficulty: 'advanced',
   },
 
   // Data Upload
