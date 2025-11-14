@@ -41,6 +41,9 @@ import { AskBar } from '@/components/rag/AskBar';
 import { ChatPanel } from '@/components/rag/ChatPanel';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { StrandDeleteButton } from '@/components/pkms/StrandDeleteButton';
+import { StrandAnalyticsPanel } from '@/components/pkms/analytics/StrandAnalyticsPanel';
+import { LoomAnalyticsPanel } from '@/components/pkms/analytics/LoomAnalyticsPanel';
+import { WeaveAnalyticsPanel } from '@/components/pkms/analytics/WeaveAnalyticsPanel';
 
 type ViewMode = 'grid' | 'list';
 
@@ -77,6 +80,7 @@ export function PKMSDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [strands, setStrands] = useState<Strand[]>([]);
+  const [focusedStrandId, setFocusedStrandId] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     try {
@@ -117,6 +121,35 @@ export function PKMSDashboard() {
       return hay.includes(query);
     });
   }, [searchQuery, strands]);
+
+  useEffect(() => {
+    if (filteredStrands.length === 0) {
+      setFocusedStrandId(null);
+      return;
+    }
+    if (!focusedStrandId || !filteredStrands.some((strand) => strand.id === focusedStrandId)) {
+      setFocusedStrandId(filteredStrands[0].id);
+    }
+  }, [filteredStrands, focusedStrandId]);
+
+  const selectedStrand = useMemo(
+    () => filteredStrands.find((strand) => strand.id === focusedStrandId) ?? null,
+    [filteredStrands, focusedStrandId],
+  );
+
+  const selectedLoomTitle = useMemo(() => {
+    const meta = selectedStrand?.metadata as Record<string, unknown> | undefined;
+    const candidate = meta && typeof meta === 'object' ? (meta as any).loomName : undefined;
+    return typeof candidate === 'string' && candidate.length > 0 ? candidate : undefined;
+  }, [selectedStrand]);
+
+  const activeScopeIdForAnalytics = selectedStrand?.primaryScopeId ?? null;
+  const workspaceKey =
+    teamId && teamId.length > 0
+      ? `team:${teamId}`
+      : selectedStrand?.teamId
+        ? `team:${selectedStrand.teamId}`
+        : 'community';
 
   const handleUseTemplate = (tpl: StrandTemplate) => {
     setTemplatePrefill({
@@ -265,6 +298,20 @@ export function PKMSDashboard() {
           </Card>
         </div>
 
+        {/* Analytics overview */}
+        <div className="mb-6 grid gap-4 xl:grid-cols-3">
+          <StrandAnalyticsPanel
+            strands={filteredStrands}
+            selectedStrandId={selectedStrand?.id ?? null}
+            onSelect={setFocusedStrandId}
+          />
+          <LoomAnalyticsPanel
+            scopeId={activeScopeIdForAnalytics}
+            title={selectedLoomTitle}
+          />
+          <WeaveAnalyticsPanel workspaceKey={workspaceKey} strands={filteredStrands} />
+        </div>
+
         {/* Creator area */}
         {showComposer ? (
           <Card className="mb-6 p-4">
@@ -368,11 +415,25 @@ export function PKMSDashboard() {
         ) : viewMode === 'grid' ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filteredStrands.map((s) => (
-              <Card key={s.id} className="group p-4">
+              <Card
+                key={s.id}
+                role="button"
+                aria-pressed={focusedStrandId === s.id}
+                onClick={() => setFocusedStrandId(s.id)}
+                className={cn(
+                  'group cursor-pointer border border-transparent p-4 transition hover:border-primary/60',
+                  focusedStrandId === s.id && 'border-primary shadow-lg',
+                )}
+              >
                 <div className="mb-2 flex items-center justify-between">
                   <span className="rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
                     {(s.noteType ?? s.strandType ?? 'note').toString()}
                   </span>
+                  {focusedStrandId === s.id ? (
+                    <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+                      Focused
+                    </Badge>
+                  ) : null}
                 </div>
                 <h3 className="mb-1 line-clamp-1 font-semibold">{s.title ?? 'Untitled strand'}</h3>
                 {s.summary ? (
@@ -404,7 +465,15 @@ export function PKMSDashboard() {
             <ScrollArea className="h-[560px]">
               <div className="divide-y">
                 {filteredStrands.map((s) => (
-                  <div key={s.id} className="flex items-center gap-3 p-3 transition-colors hover:bg-muted/50">
+                  <button
+                    type="button"
+                    key={s.id}
+                    onClick={() => setFocusedStrandId(s.id)}
+                    className={cn(
+                      'flex w-full items-center gap-3 p-3 text-left transition-colors hover:bg-muted/50',
+                      focusedStrandId === s.id && 'bg-muted/70',
+                    )}
+                  >
                     <div className="flex min-w-0 flex-1 items-center gap-3">
                       <div className="rounded-md bg-muted px-2 py-0.5 text-[11px] uppercase tracking-wide text-muted-foreground">
                         {(s.noteType ?? s.strandType ?? 'note').toString()}
@@ -434,7 +503,7 @@ export function PKMSDashboard() {
                       </Button>
                       <StrandDeleteButton strandId={s.id} onDeleted={() => void refresh()} />
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             </ScrollArea>

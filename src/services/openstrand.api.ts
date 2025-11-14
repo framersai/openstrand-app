@@ -27,6 +27,9 @@ import {
   AIArtisanQuota,
   ContentEnhancement,
   PlaceholderPreferences,
+  StrandAnalyticsSummary,
+  LoomAnalyticsSummary,
+  WeaveAnalyticsSummary,
 } from '@/types/openstrand';
 
 // API Configuration
@@ -1482,6 +1485,74 @@ export const weaveAPI = {
 };
 
 /**
+ * Analytics endpoints (strand, loom, weave dashboards)
+ */
+export const analyticsAPI = {
+  /**
+   * Fetch analytics summary for a single strand.
+   *
+   * @param strandId - Strand identifier
+   * @param options - Optional flags (fresh to bypass cache)
+   */
+  async getStrandSummary(
+    strandId: string,
+    options?: { fresh?: boolean },
+  ): Promise<StrandAnalyticsSummary> {
+    const params = new URLSearchParams();
+    if (options?.fresh) {
+      params.set('fresh', 'true');
+    }
+    const query = params.toString();
+    const response = await apiFetch(
+      `/analytics/strands/${strandId}${query ? `?${query}` : ''}`,
+    );
+    return await parseData(response);
+  },
+
+  /**
+   * Fetch analytics summary for a Loom/project scope.
+   *
+   * @param scopeId - Strand scope identifier
+   * @param options - Optional flags (fresh to bypass cache)
+   */
+  async getLoomSummary(
+    scopeId: string,
+    options?: { fresh?: boolean },
+  ): Promise<LoomAnalyticsSummary> {
+    const params = new URLSearchParams();
+    if (options?.fresh) {
+      params.set('fresh', 'true');
+    }
+    const query = params.toString();
+    const response = await apiFetch(
+      `/analytics/looms/${scopeId}${query ? `?${query}` : ''}`,
+    );
+    return await parseData(response);
+  },
+
+  /**
+   * Fetch analytics summary for a Weave/workspace.
+   *
+   * @param workspaceKey - 'community' or `team:ID`
+   * @param options - Optional flags (fresh to bypass cache)
+   */
+  async getWeaveSummary(
+    workspaceKey: string,
+    options?: { fresh?: boolean },
+  ): Promise<WeaveAnalyticsSummary> {
+    const params = new URLSearchParams();
+    if (options?.fresh) {
+      params.set('fresh', 'true');
+    }
+    const query = params.toString();
+    const response = await apiFetch(
+      `/analytics/weaves/${workspaceKey}${query ? `?${query}` : ''}`,
+    );
+    return await parseData(response);
+  },
+};
+
+/**
  * Learning & Schedule Operations
  */
 export const learningAPI = {
@@ -1875,6 +1946,7 @@ export const teamAdminAPI = {
 export const openstrandAPI = {
   strands: strandAPI,
   weave: weaveAPI,
+  analytics: analyticsAPI,
   learning: learningAPI,
   ai: aiAPI,
   meta: metaAPI,

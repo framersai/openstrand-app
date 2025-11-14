@@ -629,6 +629,108 @@ export interface AIArtisanQuota {
   resets_at?: string;
 }
 
+export interface KeywordEntry {
+  term: string;
+  score: number;
+  count: number;
+}
+
+export interface StrandAnalyticsSummary {
+  type: 'strand';
+  id: string;
+  strandType: string;
+  scopeId?: string;
+  teamId?: string;
+  workspaceKey: string;
+  metrics: {
+    tokenCount: number;
+    wordCount: number;
+    readingTimeMinutes: number;
+    chunkCount: number;
+    keywords: KeywordEntry[];
+    bigrams: KeywordEntry[];
+    entityHistogram: Array<{ type: string; count: number }>;
+    posDistribution: Record<string, number>;
+    sentiment: {
+      positive: number;
+      negative: number;
+      neutral: number;
+      compound: number;
+    };
+    readability: {
+      fleschKincaid: number;
+      colemanLiau: number;
+    };
+  };
+  ratings: {
+    llm?: number | null;
+    humanAverage?: number | null;
+    userRating?: number | null;
+    counts: Record<string, number>;
+  };
+  metadata: {
+    mime?: string | null;
+    sizeBytes?: number | null;
+    language?: string | null;
+    ingestDate?: string;
+    lastEmbeddedAt?: string | null;
+    updatedAt: string;
+  };
+  updatedAt: string;
+}
+
+export interface LoomAnalyticsSummary {
+  type: 'loom';
+  id: string;
+  name: string;
+  metrics: {
+    totalStrands: number;
+    totalTokens: number;
+    averageTokensPerStrand: number;
+    topicDistribution: Array<{ label: string; value: number }>;
+    vocabularyGrowth: Array<{ date: string; tokens: number }>;
+    entityTimeline: Array<{ date: string; [key: string]: number | string }>;
+    embeddingCoverage: {
+      embedded: number;
+      pending: number;
+      percent: number;
+    };
+    ratings: {
+      humanAverage: number;
+      llmAverage: number;
+      counts: Record<string, number>;
+    };
+  };
+  updatedAt: string;
+}
+
+export interface WeaveAnalyticsSummary {
+  type: 'weave';
+  workspaceKey: string;
+  teamId?: string | null;
+  metrics: {
+    totalLooms: number;
+    totalStrands: number;
+    totalTokens: number;
+    storageFootprintBytes: number;
+    cost: {
+      totalUsd: number;
+      byProvider: Array<{ provider: string; amount: number }>;
+    };
+    usageByHour: Array<{ hour: number; count: number }>;
+    embeddingCoverage: {
+      embedded: number;
+      pending: number;
+      percent: number;
+    };
+    ratings: {
+      humanAverage: number;
+      counts: Record<string, number>;
+    };
+  };
+  updatedAt: string;
+}
+
 export interface ContentEnhancement {
   strand_id: string;
   suggestions: string[];
