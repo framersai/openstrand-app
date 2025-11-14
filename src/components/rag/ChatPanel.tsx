@@ -11,6 +11,7 @@ import {
   Check,
   Sparkles,
   FileText,
+  DollarSign,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -263,8 +264,11 @@ export function ChatPanel({ loomId, onClose, className }: ChatPanelProps) {
 
                     {/* Cost badge */}
                     {message.cost !== undefined && message.cost > 0 && (
-                      <div className="mt-2 text-[10px] text-muted-foreground">
-                        Cost: ${message.cost.toFixed(4)}
+                      <div className="mt-2 flex items-center gap-1 text-[10px] text-muted-foreground">
+                        <DollarSign className="h-3 w-3" />
+                        <span>
+                          Cost: ${message.cost < 0.01 ? '<$0.01' : `$${message.cost.toFixed(4)}`}
+                        </span>
                       </div>
                     )}
                   </div>

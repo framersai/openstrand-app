@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Search, Sparkles, Loader2, X, MessageSquare } from 'lucide-react';
+import { Search, Sparkles, Loader2, X, MessageSquare, DollarSign } from 'lucide-react';
+import { useDebounce } from '@/hooks/use-debounce';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -42,7 +43,10 @@ export function AskBar({
 }: AskBarProps) {
   const [question, setQuestion] = useState('');
   const [showRecent, setShowRecent] = useState(false);
+  const [costEstimate, setCostEstimate] = useState<number | null>(null);
+  const [estimating, setEstimating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const debouncedQuestion = useDebounce(question, 500);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +62,43 @@ export function AskBar({
     setShowRecent(false);
     inputRef.current?.focus();
   };
+
+  // Estimate cost when question changes
+  useEffect(() => {
+    if (!debouncedQuestion || debouncedQuestion.length < 3) {
+      setCostEstimate(null);
+      return;
+    }
+
+    const estimateCost = async () => {
+      setEstimating(true);
+      try {
+        const response = await fetch('/api/v1/rag/query', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+          body: JSON.stringify({
+            question: debouncedQuestion,
+            loomId,
+            dryRun: true,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setCostEstimate(data.cost?.total?.estimate || 0);
+        }
+      } catch (error) {
+        console.error('Failed to estimate cost:', error);
+      } finally {
+        setEstimating(false);
+      }
+    };
+
+    void estimateCost();
+  }, [debouncedQuestion, loomId]);
 
   // Show recent on focus if available
   useEffect(() => {
@@ -92,6 +133,12 @@ export function AskBar({
             </div>
           ) : question ? (
             <div className="absolute right-3 top-1/2 flex -translate-y-1/2 gap-1">
+              {costEstimate !== null && costEstimate > 0 && (
+                <Badge variant="outline" className="h-7 gap-1 text-[10px]">
+                  <DollarSign className="h-3 w-3" />
+                  {costEstimate < 0.01 ? '<$0.01' : `$${costEstimate.toFixed(3)}`}
+                </Badge>
+              )}
               <Button
                 type="button"
                 variant="ghost"

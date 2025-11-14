@@ -15,6 +15,7 @@ import {
   HardDrive,
   Brain,
   Network,
+  DollarSign,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -79,6 +80,13 @@ export function FeaturesSection({ id, className }: FeaturesSectionProps) {
         description:
           'Build vocabularies, extract entities, and summarize content with deterministic NLP. Works offline with TF/IDF, NER, and TextRank. Teams can add optional LLM verification.',
         badge: 'core',
+      },
+      {
+        icon: DollarSign,
+        title: 'Cost Prediction',
+        description:
+          'See costs before you click. Dry-run estimates for all AI operations (RAG, embeddings, visualizations). Local models: $0. Cloud models: transparent pricing with budgets.',
+        badge: 'team',
       },
       {
         icon: Network,
