@@ -36,6 +36,7 @@ import { QuickCapturePanel } from '@/components/pkms/QuickCapturePanel';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { WeavePreviewCard } from '@/components/pkms/WeavePreviewCard';
 import { LoomsPanel } from '@/components/pkms/LoomsPanel';
+import { LoomSwitcher } from '@/components/pkms/LoomSwitcher';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { StrandDeleteButton } from '@/components/pkms/StrandDeleteButton';
 
@@ -49,6 +50,7 @@ export function PKMSDashboard() {
   const [prefsOpen, setPrefsOpen] = useState<boolean>(false);
   const [teamId, setTeamId] = useState<string | ''>('');
   const [teams, setTeams] = useState<Array<{ id: string; name: string }>>([]);
+  const [activeLoomId, setActiveLoomId] = useState<string>('global');
 
   // Quick create / templates
   const [showComposer, setShowComposer] = useState(false);
@@ -160,6 +162,7 @@ export function PKMSDashboard() {
                 <Settings2 className="h-4 w-4" />
                 {t('actions.preferences')}
               </Button>
+              <LoomSwitcher value={activeLoomId} onChange={setActiveLoomId} />
               {teams.length > 0 ? (
                 <Select value={teamId} onValueChange={setTeamId}>
                   <SelectTrigger className="w-[160px]">

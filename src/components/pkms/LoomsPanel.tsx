@@ -6,11 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useTranslations } from 'next-intl';
 import { openstrandAPI } from '@/services/openstrand.api';
+import { useFeatureFlags } from '@/lib/feature-flags';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Sparkles } from 'lucide-react';
 
 type Thread = { id: string; title?: string; description?: string; strandIds?: string[] };
 
 export function LoomsPanel() {
   const t = useTranslations('pkms');
+  const { isTeamEdition } = useFeatureFlags();
   const [threads, setThreads] = useState<Thread[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -35,12 +39,29 @@ export function LoomsPanel() {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-base">{t('looms.title')}</CardTitle>
         <div className="flex items-center gap-2">
+          {!isTeamEdition && (
+            <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+              Community
+            </Badge>
+          )}
           <Button variant="outline" size="sm" onClick={() => window.location.assign('/patterns')}>
             {t('looms.open')}
           </Button>
         </div>
       </CardHeader>
       <CardContent>
+        {!isTeamEdition && (
+          <Alert className="mb-3 border-primary/20 bg-primary/5">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <AlertDescription className="text-xs">
+              <strong>Community Edition:</strong> You have one global Loom for all strands.{' '}
+              <a href="/pricing" className="underline hover:text-primary">
+                Upgrade to Teams
+              </a>{' '}
+              to manage multiple projects (storytelling, world-building, research, etc.).
+            </AlertDescription>
+          </Alert>
+        )}
         {loading ? <div className="text-sm text-muted-foreground">{t('list.loading')}</div> : null}
         {!loading && threads.length === 0 ? (
           <div className="text-sm text-muted-foreground">{t('looms.empty')}</div>
