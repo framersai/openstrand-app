@@ -66,7 +66,7 @@ const nextConfig = {
       },
       // Static assets served from public/ (fonts, media, etc.)
       {
-        source: '/(.*)\\.(?:woff2|woff|ttf|eot|css|js|png|jpg|jpeg|gif|svg|webp|avif|mp4|webm)',
+        source: '/(.*)\\.(woff2|woff|ttf|eot|css|js|png|jpg|jpeg|gif|svg|webp|avif|mp4|webm)',
         headers: [
           {
             key: 'Cache-Control',
