@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Search,
@@ -27,6 +27,12 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 /**
  * Command item in the palette
@@ -50,6 +56,10 @@ export interface CommandItem {
   shortcut?: string;
   /** Badge text */
   badge?: string;
+  /** Extended description shown in preview/tooltips */
+  description?: string;
+  /** Optional tags for quick context */
+  tags?: string[];
 }
 
 /**
@@ -91,6 +101,7 @@ interface CommandPaletteProps {
  * - Categorized commands
  * - Custom command support
  * - Keyboard shortcuts display
+ * - `/` key support for instant search focus/opening
  * - Full ARIA support
  * - Dark mode compatible
  * 
@@ -128,6 +139,7 @@ export function CommandPalette({
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [recentCommands, setRecentCommands] = useState<string[]>([]);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   /**
    * Default navigation commands
@@ -138,41 +150,49 @@ export function CommandPalette({
       id: 'nav-dashboard',
       title: 'Dashboard',
       subtitle: 'Go to main dashboard',
+      description: 'Jump to the analytics dashboard to monitor activity and usage.',
       icon: BarChart3,
       action: () => router.push('/'),
       category: 'navigation',
       keywords: ['home', 'dashboard', 'main'],
       shortcut: 'G D',
+      tags: ['analytics', 'overview'],
     },
     {
       id: 'nav-strands',
       title: 'Strands',
       subtitle: 'View your strands',
+      description: 'Browse, search, and manage every strand in your workspace.',
       icon: FileText,
       action: () => router.push('/pkms/strands'),
       category: 'navigation',
       keywords: ['strands', 'notes', 'documents'],
       shortcut: 'G S',
+      tags: ['knowledge', 'content'],
     },
     {
       id: 'nav-tutorials',
       title: 'Tutorials',
       subtitle: 'Learn OpenStrand',
+      description: 'Open the interactive tutorial library to learn new workflows.',
       icon: Book,
       action: () => router.push('/tutorials'),
       category: 'navigation',
       keywords: ['tutorials', 'learn', 'help', 'guides'],
       shortcut: 'G T',
+      tags: ['learning'],
     },
     {
       id: 'nav-profile',
       title: 'Profile',
       subtitle: 'View your profile',
+      description: 'Edit your public details, preferences, and connected apps.',
       icon: Users,
       action: () => router.push('/profile'),
       category: 'navigation',
       keywords: ['profile', 'account', 'settings'],
       shortcut: 'G P',
+      tags: ['account'],
     },
 
     // Actions
@@ -180,6 +200,7 @@ export function CommandPalette({
       id: 'action-new-strand',
       title: 'Create New Strand',
       subtitle: 'Start a new knowledge strand',
+      description: 'Opens the composer so you can capture a new strand instantly.',
       icon: Sparkles,
       action: () => {
         router.push('/pkms/strands');
@@ -188,6 +209,7 @@ export function CommandPalette({
       category: 'actions',
       keywords: ['create', 'new', 'strand', 'note'],
       shortcut: 'C',
+      tags: ['creation'],
     },
 
     // Settings
@@ -195,10 +217,12 @@ export function CommandPalette({
       id: 'settings-preferences',
       title: 'Preferences',
       subtitle: 'Manage your preferences',
+      description: 'Open the preferences panel for theme, keyboard shortcuts, and more.',
       icon: Settings,
       action: () => router.push('/profile?tab=preferences'),
       category: 'settings',
       keywords: ['settings', 'preferences', 'options'],
+      tags: ['settings'],
     },
 
     // Help
@@ -206,11 +230,13 @@ export function CommandPalette({
       id: 'help-docs',
       title: 'Documentation',
       subtitle: 'Read the docs',
+      description: 'Open the documentation site in a new tab.',
       icon: HelpCircle,
       action: () => window.open('https://docs.openstrand.ai', '_blank'),
       category: 'help',
       keywords: ['help', 'docs', 'documentation'],
       shortcut: '?',
+      tags: ['support'],
     },
   ], [router]);
 
@@ -220,6 +246,15 @@ export function CommandPalette({
   const allCommands = useMemo(() => {
     return [...defaultCommands, ...customCommands];
   }, [defaultCommands, customCommands]);
+
+  const categoryLookup = useMemo(
+    () =>
+      CATEGORIES.reduce<Record<string, CommandCategory>>((acc, category) => {
+        acc[category.id] = category;
+        return acc;
+      }, {}),
+    []
+  );
 
   /**
    * Filter and search commands
@@ -282,6 +317,11 @@ export function CommandPalette({
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (isSlashKey(e)) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        return;
+      }
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault();
@@ -313,12 +353,23 @@ export function CommandPalette({
   }, [isOpen, filteredCommands, selectedIndex, executeCommand, onClose]);
 
   /**
+   * Keep selected index within bounds
+   */
+  useEffect(() => {
+    if (selectedIndex > filteredCommands.length - 1) {
+      setSelectedIndex(filteredCommands.length > 0 ? filteredCommands.length - 1 : 0);
+    }
+  }, [filteredCommands.length, selectedIndex]);
+
+  /**
    * Reset state when opening
    */
   useEffect(() => {
     if (isOpen) {
       setQuery('');
       setSelectedIndex(0);
+      const frame = requestAnimationFrame(() => searchInputRef.current?.focus());
+      return () => cancelAnimationFrame(frame);
     }
   }, [isOpen]);
 
@@ -347,144 +398,170 @@ export function CommandPalette({
     }
   }, [recentCommands]);
 
+  const selectedCommand = filteredCommands[selectedIndex];
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl p-0 gap-0" aria-labelledby="command-palette-title">
-        {/* Search Input */}
-        <div className="flex items-center border-b px-4 py-3">
-          <Search className="h-5 w-5 text-muted-foreground mr-3 shrink-0" />
-          <Input
-            placeholder="Search commands, settings, and more..."
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setSelectedIndex(0);
-            }}
-            className="border-0 shadow-none focus-visible:ring-0 text-base"
-            autoFocus
-            aria-label="Search commands"
-          />
-          <kbd className="hidden sm:flex h-6 items-center gap-1 rounded border bg-muted px-2 font-mono text-xs text-muted-foreground">
-            <span>ESC</span>
-          </kbd>
-        </div>
-
-        {/* Command List */}
-        <div className="max-h-96 overflow-y-auto p-2" role="listbox" id="command-palette-title">
-          {filteredCommands.length === 0 ? (
-            <div className="py-12 text-center">
-              <p className="text-sm text-muted-foreground">No results found</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Try different keywords
-              </p>
-            </div>
-          ) : (
-            groupedCommands.map(({ category, commands }, groupIndex) => (
-              <div key={category.id} className={groupIndex > 0 ? 'mt-4' : ''}>
-                {/* Category Header */}
-                <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                  {category.icon && <category.icon className="h-3 w-3" />}
-                  {category.label}
-                </div>
-
-                {/* Commands in this category */}
-                <div className="mt-1 space-y-1">
-                  {commands.map((command, index) => {
-                    const globalIndex = filteredCommands.indexOf(command);
-                    const isSelected = globalIndex === selectedIndex;
-                    const Icon = command.icon;
-
-                    return (
-                      <button
-                        key={command.id}
-                        onClick={() => executeCommand(command)}
-                        onMouseEnter={() => setSelectedIndex(globalIndex)}
-                        className={cn(
-                          'flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors',
-                          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                          isSelected
-                            ? 'bg-accent text-accent-foreground'
-                            : 'hover:bg-accent/50'
-                        )}
-                        role="option"
-                        aria-selected={isSelected}
-                      >
-                        {/* Icon */}
-                        <div className={cn(
-                          'flex h-8 w-8 shrink-0 items-center justify-center rounded-md',
-                          isSelected ? 'bg-primary/10' : 'bg-muted'
-                        )}>
-                          <Icon className={cn(
-                            'h-4 w-4',
-                            isSelected ? 'text-primary' : 'text-muted-foreground'
-                          )} />
-                        </div>
-
-                        {/* Content */}
-                        <div className="flex-1 min-w-0">
-                          <div className="font-medium text-sm truncate">
-                            {command.title}
-                          </div>
-                          {command.subtitle && (
-                            <div className="text-xs text-muted-foreground truncate">
-                              {command.subtitle}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Badge and Shortcut */}
-                        <div className="flex items-center gap-2 shrink-0">
-                          {command.badge && (
-                            <Badge variant="secondary" className="text-xs">
-                              {command.badge}
-                            </Badge>
-                          )}
-                          {command.shortcut && (
-                            <kbd className="hidden sm:flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-xs text-muted-foreground">
-                              {command.shortcut.split(' ').map((key, i) => (
-                                <React.Fragment key={i}>
-                                  {i > 0 && <span className="text-muted-foreground/50">+</span>}
-                                  <span>{key}</span>
-                                </React.Fragment>
-                              ))}
-                            </kbd>
-                          )}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {groupIndex < groupedCommands.length - 1 && (
-                  <Separator className="my-2" />
-                )}
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Footer with hint */}
-        <div className="border-t px-4 py-2 text-xs text-muted-foreground">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <span className="flex items-center gap-1">
-                <kbd className="h-4 rounded border bg-muted px-1 font-mono">↑↓</kbd>
-                Navigate
-              </span>
-              <span className="flex items-center gap-1">
-                <kbd className="h-4 rounded border bg-muted px-1 font-mono">↵</kbd>
-                Select
-              </span>
-              <span className="flex items-center gap-1">
-                <kbd className="h-4 rounded border bg-muted px-1 font-mono">ESC</kbd>
-                Close
-              </span>
-            </div>
-            <span className="hidden sm:block">
-              {filteredCommands.length} command{filteredCommands.length !== 1 ? 's' : ''}
-            </span>
+      <DialogContent className="max-w-3xl p-0 gap-0" aria-labelledby="command-palette-title">
+        <TooltipProvider delayDuration={120}>
+          {/* Search Input */}
+          <div className="flex items-center border-b px-4 py-3">
+            <Search className="h-5 w-5 text-muted-foreground mr-3 shrink-0" />
+            <Input
+              ref={searchInputRef}
+              placeholder="Search commands, data, and controls..."
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setSelectedIndex(0);
+              }}
+              className="border-0 shadow-none focus-visible:ring-0 text-base"
+              aria-label="Search commands"
+            />
+            <kbd className="hidden sm:flex h-6 items-center gap-1 rounded border bg-muted px-2 font-mono text-xs text-muted-foreground">
+              <span>ESC</span>
+            </kbd>
           </div>
-        </div>
+
+          {/* Content area */}
+          <div className="md:grid md:grid-cols-[minmax(0,1fr)_minmax(280px,0.7fr)] md:divide-x" role="listbox" id="command-palette-title">
+            {/* Command List */}
+            <div className="max-h-[26rem] overflow-y-auto p-2">
+              {filteredCommands.length === 0 ? (
+                <div className="py-12 text-center">
+                  <p className="text-sm text-muted-foreground">No results found</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Try different keywords or filter terms
+                  </p>
+                </div>
+              ) : (
+                groupedCommands.map(({ category, commands }, groupIndex) => (
+                  <div key={category.id} className={groupIndex > 0 ? 'mt-4' : ''}>
+                    {/* Category Header */}
+                    <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                      {category.icon && <category.icon className="h-3 w-3" />}
+                      {category.label}
+                    </div>
+
+                    {/* Commands in this category */}
+                    <div className="mt-1 space-y-1">
+                      {commands.map((command) => {
+                        const globalIndex = filteredCommands.indexOf(command);
+                        const isSelected = globalIndex === selectedIndex;
+                        const Icon = command.icon;
+
+                        return (
+                          <Tooltip key={command.id}>
+                            <TooltipTrigger asChild>
+                              <button
+                                onClick={() => executeCommand(command)}
+                                onMouseEnter={() => setSelectedIndex(globalIndex)}
+                                className={cn(
+                                  'flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors',
+                                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                                  isSelected
+                                    ? 'bg-accent text-accent-foreground'
+                                    : 'hover:bg-accent/50'
+                                )}
+                                role="option"
+                                aria-selected={isSelected}
+                              >
+                                {/* Icon */}
+                                <div className={cn(
+                                  'flex h-8 w-8 shrink-0 items-center justify-center rounded-md',
+                                  isSelected ? 'bg-primary/10' : 'bg-muted'
+                                )}>
+                                  <Icon className={cn(
+                                    'h-4 w-4',
+                                    isSelected ? 'text-primary' : 'text-muted-foreground'
+                                  )} />
+                                </div>
+
+                                {/* Content */}
+                                <div className="flex-1 min-w-0">
+                                  <div className="font-medium text-sm truncate">
+                                    {command.title}
+                                  </div>
+                                  {(command.subtitle || command.description) && (
+                                    <div className="text-xs text-muted-foreground truncate">
+                                      {command.subtitle ?? command.description}
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Badge and Shortcut */}
+                                <div className="flex items-center gap-2 shrink-0">
+                                  {command.badge && (
+                                    <Badge variant="secondary" className="text-xs">
+                                      {command.badge}
+                                    </Badge>
+                                  )}
+                                  {command.shortcut && (
+                                    <kbd className="hidden sm:flex h-5 items-center gap-1 rounded border bg-muted px-1.5 font-mono text-xs text-muted-foreground">
+                                      {command.shortcut.split(' ').map((key, i) => (
+                                        <React.Fragment key={i}>
+                                          {i > 0 && <span className="text-muted-foreground/50">+</span>}
+                                          <span>{key}</span>
+                                        </React.Fragment>
+                                      ))}
+                                    </kbd>
+                                  )}
+                                </div>
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="right" align="center" className="max-w-xs">
+                              <p className="text-sm font-medium">{command.title}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {command.description ?? command.subtitle ?? 'Run command'}
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        );
+                      })}
+                    </div>
+
+                    {groupIndex < groupedCommands.length - 1 && (
+                      <Separator className="my-2" />
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Preview Panel */}
+            <CommandPreviewPanel
+              command={selectedCommand}
+              categoryLabel={selectedCommand ? (categoryLookup[selectedCommand.category]?.label ?? selectedCommand.category) : undefined}
+            />
+          </div>
+
+          {/* Footer with hint */}
+          <div className="border-t px-4 py-2 text-xs text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-4 justify-between">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="flex items-center gap-1">
+                  <kbd className="h-4 rounded border bg-muted px-1 font-mono">↑↓</kbd>
+                  Navigate
+                </span>
+                <span className="flex items-center gap-1">
+                  <kbd className="h-4 rounded border bg-muted px-1 font-mono">↵</kbd>
+                  Select
+                </span>
+                <span className="flex items-center gap-1">
+                  <kbd className="h-4 rounded border bg-muted px-1 font-mono">ESC</kbd>
+                  Close
+                </span>
+                <span className="flex items-center gap-1">
+                  <kbd className="h-4 rounded border bg-muted px-1 font-mono">/</kbd>
+                  Quick search
+                </span>
+              </div>
+              <span className="hidden sm:block">
+                {filteredCommands.length} command{filteredCommands.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+          </div>
+        </TooltipProvider>
       </DialogContent>
     </Dialog>
   );
@@ -513,11 +590,19 @@ export function useCommandPalette(customCommands?: CommandItem[]) {
   const [isOpen, setIsOpen] = useState(false);
 
   /**
-   * Setup global keyboard shortcut (Cmd+K / Ctrl+K)
+   * Setup global keyboard shortcut (Cmd+K / Ctrl+K / /)
    */
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+      const isPaletteShortcut = e.key === 'k' && (e.metaKey || e.ctrlKey);
+      const isSlashShortcut =
+        e.key === '/' &&
+        !e.metaKey &&
+        !e.ctrlKey &&
+        !e.altKey &&
+        !isEditableElement(e.target);
+
+      if (isPaletteShortcut || isSlashShortcut) {
         e.preventDefault();
         setIsOpen(true);
       }
@@ -566,6 +651,94 @@ export function CommandPaletteButton({ onClick }: { onClick: () => void }) {
         <span>K</span>
       </kbd>
     </Button>
+  );
+}
+
+/**
+ * Helper to determine if an element is editable
+ */
+function isEditableElement(target: EventTarget | null): target is HTMLElement {
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+
+  const tagName = target.tagName;
+  return (
+    target.isContentEditable ||
+    tagName === 'INPUT' ||
+    tagName === 'TEXTAREA' ||
+    tagName === 'SELECT'
+  );
+}
+
+function isSlashKey(event: KeyboardEvent) {
+  return (
+    event.key === '/' &&
+    !event.metaKey &&
+    !event.ctrlKey &&
+    !event.altKey &&
+    !isEditableElement(event.target)
+  );
+}
+
+function CommandPreviewPanel({
+  command,
+  categoryLabel,
+}: {
+  command?: CommandItem;
+  categoryLabel?: string;
+}) {
+  if (!command) {
+    return (
+      <div className="hidden max-h-[26rem] min-h-[18rem] flex-col justify-center gap-4 p-4 text-sm text-muted-foreground md:flex">
+        <div className="rounded-lg border border-dashed border-border/60 p-4">
+          <p className="font-semibold text-foreground mb-1">Command palette tips</p>
+          <ul className="list-disc pl-4 space-y-1 text-muted-foreground/80">
+            <li>Press <kbd className="rounded border bg-muted px-1 font-mono text-[11px]">/</kbd> anywhere to jump into search.</li>
+            <li>Use keywords like “theme”, “invite”, or “settings”.</li>
+            <li>Hover a command to preview full details.</li>
+          </ul>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="hidden max-h-[26rem] min-h-[18rem] flex-col gap-4 p-4 md:flex">
+      <div className="space-y-1">
+        <span className="text-xs uppercase tracking-wide text-muted-foreground">
+          {categoryLabel ?? 'Command'}
+        </span>
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="text-lg font-semibold text-foreground">{command.title}</h3>
+          {command.shortcut && (
+            <kbd className="flex h-6 items-center gap-1 rounded border bg-muted px-2 font-mono text-xs text-muted-foreground">
+              {command.shortcut}
+            </kbd>
+          )}
+        </div>
+        {command.subtitle && (
+          <p className="text-sm text-muted-foreground">{command.subtitle}</p>
+        )}
+        {command.description && (
+          <p className="text-sm text-muted-foreground/90 leading-relaxed">{command.description}</p>
+        )}
+      </div>
+
+      {command.tags && command.tags.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {command.tags.map((tag) => (
+            <Badge key={tag} variant="outline" className="text-xs">
+              {tag}
+            </Badge>
+          ))}
+        </div>
+      )}
+
+      <div className="rounded-lg border border-dashed border-border/60 bg-muted/40 p-3 text-xs leading-relaxed text-muted-foreground">
+        Tip: Use <kbd className="mx-1 rounded border bg-background px-1 font-mono text-[10px]">Tab</kbd> to jump into filters, or <kbd className="mx-1 rounded border bg-background px-1 font-mono text-[10px]">/</kbd> to refocus this search.
+      </div>
+    </div>
   );
 }
 

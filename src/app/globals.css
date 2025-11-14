@@ -56,6 +56,38 @@
     --shadow-soft-hover: 0 26px 60px -26px hsl(221 83% 53% / 0.34);
     --shadow-glow: 0 0 0 1px hsl(221 83% 53% / 0.14);
     --transition-base: 220ms cubic-bezier(0.22, 1, 0.36, 1);
+
+    /* Semantic colors - Success */
+    --color-success-50: 142 76% 96%;
+    --color-success-100: 142 76% 92%;
+    --color-success-500: 142 76% 52%;
+    --color-success-600: 142 76% 42%;
+    --color-success-700: 142 76% 32%;
+
+    /* Semantic colors - Warning */
+    --color-warning-50: 38 92% 96%;
+    --color-warning-100: 38 92% 92%;
+    --color-warning-500: 38 92% 52%;
+    --color-warning-600: 38 92% 42%;
+
+    /* Semantic colors - Info */
+    --color-info-50: 199 89% 96%;
+    --color-info-500: 199 89% 52%;
+    --color-info-600: 199 89% 42%;
+
+    /* Status colors */
+    --color-pending: 43 96% 56%;
+    --color-approved: 142 76% 45%;
+    --color-rejected: 0 84% 60%;
+    --color-draft: 215 20% 65%;
+
+    /* Colorblind-friendly chart colors */
+    --chart-accessible-1: 210 100% 50%;
+    --chart-accessible-2: 142 76% 36%;
+    --chart-accessible-3: 38 92% 50%;
+    --chart-accessible-4: 280 84% 55%;
+    --chart-accessible-5: 0 84% 60%;
+    --chart-accessible-6: 180 100% 35%;
   }
 
   .dark {
@@ -102,6 +134,38 @@
     --shadow-soft-hover: 0 32px 74px -28px hsl(217 91% 60% / 0.58);
     --shadow-glow: 0 0 0 1px hsl(217 91% 60% / 0.42);
     --transition-base: 220ms cubic-bezier(0.22, 1, 0.36, 1);
+
+    /* Semantic colors - Dark mode adjustments */
+    --color-success-500: 142 76% 58%;
+    --color-warning-500: 38 92% 58%;
+    --color-info-500: 199 89% 58%;
+  }
+
+  /* High contrast mode */
+  :root[data-theme*="high-contrast-light"] {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --primary: 210 100% 30%;
+    --primary-foreground: 0 0% 100%;
+    --border: 0 0% 20%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 10%;
+    --color-success-500: 142 100% 25%;
+    --color-warning-500: 38 100% 30%;
+    --destructive: 0 100% 30%;
+  }
+
+  :root[data-theme*="high-contrast-dark"] {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --primary: 210 100% 70%;
+    --primary-foreground: 0 0% 0%;
+    --border: 0 0% 80%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 90%;
+    --color-success-500: 142 100% 70%;
+    --color-warning-500: 38 100% 70%;
+    --destructive: 0 100% 70%;
   }
 }
 

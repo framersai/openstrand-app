@@ -45,6 +45,13 @@ export function FeaturesSection({ id, className }: FeaturesSectionProps) {
         badge: 'core',
       },
       {
+        icon: Workflow,
+        title: 'Command Palette',
+        description:
+          'Press / or Cmd+K to instantly search and activate anything. Navigate pages, trigger actions, find data, and control every UI element—all from your keyboard. Power user heaven.',
+        badge: 'core',
+      },
+      {
         icon: FolderPlus,
         title: 'Drag & Drop Folders → Strands',
         description:

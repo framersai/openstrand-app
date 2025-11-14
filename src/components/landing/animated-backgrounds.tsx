@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
 interface AnimatedBackgroundProps {
@@ -14,6 +14,17 @@ export function AnimatedBackground({
   className,
   intensity = 'light'
 }: AnimatedBackgroundProps) {
+  // Respect user motion preferences
+  const [reducedMotion, setReducedMotion] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('matchMedia' in window)) return;
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const apply = () => setReducedMotion(!!mq.matches);
+    apply();
+    mq.addEventListener?.('change', apply);
+    return () => mq.removeEventListener?.('change', apply);
+  }, []);
+
   const intensityOpacity = {
     light: 'opacity-10',
     medium: 'opacity-20',
@@ -37,34 +48,38 @@ export function AnimatedBackground({
             fill="url(#ocean-gradient)"
             className="animate-ocean-wave"
           >
-            <animate
-              attributeName="d"
-              values="M0,100 C150,120 300,80 450,100 C600,120 750,80 900,100 L900,200 L0,200 Z;
-                      M0,100 C150,80 300,120 450,100 C600,80 750,120 900,100 L900,200 L0,200 Z;
-                      M0,100 C150,120 300,80 450,100 C600,120 750,80 900,100 L900,200 L0,200 Z"
-              dur="6s"
-              repeatCount="indefinite"
-            />
+            {!reducedMotion && (
+              <animate
+                attributeName="d"
+                values="M0,100 C150,120 300,80 450,100 C600,120 750,80 900,100 L900,200 L0,200 Z;
+                        M0,100 C150,80 300,120 450,100 C600,80 750,120 900,100 L900,200 L0,200 Z;
+                        M0,100 C150,120 300,80 450,100 C600,120 750,80 900,100 L900,200 L0,200 Z"
+                dur="6s"
+                repeatCount="indefinite"
+              />
+            )}
           </path>
           <path
             d="M0,140 C200,160 400,120 600,140 C800,160 1000,120 1200,140 L1200,200 L0,200 Z"
             fill="url(#ocean-gradient)"
             opacity="0.6"
           >
-            <animate
-              attributeName="d"
-              values="M0,140 C200,160 400,120 600,140 C800,160 1000,120 1200,140 L1200,200 L0,200 Z;
-                      M0,140 C200,120 400,160 600,140 C800,120 1000,160 1200,140 L1200,200 L0,200 Z;
-                      M0,140 C200,160 400,120 600,140 C800,160 1000,120 1200,140 L1200,200 L0,200 Z"
-              dur="8s"
-              repeatCount="indefinite"
-            />
+            {!reducedMotion && (
+              <animate
+                attributeName="d"
+                values="M0,140 C200,160 400,120 600,140 C800,160 1000,120 1200,140 L1200,200 L0,200 Z;
+                        M0,140 C200,120 400,160 600,140 C800,120 1000,160 1200,140 L1200,200 L0,200 Z;
+                        M0,140 C200,160 400,120 600,140 C800,160 1000,120 1200,140 L1200,200 L0,200 Z"
+                dur="8s"
+                repeatCount="indefinite"
+              />
+            )}
           </path>
         </svg>
 
         {/* Floating particles */}
         <div className="absolute inset-0">
-          {[...Array(20)].map((_, i) => (
+          {[...Array(reducedMotion ? 4 : 8)].map((_, i) => (
             <div
               key={i}
               className={cn(
@@ -74,8 +89,8 @@ export function AnimatedBackground({
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 5}s`,
-                animationDuration: `${5 + Math.random() * 5}s`
+                animationDelay: reducedMotion ? '0s' : `${Math.random() * 5}s`,
+                animationDuration: reducedMotion ? '0s' : `${5 + Math.random() * 5}s`
               }}
             />
           ))}
@@ -96,7 +111,7 @@ export function AnimatedBackground({
           </defs>
 
           {/* Neural network connections */}
-          {[...Array(8)].map((_, i) => {
+          {[...Array(reducedMotion ? 3 : 8)].map((_, i) => {
             const x1 = 100 + (i % 4) * 200;
             const y1 = 100 + Math.floor(i / 4) * 200;
             const x2 = x1 + 150 + Math.random() * 100;
@@ -112,24 +127,24 @@ export function AnimatedBackground({
                   stroke="url(#neural-gradient)"
                   strokeWidth="1"
                   strokeDasharray="5,5"
-                  className="animate-pulse"
-                  style={{ animationDelay: `${i * 0.2}s` }}
+                  className={reducedMotion ? undefined : 'animate-pulse'}
+                  style={{ animationDelay: reducedMotion ? undefined : `${i * 0.2}s` }}
                 />
                 <circle
                   cx={x1}
                   cy={y1}
                   r="3"
                   fill="#06b6d4"
-                  className="animate-pulse"
-                  style={{ animationDelay: `${i * 0.2}s` }}
+                  className={reducedMotion ? undefined : 'animate-pulse'}
+                  style={{ animationDelay: reducedMotion ? undefined : `${i * 0.2}s` }}
                 />
                 <circle
                   cx={x2}
                   cy={y2}
                   r="3"
                   fill="#14b8a6"
-                  className="animate-pulse"
-                  style={{ animationDelay: `${i * 0.2 + 0.5}s` }}
+                  className={reducedMotion ? undefined : 'animate-pulse'}
+                  style={{ animationDelay: reducedMotion ? undefined : `${i * 0.2 + 0.5}s` }}
                 />
               </g>
             );
@@ -163,7 +178,7 @@ export function AnimatedBackground({
   if (variant === 'particles') {
     return (
       <div className={cn('absolute inset-0 overflow-hidden pointer-events-none', className)}>
-        {[...Array(50)].map((_, i) => {
+        {[...Array(reducedMotion ? 8 : 24)].map((_, i) => {
           const size = Math.random() * 3 + 1;
           const duration = Math.random() * 20 + 10;
           const delay = Math.random() * 10;
@@ -180,7 +195,7 @@ export function AnimatedBackground({
                 background: `radial-gradient(circle, ${
                   i % 3 === 0 ? '#06b6d4' : i % 3 === 1 ? '#14b8a6' : '#10b981'
                 }, transparent)`,
-                animation: `float ${duration}s ease-in-out ${delay}s infinite`
+                animation: reducedMotion ? undefined : `float ${duration}s ease-in-out ${delay}s infinite`
               }}
             />
           );
@@ -193,7 +208,7 @@ export function AnimatedBackground({
     return (
       <div className={cn('absolute inset-0 overflow-hidden pointer-events-none', className)}>
         <div className="absolute inset-0">
-          {[...Array(4)].map((_, i) => (
+          {[...Array(reducedMotion ? 2 : 4)].map((_, i) => (
             <div
               key={i}
               className={cn(
@@ -202,8 +217,8 @@ export function AnimatedBackground({
               )}
               style={{
                 transform: `translateY(${i * 100}px)`,
-                animation: `dataFlow ${3 + i}s linear infinite`,
-                animationDelay: `${i * 0.5}s`
+                animation: reducedMotion ? undefined : `dataFlow ${3 + i}s linear infinite`,
+                animationDelay: reducedMotion ? undefined : `${i * 0.5}s`
               }}
             />
           ))}

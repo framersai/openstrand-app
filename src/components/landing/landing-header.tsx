@@ -22,6 +22,7 @@ const NAV_ITEMS = [
   { key: 'pricing', href: '#pricing', label: 'Pricing', badge: undefined },
   { key: 'docs', href: '/docs', label: 'Documentation', badge: undefined },
   { key: 'pkms', href: '/pkms', label: 'PKMS', badge: 'New' },
+  { key: 'shortcuts', href: '/tutorials/keyboard-shortcuts', label: 'Keyboard /', badge: undefined },
 ] as const;
 
 interface LandingHeaderProps {

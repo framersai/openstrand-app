@@ -4,18 +4,31 @@ import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+interface ResponsiveTableColumn {
+  key: string;
+  header: string;
+  width?: number;
+  align?: 'left' | 'center' | 'right';
+  render?: (value: any, row: any) => React.ReactNode;
+  className?: string;
+  /** Hide column in card/mobile view */
+  hideOnMobile?: boolean;
+}
+
 interface ResponsiveTableProps {
   data: any[];
-  columns: {
-    key: string;
-    header: string;
-    width?: number;
-    align?: 'left' | 'center' | 'right';
-    render?: (value: any, row: any) => React.ReactNode;
-  }[];
+  columns: ResponsiveTableColumn[];
   className?: string;
   stickyHeader?: boolean;
   compactMode?: boolean;
+  /** Force view mode */
+  view?: 'auto' | 'cards' | 'table';
+  /** Called when a row is clicked */
+  onRowClick?: (row: any) => void;
+  /** Custom row key generator */
+  rowKey?: (row: any, index: number) => React.Key;
+  /** Empty state message */
+  emptyMessage?: string;
 }
 
 export function ResponsiveTable({
@@ -23,40 +36,64 @@ export function ResponsiveTable({
   columns,
   className,
   stickyHeader = true,
-  compactMode: propCompactMode
+  compactMode: propCompactMode,
+  view = 'auto',
+  onRowClick,
+  rowKey,
+  emptyMessage = 'No data available'
 }: ResponsiveTableProps) {
   const { device, orientation } = useResponsiveLayout();
   const [currentPage, setCurrentPage] = useState(0);
   
   // Determine compact mode based on device
-  const compactMode = propCompactMode ?? (device.isPhone || (device.isTablet && orientation.isPortrait));
+  const derivedCompactMode = propCompactMode ?? (device.isPhone || (device.isTablet && orientation.isPortrait));
+  const isCardView = view === 'cards' || (view === 'auto' && derivedCompactMode);
+  const isTableView = view === 'table' || (view === 'auto' && !derivedCompactMode);
   
   // Pagination for mobile
   const itemsPerPage = device.isPhone ? 5 : device.isTablet ? 10 : 20;
   const totalPages = Math.ceil(data.length / itemsPerPage);
-  const paginatedData = compactMode 
+  const shouldPaginate = isCardView;
+  const paginatedData = shouldPaginate 
     ? data.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage)
     : data;
 
+  if (!data.length) {
+    return (
+      <div className={cn('rounded-lg border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground', className)}>
+        {emptyMessage}
+      </div>
+    );
+  }
+  
+  const getRowKey = (row: any, index: number) =>
+    rowKey ? rowKey(row, index) : index;
+
   // Mobile card view
-  if (device.isPhone) {
+  if (isCardView) {
     return (
       <div className={cn("space-y-4", className)}>
         {paginatedData.map((row, rowIndex) => (
           <div
-            key={rowIndex}
-            className="rounded-lg border border-border/50 bg-card p-4 space-y-2"
+            key={getRowKey(row, rowIndex)}
+            className={cn(
+              "rounded-lg border border-border/50 bg-card p-4 space-y-2 transition-all",
+              onRowClick && "cursor-pointer hover:-translate-y-0.5 hover:shadow-md"
+            )}
+            onClick={() => onRowClick?.(row)}
           >
-            {columns.map((column) => (
-              <div key={column.key} className="flex justify-between items-start gap-2">
-                <span className="text-sm font-medium text-muted-foreground">
-                  {column.header}:
-                </span>
-                <span className="text-sm text-right">
-                  {column.render ? column.render(row[column.key], row) : row[column.key]}
-                </span>
-              </div>
-            ))}
+            {columns
+              .filter((column) => !column.hideOnMobile)
+              .map((column) => (
+                <div key={column.key} className="flex justify-between items-start gap-2">
+                  <span className="text-sm font-medium text-muted-foreground">
+                    {column.header}:
+                  </span>
+                  <span className="text-sm text-right">
+                    {column.render ? column.render(row[column.key], row) : row[column.key]}
+                  </span>
+                </div>
+              ))}
           </div>
         ))}
         
@@ -91,6 +128,10 @@ export function ResponsiveTable({
   }
 
   // Tablet and desktop table view
+  if (!isTableView) {
+    return null;
+  }
+
   return (
     <div className={cn("w-full", className)}>
       <div className="overflow-x-auto rounded-lg border border-border/50">
@@ -119,11 +160,13 @@ export function ResponsiveTable({
           <tbody>
             {paginatedData.map((row, rowIndex) => (
               <tr
-                key={rowIndex}
+                key={getRowKey(row, rowIndex)}
                 className={cn(
                   "border-b border-border/30 transition-colors",
-                  "hover:bg-muted/30"
+                  "hover:bg-muted/30",
+                  onRowClick && "cursor-pointer"
                 )}
+                onClick={() => onRowClick?.(row)}
               >
                 {columns.map((column) => (
                   <td

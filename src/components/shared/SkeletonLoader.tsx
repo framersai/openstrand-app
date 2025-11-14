@@ -294,3 +294,78 @@ export function InlineSkeleton({
   );
 }
 
+/**
+ * Progress Loading indicator with percentage
+ */
+export function LoadingProgress({ 
+  progress, 
+  label = 'Loading...',
+  className 
+}: { 
+  progress: number;
+  label?: string;
+  className?: string;
+}) {
+  return (
+    <div className={cn('w-full space-y-2', className)} role="status" aria-label={`${label} ${progress}%`}>
+      <div className="flex items-center justify-between text-sm">
+        <span className="text-muted-foreground">{label}</span>
+        <span className="font-medium">{progress}%</span>
+      </div>
+      <div className="h-2 bg-muted rounded-full overflow-hidden">
+        <div
+          className="h-full bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] animate-gradient-x transition-all duration-300"
+          style={{ width: `${progress}%` }}
+          role="progressbar"
+          aria-valuenow={progress}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Loading Dots animation
+ */
+export function LoadingDots({ className }: { className?: string }) {
+  return (
+    <div className={cn('flex items-center justify-center gap-1', className)} role="status" aria-label="Loading">
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          className="h-2 w-2 rounded-full bg-primary animate-bounce"
+          style={{ animationDelay: `${i * 0.15}s` }}
+        />
+      ))}
+      <span className="sr-only">Loading</span>
+    </div>
+  );
+}
+
+/**
+ * Spinner Loading indicator
+ */
+export function LoadingSpinner({ 
+  size = 'md',
+  className 
+}: { 
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}) {
+  const sizeClasses = {
+    sm: 'h-4 w-4',
+    md: 'h-8 w-8',
+    lg: 'h-12 w-12',
+  };
+  
+  return (
+    <div className={cn('relative', sizeClasses[size], className)} role="status" aria-label="Loading">
+      <div className="absolute inset-0 rounded-full border-2 border-muted" />
+      <div className="absolute inset-0 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      <span className="sr-only">Loading</span>
+    </div>
+  );
+}
+

@@ -39,6 +39,14 @@ const TOUR_STEPS: TourStep[] = [
     icon: <Sparkles className="h-5 w-5" />,
   },
   {
+    id: 'keyboard-shortcuts',
+    target: 'body',
+    title: 'Keyboard Power User',
+    content: 'Press / or Cmd+K (Ctrl+K on Windows) to open the command palette. Navigate anywhere, trigger any action, and search everything—all from your keyboard!',
+    position: 'bottom',
+    icon: <Book className="h-5 w-5" />,
+  },
+  {
     id: 'upload',
     target: '[data-tour-id="upload-tab"]',
     title: 'Upload Your Data',

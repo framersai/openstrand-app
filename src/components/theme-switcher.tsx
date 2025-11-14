@@ -7,7 +7,7 @@
 
 import * as React from 'react';
 import { useTheme } from 'next-themes';
-import { Moon, Sun, Smartphone, Monitor } from 'lucide-react';
+import { Moon, Sun, Smartphone, Monitor, Palette } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -106,6 +106,14 @@ const ThemeGlyph = ({ className }: IconProps) => {
 };
 
 const THEME_BASE_KEY = 'openstrand-theme-base';
+const THEME_COLORBLIND_KEY = 'openstrand-theme-colorblind';
+
+const COLORBLIND_MODES = [
+  { id: 'normal', name: 'Normal vision', description: 'Default palette' },
+  { id: 'protanopia', name: 'Protanopia', description: 'Red-blind friendly' },
+  { id: 'deuteranopia', name: 'Deuteranopia', description: 'Green-blind friendly' },
+  { id: 'tritanopia', name: 'Tritanopia', description: 'Blue-blind friendly' },
+] as const;
 
 const themes: Theme[] = [
   {
@@ -233,6 +241,8 @@ export function ThemeSwitcher({
   const [currentThemeBase, setCurrentThemeBase] = React.useState('modern-light');
   const [isDarkMode, setIsDarkMode] = React.useState(false);
   const [isAutoMode, setIsAutoMode] = React.useState<boolean>(true);
+  const [colorblindMode, setColorblindMode] =
+    React.useState<(typeof COLORBLIND_MODES)[number]['id']>('normal');
   
   React.useEffect(() => {
     setMounted(true);
@@ -254,6 +264,15 @@ export function ThemeSwitcher({
         if (stored && themes.some((t) => t.id === stored)) {
           setCurrentThemeBase(stored);
         }
+        const storedColorblind = window.localStorage.getItem(
+          THEME_COLORBLIND_KEY
+        ) as (typeof COLORBLIND_MODES)[number]['id'] | null;
+        if (
+          storedColorblind &&
+          COLORBLIND_MODES.some((mode) => mode.id === storedColorblind)
+        ) {
+          setColorblindMode(storedColorblind);
+        }
       } catch {
         // ignore storage errors (private mode, etc.)
       }
@@ -264,6 +283,7 @@ export function ThemeSwitcher({
     // Apply theme to document
     if (currentThemeBase && mounted) {
       document.documentElement.setAttribute('data-theme', currentThemeBase);
+      document.documentElement.setAttribute('data-colorblind-mode', colorblindMode);
 
       // Apply dark mode class if needed
       if (isDarkMode) {
@@ -274,11 +294,12 @@ export function ThemeSwitcher({
 
       try {
         window.localStorage.setItem(THEME_BASE_KEY, currentThemeBase);
+        window.localStorage.setItem(THEME_COLORBLIND_KEY, colorblindMode);
       } catch {
         // ignore storage errors
       }
     }
-  }, [currentThemeBase, isDarkMode, mounted]);
+  }, [currentThemeBase, isDarkMode, mounted, colorblindMode]);
 
   if (!mounted) {
     return null;
@@ -344,6 +365,12 @@ export function ThemeSwitcher({
     return themes.find(t => t.id === currentThemeBase) || themes[0];
   };
 
+  const handleColorblindModeChange = (
+    mode: (typeof COLORBLIND_MODES)[number]['id']
+  ) => {
+    setColorblindMode(mode);
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{triggerButton}</DropdownMenuTrigger>
@@ -401,6 +428,35 @@ export function ThemeSwitcher({
                 </div>
               )}
             </div>
+          </DropdownMenuItem>
+        ))}
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuLabel className="text-xs font-semibold uppercase tracking-wide text-muted-foreground flex items-center gap-2">
+          <Palette className="h-3 w-3" />
+          Accessibility
+        </DropdownMenuLabel>
+        {COLORBLIND_MODES.map((mode) => (
+          <DropdownMenuItem
+            key={mode.id}
+            onClick={() => handleColorblindModeChange(mode.id)}
+            className={cn(
+              'cursor-pointer flex flex-col items-start gap-1',
+              colorblindMode === mode.id && 'text-primary'
+            )}
+          >
+            <div className="flex w-full items-center justify-between">
+              <span className="text-sm font-medium">{mode.name}</span>
+              {colorblindMode === mode.id && (
+                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
+                  Active
+                </span>
+              )}
+            </div>
+            <span className="text-xs text-muted-foreground">
+              {mode.description}
+            </span>
           </DropdownMenuItem>
         ))}
 

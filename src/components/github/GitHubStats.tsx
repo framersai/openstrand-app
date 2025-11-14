@@ -92,7 +92,24 @@ export function GitHubStats({
       }
     };
 
-    fetchGitHubStats();
+    // Defer the fetch to an idle callback to avoid competing with critical work
+    let timeoutId: number | null = null;
+    let idleId: number | null = null;
+    const win: any = typeof window !== 'undefined' ? window : undefined;
+    const requestIdle = win?.requestIdleCallback
+      ? (cb: () => void) => (idleId = win.requestIdleCallback(cb))
+      : (cb: () => void) => (timeoutId = window.setTimeout(cb, 0));
+    const cancelIdle = () => {
+      if (idleId != null && win?.cancelIdleCallback) {
+        win.cancelIdleCallback(idleId);
+      }
+      if (timeoutId != null) {
+        clearTimeout(timeoutId);
+      }
+    };
+
+    requestIdle(fetchGitHubStats);
+    return () => cancelIdle();
   }, []);
 
   if (loading || !data) {

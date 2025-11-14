@@ -16,18 +16,22 @@ const buttonVariants = cva(
       variant: {
         default:
           'relative overflow-hidden border border-primary/25 bg-[hsl(var(--surface-1))] text-primary shadow-[var(--shadow-glow)] hover:border-primary/35 hover:bg-[hsl(var(--surface-2))] hover:text-primary dark:border-primary/40 dark:bg-[hsl(var(--surface-2))] dark:text-primary-foreground dark:hover:bg-[hsl(var(--surface-3))] dark:shadow-[var(--shadow-glow)]',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-lg',
+        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-lg hover:shadow-xl',
         outline:
           'border border-border/70 bg-[hsl(var(--surface-1))] text-foreground hover:border-primary/40 hover:bg-[hsl(var(--surface-2))] hover:text-primary dark:border-border/40 dark:bg-[hsl(var(--surface-2))] dark:hover:border-primary/50',
         secondary:
           'border border-border/60 bg-[hsl(var(--surface-2))] text-foreground shadow-none hover:border-primary/30 hover:bg-[hsl(var(--surface-3))] hover:text-foreground dark:border-border/40 dark:bg-[hsl(var(--surface-2))] dark:hover:bg-[hsl(var(--surface-3))]',
         ghost: 'text-foreground/85 hover:text-primary hover:bg-[hsl(var(--surface-2))] dark:hover:bg-[hsl(var(--surface-2))]',
-        link: 'text-primary underline-offset-4 hover:underline',
+        link: 'text-primary underline-offset-4 hover:underline shadow-none',
+        gradient: 'relative overflow-hidden bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] text-primary-foreground hover:shadow-lg hover:shadow-primary/30 animate-gradient-x border-0',
+        glass: 'backdrop-blur-xl bg-card/70 border border-border/50 hover:bg-card/80 hover:shadow-lg',
+        success: 'bg-[hsl(var(--color-success-500))] text-white hover:bg-[hsl(var(--color-success-600))] hover:shadow-lg hover:shadow-[hsl(var(--color-success-500))]/30',
       },
       size: {
         default: 'h-11 px-6 min-h-[44px]',
         sm: 'h-11 px-4 text-sm min-h-[44px]',
         lg: 'h-12 px-8 text-base min-h-[48px]',
+        xl: 'h-14 px-10 text-lg min-h-[52px]',
         icon: 'h-11 w-11 rounded-full min-h-[44px] min-w-[44px]',
       },
     },
@@ -42,17 +46,52 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  /** Show loading spinner */
+  loading?: boolean;
+  /** Icon to display before text */
+  leftIcon?: React.ReactNode;
+  /** Icon to display after text */
+  rightIcon?: React.ReactNode;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, loading, leftIcon, rightIcon, children, disabled, ...props }, ref) => {
     const Comp = asChild ? Slot : 'button';
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
+        disabled={disabled || loading}
+        aria-busy={loading}
         {...props}
-      />
+      >
+        {loading && (
+          <svg
+            className="mr-2 h-4 w-4 animate-spin"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            aria-label="Loading"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            />
+          </svg>
+        )}
+        {!loading && leftIcon && <span className="mr-2">{leftIcon}</span>}
+        {children}
+        {!loading && rightIcon && <span className="ml-2">{rightIcon}</span>}
+      </Comp>
     );
   }
 );

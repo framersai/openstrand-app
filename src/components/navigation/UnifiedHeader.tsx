@@ -334,6 +334,7 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
             href={localizePath('/')}
             className="group flex items-center gap-3 rounded-full px-2 py-1 transition-transform hover:scale-105 hover:bg-primary/10"
             onClick={closeMobileMenu}
+            aria-label="OpenStrand home"
           >
             <OpenStrandLogo 
               size="sm" 

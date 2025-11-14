@@ -1,17 +1,39 @@
 import type { Metadata } from 'next';
 
+import dynamic from 'next/dynamic';
 import { HeroSection } from '@/components/landing/hero-section-new';
-import { FeaturesSection } from '@/components/landing/features-section-new';
-import { InteractiveExamples } from '@/components/landing/interactive-examples';
-import { VisualizationShowcase } from '@/components/landing/visualization-showcase';
-import { PricingSection } from '@/components/landing/pricing-section';
-import { TestimonialsEnhanced } from '@/components/landing/testimonials-enhanced';
-import { CTASection } from '@/components/landing/cta-section';
-import { UnifiedHeader } from '@/components/navigation/UnifiedHeader';
 import { AnimatedBackground } from '@/components/landing/animated-backgrounds';
+import { UnifiedHeader } from '@/components/navigation/UnifiedHeader';
 import { landingStructuredData } from '@/components/seo/structured-data';
 import { getRouteMetadata, siteMetadata } from '@/config/seo';
 import type { Locale } from '@/i18n/config';
+import { LazyOnViewport } from '@/components/utility/LazyOnViewport';
+
+// Defer heavy client components until they are near viewport to reduce TBT
+const FeaturesSection = dynamic(
+  () => import('@/components/landing/features-section-new').then((m) => m.FeaturesSection),
+  { ssr: false },
+);
+const InteractiveExamples = dynamic(
+  () => import('@/components/landing/interactive-examples').then((m) => m.InteractiveExamples),
+  { ssr: false, loading: () => <div className="container mx-auto h-40 sm:h-56" /> },
+);
+const VisualizationShowcase = dynamic(
+  () => import('@/components/landing/visualization-showcase').then((m) => m.VisualizationShowcase),
+  { ssr: false },
+);
+const PricingSection = dynamic(
+  () => import('@/components/landing/pricing-section').then((m) => m.PricingSection),
+  { ssr: false },
+);
+const TestimonialsEnhanced = dynamic(
+  () => import('@/components/landing/testimonials-enhanced').then((m) => m.TestimonialsEnhanced),
+  { ssr: false },
+);
+const CTASection = dynamic(
+  () => import('@/components/landing/cta-section').then((m) => m.CTASection),
+  { ssr: false },
+);
 
 type LandingPageParams = {
   params: {
@@ -84,19 +106,31 @@ export default function LandingPage({ params }: LandingPageParams) {
         </section>
 
         <section className="relative">
-          <AnimatedBackground variant="grid" intensity="light" />
-          <InteractiveExamples id="examples" />
+          <LazyOnViewport rootMargin="300px">
+            <AnimatedBackground variant="grid" intensity="light" />
+            <InteractiveExamples id="examples" />
+          </LazyOnViewport>
         </section>
 
         <section className="relative">
-          <AnimatedBackground variant="neural" intensity="light" />
-          <FeaturesSection id="features" />
+          <LazyOnViewport rootMargin="300px">
+            <AnimatedBackground variant="neural" intensity="light" />
+            <FeaturesSection id="features" />
+          </LazyOnViewport>
         </section>
 
-        <VisualizationShowcase id="use-cases" />
-        <PricingSection id="pricing" />
-        <TestimonialsEnhanced id="testimonials" />
-        <CTASection id="cta" />
+        <LazyOnViewport rootMargin="300px">
+          <VisualizationShowcase id="use-cases" />
+        </LazyOnViewport>
+        <LazyOnViewport rootMargin="300px">
+          <PricingSection id="pricing" />
+        </LazyOnViewport>
+        <LazyOnViewport rootMargin="300px">
+          <TestimonialsEnhanced id="testimonials" />
+        </LazyOnViewport>
+        <LazyOnViewport rootMargin="300px">
+          <CTASection id="cta" />
+        </LazyOnViewport>
       </main>
 
       {landingStructuredData.map((schema, index) => (
