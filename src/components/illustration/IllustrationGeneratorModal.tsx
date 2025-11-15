@@ -1,0 +1,590 @@
+'use client';
+
+/**
+ * @module IllustrationGeneratorModal
+ * @description Modal for generating illustrations with preview → confirm → batch workflow
+ * 
+ * Features:
+ * - Tab 1: Settings (style presets, safety, API key)
+ * - Tab 2: Preview (generate 1-5 samples, refine style)
+ * - Tab 3: Batch (show cost estimate, generate all)
+ * - Real-time progress tracking
+ * - Cost estimates displayed throughout
+ */
+
+import React, { useState, useEffect } from 'react';
+import { 
+  Sparkles, 
+  Settings, 
+  Eye, 
+  Zap, 
+  DollarSign,
+  AlertCircle,
+  Check,
+  X,
+  Loader2
+} from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
+import { cn } from '@/lib/utils';
+
+interface PageSummary {
+  pageNumber: number;
+  title?: string;
+  summary: string;
+}
+
+interface IllustrationGeneratorModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  strandId: string;
+  pages: PageSummary[];
+  onComplete?: (jobId: string) => void;
+}
+
+interface PreviewResult {
+  pageNumber: number;
+  imageUrl: string;
+  cost: number;
+}
+
+interface CostEstimate {
+  pageCount: number;
+  totalCost: number;
+  costPerPage: number;
+}
+
+interface BatchProgress {
+  jobId: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  progress: {
+    completed: number;
+    total: number;
+  };
+  totalCost: number;
+}
+
+export function IllustrationGeneratorModal({
+  isOpen,
+  onClose,
+  strandId,
+  pages,
+  onComplete,
+}: IllustrationGeneratorModalProps) {
+  const [activeTab, setActiveTab] = useState<'settings' | 'preview' | 'batch'>('settings');
+  
+  // Settings
+  const [stylePreset, setStylePreset] = useState('flat_pastel');
+  const [customStyle, setCustomStyle] = useState('');
+  const [safetyLevel, setSafetyLevel] = useState('default');
+  const [imageSize, setImageSize] = useState<'1024x1024' | '1792x1024' | '1024x1792'>('1024x1024');
+  const [imageQuality, setImageQuality] = useState<'standard' | 'hd'>('standard');
+  
+  // Preview
+  const [previewCount, setPreviewCount] = useState(3);
+  const [previews, setPreviews] = useState<PreviewResult[]>([]);
+  const [generatingPreview, setGeneratingPreview] = useState(false);
+  
+  // Batch
+  const [costEstimate, setCostEstimate] = useState<CostEstimate | null>(null);
+  const [estimating, setEstimating] = useState(false);
+  const [batchJobId, setBatchJobId] = useState<string | null>(null);
+  const [batchProgress, setBatchProgress] = useState<BatchProgress | null>(null);
+  
+  // Load cost estimate when modal opens
+  useEffect(() => {
+    if (isOpen && activeTab === 'batch') {
+      loadCostEstimate();
+    }
+  }, [isOpen, activeTab, stylePreset, imageSize, imageQuality]);
+
+  // Poll batch progress
+  useEffect(() => {
+    if (!batchJobId) return;
+
+    const interval = setInterval(() => {
+      loadBatchProgress();
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [batchJobId]);
+
+  const loadCostEstimate = async () => {
+    try {
+      setEstimating(true);
+      const response = await fetch('/api/v1/illustrations/estimate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          strandId,
+          pages,
+          stylePreset,
+          safetyLevel,
+          imageOptions: {
+            size: imageSize,
+            quality: imageQuality,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCostEstimate(data.data);
+      }
+    } catch (error) {
+      console.error('Failed to load cost estimate:', error);
+    } finally {
+      setEstimating(false);
+    }
+  };
+
+  const generatePreviews = async () => {
+    try {
+      setGeneratingPreview(true);
+      const response = await fetch('/api/v1/illustrations/preview', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          strandId,
+          pages,
+          previewCount,
+          stylePreset,
+          customStylePrompt: customStyle || undefined,
+          safetyLevel,
+          imageOptions: {
+            size: imageSize,
+            quality: imageQuality,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setPreviews(data.data.previews.map((p: any) => ({
+          pageNumber: p.pageNumber,
+          imageUrl: p.image.url,
+          cost: p.cost,
+        })));
+        setActiveTab('preview');
+      }
+    } catch (error) {
+      console.error('Failed to generate previews:', error);
+    } finally {
+      setGeneratingPreview(false);
+    }
+  };
+
+  const startBatchJob = async () => {
+    try {
+      const response = await fetch('/api/v1/illustrations/batch', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          strandId,
+          pages,
+          stylePreset,
+          customStylePrompt: customStyle || undefined,
+          safetyLevel,
+          imageOptions: {
+            size: imageSize,
+            quality: imageQuality,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setBatchJobId(data.data.jobId);
+      }
+    } catch (error) {
+      console.error('Failed to start batch job:', error);
+    }
+  };
+
+  const loadBatchProgress = async () => {
+    if (!batchJobId) return;
+
+    try {
+      const response = await fetch(`/api/v1/illustrations/batch/${batchJobId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setBatchProgress(data.data);
+
+        if (data.data.status === 'completed') {
+          onComplete?.(batchJobId);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load batch progress:', error);
+    }
+  };
+
+  const cancelBatchJob = async () => {
+    if (!batchJobId) return;
+
+    try {
+      await fetch(`/api/v1/illustrations/batch/${batchJobId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      setBatchJobId(null);
+      setBatchProgress(null);
+    } catch (error) {
+      console.error('Failed to cancel batch job:', error);
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary" />
+            Generate Illustrations
+          </DialogTitle>
+        </DialogHeader>
+
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="flex-1 flex flex-col">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="settings" className="gap-2">
+              <Settings className="h-4 w-4" />
+              Settings
+            </TabsTrigger>
+            <TabsTrigger value="preview" className="gap-2">
+              <Eye className="h-4 w-4" />
+              Preview ({previews.length})
+            </TabsTrigger>
+            <TabsTrigger value="batch" className="gap-2">
+              <Zap className="h-4 w-4" />
+              Batch
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Settings Tab */}
+          <TabsContent value="settings" className="flex-1 overflow-y-auto space-y-6 p-6">
+            {/* Style Preset */}
+            <div className="space-y-2">
+              <Label>Art Style</Label>
+              <Select value={stylePreset} onValueChange={setStylePreset}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="minimal_vector">Minimal Vector</SelectItem>
+                  <SelectItem value="flat_pastel">Flat Pastel (Recommended)</SelectItem>
+                  <SelectItem value="watercolor_soft">Soft Watercolor</SelectItem>
+                  <SelectItem value="pencil_sketch">Pencil Sketch</SelectItem>
+                  <SelectItem value="comic_lineart">Comic Line Art</SelectItem>
+                  <SelectItem value="realistic_soft">Soft Realistic</SelectItem>
+                  <SelectItem value="custom">Custom</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Custom Style */}
+            {stylePreset === 'custom' && (
+              <div className="space-y-2">
+                <Label>Custom Style Description</Label>
+                <Input
+                  placeholder="e.g., minimalist line art with pastel colors"
+                  value={customStyle}
+                  onChange={(e) => setCustomStyle(e.target.value)}
+                />
+              </div>
+            )}
+
+            {/* Safety Level */}
+            <div className="space-y-2">
+              <Label>Content Safety</Label>
+              <Select value={safetyLevel} onValueChange={setSafetyLevel}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="strict">Strict (K-12 safe)</SelectItem>
+                  <SelectItem value="censored">Censored (All ages)</SelectItem>
+                  <SelectItem value="default">Default (Moderate)</SelectItem>
+                  <SelectItem value="uncensored">Uncensored (Adult)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Image Size */}
+            <div className="space-y-2">
+              <Label>Image Size</Label>
+              <Select value={imageSize} onValueChange={(v: any) => setImageSize(v)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1024x1024">Square (1024×1024)</SelectItem>
+                  <SelectItem value="1792x1024">Landscape (1792×1024)</SelectItem>
+                  <SelectItem value="1024x1792">Portrait (1024×1792)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Quality */}
+            <div className="space-y-2">
+              <Label>Quality</Label>
+              <Select value={imageQuality} onValueChange={(v: any) => setImageQuality(v)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="standard">Standard (Faster, cheaper)</SelectItem>
+                  <SelectItem value="hd">HD (Better quality)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Preview Count */}
+            <div className="space-y-2">
+              <Label>Preview Images (1-5)</Label>
+              <Slider
+                value={[previewCount]}
+                onValueChange={([v]) => setPreviewCount(v)}
+                min={1}
+                max={5}
+                step={1}
+              />
+              <p className="text-xs text-muted-foreground">
+                Generate {previewCount} sample{previewCount > 1 ? 's' : ''} to verify style before batch
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 pt-4">
+              <Button onClick={generatePreviews} disabled={generatingPreview} className="flex-1">
+                {generatingPreview ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Eye className="h-4 w-4 mr-2" />
+                    Generate Preview
+                  </>
+                )}
+              </Button>
+            </div>
+          </TabsContent>
+
+          {/* Preview Tab */}
+          <TabsContent value="preview" className="flex-1 overflow-y-auto space-y-6 p-6">
+            {previews.length === 0 ? (
+              <Card className="border-dashed">
+                <CardContent className="p-12 text-center">
+                  <Eye className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">
+                    No previews generated yet. Go to Settings and click "Generate Preview".
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-semibold">Preview Results</h4>
+                    <Badge variant="outline">
+                      Cost: ${previews.reduce((sum, p) => sum + p.cost, 0).toFixed(4)}
+                    </Badge>
+                  </div>
+
+                  {/* Preview Grid */}
+                  <div className="grid grid-cols-3 gap-4">
+                    {previews.map((preview) => (
+                      <Card key={preview.pageNumber} className="overflow-hidden">
+                        <CardContent className="p-0">
+                          <img
+                            src={preview.imageUrl}
+                            alt={`Page ${preview.pageNumber} preview`}
+                            className="w-full h-auto"
+                          />
+                          <div className="p-2 text-xs text-center bg-muted">
+                            Page {preview.pageNumber}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center justify-between pt-4 border-t border-border">
+                  <div className="text-sm text-muted-foreground">
+                    Happy with the style? Proceed to generate all {pages.length} pages.
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" onClick={() => setActiveTab('settings')}>
+                      <X className="h-4 w-4 mr-2" />
+                      Refine Style
+                    </Button>
+                    <Button onClick={() => setActiveTab('batch')}>
+                      Proceed to Batch
+                      <Check className="h-4 w-4 ml-2" />
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+          </TabsContent>
+
+          {/* Batch Tab */}
+          <TabsContent value="batch" className="flex-1 overflow-y-auto space-y-6 p-6">
+            {!batchJobId ? (
+              <>
+                {/* Cost Estimate */}
+                <Card>
+                  <CardContent className="p-6 space-y-4">
+                    <div className="flex items-center gap-2">
+                      <DollarSign className="h-5 w-5 text-primary" />
+                      <h4 className="font-semibold">Cost Estimate</h4>
+                    </div>
+
+                    {estimating ? (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>Calculating...</span>
+                      </div>
+                    ) : costEstimate ? (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-3 gap-4 text-center">
+                          <div>
+                            <div className="text-3xl font-bold text-primary">
+                              ${costEstimate.totalCost.toFixed(2)}
+                            </div>
+                            <div className="text-xs text-muted-foreground">Total Cost</div>
+                          </div>
+                          <div>
+                            <div className="text-3xl font-bold">{costEstimate.pageCount}</div>
+                            <div className="text-xs text-muted-foreground">Pages</div>
+                          </div>
+                          <div>
+                            <div className="text-3xl font-bold">
+                              ${costEstimate.costPerPage.toFixed(4)}
+                            </div>
+                            <div className="text-xs text-muted-foreground">Per Page</div>
+                          </div>
+                        </div>
+
+                        <div className="p-3 bg-yellow-50 dark:bg-yellow-950 rounded-lg flex gap-2">
+                          <AlertCircle className="h-4 w-4 text-yellow-600 shrink-0 mt-0.5" />
+                          <div className="text-xs text-muted-foreground">
+                            This estimate is based on DALL-E 3 pricing. Actual cost may vary
+                            slightly. Generation may take 5-10 minutes for large documents.
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <Button onClick={loadCostEstimate} variant="outline">
+                        Calculate Cost
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Start Batch */}
+                {costEstimate && (
+                  <div className="flex gap-3">
+                    <Button onClick={onClose} variant="outline" className="flex-1">
+                      Cancel
+                    </Button>
+                    <Button onClick={startBatchJob} className="flex-1">
+                      <Zap className="h-4 w-4 mr-2" />
+                      Generate All ({pages.length} pages)
+                    </Button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                {/* Progress Display */}
+                <Card>
+                  <CardContent className="p-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-semibold">Batch Generation Progress</h4>
+                      <Badge variant={
+                        batchProgress?.status === 'completed' ? 'default' :
+                        batchProgress?.status === 'failed' ? 'destructive' :
+                        'secondary'
+                      }>
+                        {batchProgress?.status || 'pending'}
+                      </Badge>
+                    </div>
+
+                    {batchProgress && (
+                      <div className="space-y-3">
+                        <Progress 
+                          value={(batchProgress.progress.completed / batchProgress.progress.total) * 100}
+                          className="h-3"
+                        />
+                        
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">
+                            {batchProgress.progress.completed} / {batchProgress.progress.total} pages
+                          </span>
+                          <span className="font-semibold">
+                            ${batchProgress.totalCost.toFixed(2)} spent
+                          </span>
+                        </div>
+
+                        {batchProgress.status === 'processing' && (
+                          <Button onClick={cancelBatchJob} variant="outline" size="sm">
+                            Cancel Generation
+                          </Button>
+                        )}
+
+                        {batchProgress.status === 'completed' && (
+                          <div className="p-4 bg-green-50 dark:bg-green-950 rounded-lg flex gap-2">
+                            <Check className="h-5 w-5 text-green-600" />
+                            <div>
+                              <div className="font-semibold text-green-900 dark:text-green-100">
+                                Generation Complete!
+                              </div>
+                              <div className="text-sm text-green-700 dark:text-green-300">
+                                All {batchProgress.progress.total} illustrations have been generated.
+                                Total cost: ${batchProgress.totalCost.toFixed(2)}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </>
+            )}
+          </TabsContent>
+        </Tabs>
+      </DialogContent>
+    </Dialog>
+  );
+}
+

@@ -75,6 +75,15 @@ export interface TeamAdminSummary {
   plan: string;
 }
 
+export interface OcrResult {
+  text: string;
+  confidence: number;
+  language: string;
+  wordCount: number;
+  lineCount: number;
+  processingTime: number;
+}
+
 /**
  * API Error class for better error handling
  */
@@ -1958,6 +1967,31 @@ export const openstrandAPI = {
   export: exportAPI,
   system: systemAPI,
   team: teamAdminAPI,
+  ocr: {
+    /**
+     * Extract text from an image (PNG, JPEG, etc.) using the OCR service.
+     * Intended for whiteboard exports, screenshots, and scanned notes.
+     */
+    async extractFromBlob(
+      blob: Blob,
+      options?: { language?: string; minConfidence?: number }
+    ): Promise<OcrResult> {
+      const formData = new FormData();
+      formData.append('file', blob, 'image.png');
+      if (options?.language) {
+        formData.append('language', options.language);
+      }
+      if (typeof options?.minConfidence === 'number') {
+        formData.append('minConfidence', String(options.minConfidence));
+      }
+
+      const response = await apiFetch('/ocr/image', {
+        method: 'POST',
+        body: formData,
+      });
+      return await parseData<OcrResult>(response);
+    },
+  },
   scraper: {
     async scrapeUrl(payload: {
       url: string;
@@ -2011,3 +2045,6 @@ export const openstrandAPI = {
     return response.json();
   },
 };
+
+// Re-export editor API for convenience
+export { editorAPI } from './editor.api';

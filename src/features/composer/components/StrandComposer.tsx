@@ -80,6 +80,7 @@ import { Label } from '@/components/ui/label';
 import { useComposerPreferences } from '../hooks/useComposerPreferences';
 import { AutoMetadataReviewModal } from './AutoMetadataReviewModal';
 import { CodeSnippetRunner } from './CodeSnippetRunner';
+import { WhiteboardPanel } from '@/components/editor/WhiteboardPanel';
 
 const NOTE_TYPE_OPTIONS = [
   { value: 'main', label: 'Main note' },
@@ -148,6 +149,8 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
   const [visibility, setVisibility] = useState<'private' | 'public' | 'unlisted' | 'team'>('private');
   const snippetApiRef = useRef<{ runWith: (code: string, language: 'ts' | 'js' | 'py') => void; getLastLogs: () => string[]; getLastError: () => string | null } | null>(null);
   const [lastCodeRun, setLastCodeRun] = useState<{ language: string; logs: string[]; error?: string | null; ranAt: string } | null>(null);
+  const [editorMode, setEditorMode] = useState<'text' | 'whiteboard'>('text');
+  const [whiteboardData, setWhiteboardData] = useState<any>(null);
 
   const editor = useEditor({
     extensions: [
@@ -583,41 +586,72 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
       </div>
 
       <div className="relative">
-        <div className="mb-2 flex flex-wrap items-center gap-2">
-          <Button variant="outline" size="sm" onClick={runCurrentCodeBlock}>
-            Run current code block
+        {/* Editor Mode Toggle */}
+        <div className="mb-4 flex items-center gap-2">
+          <Button
+            variant={editorMode === 'text' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setEditorMode('text')}
+          >
+            Text Editor
           </Button>
-          {lastCodeRun ? (
-            <span className="text-xs text-muted-foreground">
-              Last run ({lastCodeRun.language}) at {new Date(lastCodeRun.ranAt).toLocaleTimeString()}
-            </span>
-          ) : null}
+          <Button
+            variant={editorMode === 'whiteboard' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setEditorMode('whiteboard')}
+          >
+            Whiteboard
+          </Button>
         </div>
-        <FloatingVoiceRecorder
-          strandId={strandId}
-          planTier={planTier}
-          onTranscriptReady={handleInsertTranscript}
-        />
 
-        <Card className="shadow-lg">
-          <CardContent className={cn(
-            "prose max-w-none rounded-md border border-border/60 bg-background/90 dark:prose-invert",
-            device.isPhone && "min-h-[240px] px-4 py-3",
-            device.isTablet && "min-h-[300px] px-5 py-4",
-            (device.isLaptop || device.isDesktop || device.isUltrawide) && "min-h-[360px] px-6 py-5"
-          )}>
-            {loadingExisting ? (
-              <motion.div
-                className="flex h-full w-full items-center justify-center text-sm text-muted-foreground"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                Loading strand…
-              </motion.div>
-            ) : null}
-            <EditorContent editor={editor} />
-          </CardContent>
-        </Card>
+        {editorMode === 'text' ? (
+          <>
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <Button variant="outline" size="sm" onClick={runCurrentCodeBlock}>
+                Run current code block
+              </Button>
+              {lastCodeRun ? (
+                <span className="text-xs text-muted-foreground">
+                  Last run ({lastCodeRun.language}) at {new Date(lastCodeRun.ranAt).toLocaleTimeString()}
+                </span>
+              ) : null}
+            </div>
+            <FloatingVoiceRecorder
+              strandId={strandId}
+              planTier={planTier}
+              onTranscriptReady={handleInsertTranscript}
+            />
+
+            <Card className="shadow-lg">
+              <CardContent className={cn(
+                "prose max-w-none rounded-md border border-border/60 bg-background/90 dark:prose-invert",
+                device.isPhone && "min-h-[240px] px-4 py-3",
+                device.isTablet && "min-h-[300px] px-5 py-4",
+                (device.isLaptop || device.isDesktop || device.isUltrawide) && "min-h-[360px] px-6 py-5"
+              )}>
+                {loadingExisting ? (
+                  <motion.div
+                    className="flex h-full w-full items-center justify-center text-sm text-muted-foreground"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    Loading strand…
+                  </motion.div>
+                ) : null}
+                <EditorContent editor={editor} />
+              </CardContent>
+            </Card>
+          </>
+        ) : (
+          <WhiteboardPanel
+            strandId={strandId}
+            initialData={whiteboardData}
+            onChange={setWhiteboardData}
+            height={device.isPhone ? 300 : device.isTablet ? 400 : 500}
+            autoSave={prefs.autosave}
+            autoSaveInterval={8000}
+          />
+        )}
       </div>
 
       {/* Runnable snippet utility - optional helper side by side with editor */}
