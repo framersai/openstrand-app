@@ -28,7 +28,6 @@ import yaml from 'highlight.js/lib/languages/yaml';
 import dockerfile from 'highlight.js/lib/languages/dockerfile';
 import html from 'highlight.js/lib/languages/xml';
 import css from 'highlight.js/lib/languages/css';
-import { motion } from 'framer-motion';
 import { FileText, Save, Sparkles, Tag } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -630,13 +629,9 @@ export function StrandComposer({ strandId: initialStrandId, title: initialTitle 
                 (device.isLaptop || device.isDesktop || device.isUltrawide) && "min-h-[360px] px-6 py-5"
               )}>
                 {loadingExisting ? (
-                  <motion.div
-                    className="flex h-full w-full items-center justify-center text-sm text-muted-foreground"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                  >
+                  <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
                     Loading strand…
-                  </motion.div>
+                  </div>
                 ) : null}
                 <EditorContent editor={editor} />
               </CardContent>

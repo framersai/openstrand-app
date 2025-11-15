@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useMemo, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 import { Camera, ChevronLeft, ChevronRight, Film, Info, UploadCloud } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -124,16 +123,8 @@ export function MediaAttachmentWizard({ strandId, planTier }: MediaAttachmentWiz
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-6">
-            <AnimatePresence mode="wait">
-              {step === 0 && (
-                <motion.div
-                  key="step-0"
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 16 }}
-                  transition={{ duration: 0.2 }}
-                  className="grid gap-4 md:grid-cols-[200px_1fr]"
-                >
+            {step === 0 && (
+              <div className="grid gap-4 md:grid-cols-[200px_1fr]">
                   <div className="flex flex-col gap-2">
                     <Label htmlFor="file-input" className="text-xs uppercase text-muted-foreground">1. Choose file</Label>
                     <Tooltip>
@@ -166,18 +157,11 @@ export function MediaAttachmentWizard({ strandId, planTier }: MediaAttachmentWiz
                       </span>
                     </div>
                   </div>
-                </motion.div>
-              )}
+              </div>
+            )}
 
-              {step === 1 && (
-                <motion.div
-                  key="step-1"
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 16 }}
-                  transition={{ duration: 0.2 }}
-                  className="grid gap-4 md:grid-cols-2"
-                >
+            {step === 1 && (
+              <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <Label className="text-xs uppercase text-muted-foreground">2. Configure options</Label>
@@ -206,31 +190,41 @@ export function MediaAttachmentWizard({ strandId, planTier }: MediaAttachmentWiz
                       placeholder="Describe context, participants, or follow-ups. These notes stay private to editors."
                     />
                   </div>
-                </motion.div>
-              )}
+                </div>
+            )}
 
-              {step === 2 && (
-                <motion.div
-                  key="step-2"
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 16 }}
-                  transition={{ duration: 0.2 }}
-                  className="space-y-3 rounded-lg border border-border/60 bg-muted/30 p-4 text-xs"
-                >
-                  <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <UploadCloud className="h-4 w-4" /> Ready to upload
-                  </div>
-                  <ul className="list-inside list-disc space-y-1">
-                    <li>Attach to strand: <span className="font-medium text-foreground">{strandId || '—'}</span></li>
-                    <li>File: <span className="font-medium text-foreground">{file?.name ?? 'Not selected'}</span></li>
-                    <li>Type: <span className="font-medium text-foreground">{mediaType}</span></li>
-                    <li>AI summary: <span className="font-medium text-foreground">{generateSummary ? 'Yes' : 'No'}</span></li>
-                  </ul>
-                  <p className="text-muted-foreground">Uploads inherit enterprise retention policies. Remove attachments anytime from the strand detail view.</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {step === 2 && (
+              <div className="space-y-3 rounded-lg border border-border/60 bg-muted/30 p-4 text-xs">
+                <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                  <UploadCloud className="h-4 w-4" /> Ready to upload
+                </div>
+                <ul className="list-inside list-disc space-y-1">
+                  <li>
+                    Attach to strand:{' '}
+                    <span className="font-medium text-foreground">{strandId || '—'}</span>
+                  </li>
+                  <li>
+                    File:{' '}
+                    <span className="font-medium text-foreground">
+                      {file?.name ?? 'Not selected'}
+                    </span>
+                  </li>
+                  <li>
+                    Type: <span className="font-medium text-foreground">{mediaType}</span>
+                  </li>
+                  <li>
+                    AI summary:{' '}
+                    <span className="font-medium text-foreground">
+                      {generateSummary ? 'Yes' : 'No'}
+                    </span>
+                  </li>
+                </ul>
+                <p className="text-muted-foreground">
+                  Uploads inherit enterprise retention policies. Remove attachments anytime from the strand
+                  detail view.
+                </p>
+              </div>
+            )}
 
             <div className="flex items-center justify-between">
               <Button

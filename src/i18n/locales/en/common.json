@@ -22,7 +22,11 @@
     "landing": "Landing",
     "feed": "Feed",
     "strands": "Strands",
-    "import": "Import Project"
+    "import": "Import Project",
+    "daily": "Daily",
+    "history": "History",
+    "records": "Analytics",
+    "inbox": "Inbox"
   },
   "navigationDescriptions": {
     "feed": "Recent strands & updates",

@@ -12,6 +12,8 @@ import { AnalyticsManager } from '@/components/analytics/analytics-manager';
 import { GDPRConsentBanner } from '@/components/privacy/gdpr-consent-banner';
 import { SupabaseProvider } from '@/features/auth';
 import { ScrollToTop } from '@/components/landing/scroll-to-top';
+import { QuantumJournalFABWrapper } from '@/components/journal/QuantumJournalFABWrapper';
+import { AssistantModalWrapper } from '@/components/assistant/AssistantModalWrapper';
 import {
   getLocaleDirection,
   getLocaleFont,
@@ -121,6 +123,8 @@ export default async function LocaleLayout({
                 </div>
               </TooltipProvider>
               <ScrollToTop />
+              <QuantumJournalFABWrapper />
+              <AssistantModalWrapper />
               <Toaster
                 position="bottom-right"
                 toastOptions={{

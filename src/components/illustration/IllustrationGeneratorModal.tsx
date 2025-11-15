@@ -73,6 +73,23 @@ interface BatchProgress {
   totalCost: number;
 }
 
+/**
+ * IllustrationGeneratorModal
+ *
+ * High-level UX wrapper around the illustration HTTP API. It provides:
+ * - Style preset + safety + size/quality controls
+ * - Optional page-range selection and variant count
+ * - Cost estimation, preview, and background batch generation
+ * - Optional contextual generation (RAG + visual language), toggled via UI
+ *
+ * The underlying backend contracts are:
+ * - POST /api/v1/illustrations/estimate
+ * - POST /api/v1/illustrations/preview
+ * - POST /api/v1/illustrations/batch
+ * - GET  /api/v1/illustrations/batch/:jobId
+ * - DELETE /api/v1/illustrations/batch/:jobId
+ */
+
 export function IllustrationGeneratorModal({
   isOpen,
   onClose,
@@ -104,6 +121,7 @@ export function IllustrationGeneratorModal({
   const [batchProgress, setBatchProgress] = useState<BatchProgress | null>(null);
 
   const { toast } = useToast();
+  const [useContext, setUseContext] = useState<boolean>(false);
 
   // Persist basic illustration preferences locally so users get a cohesive style by default.
   useEffect(() => {
@@ -202,6 +220,7 @@ export function IllustrationGeneratorModal({
             size: imageSize,
             quality: imageQuality,
           },
+          useContext,
         }),
       });
 
@@ -250,6 +269,7 @@ export function IllustrationGeneratorModal({
             size: imageSize,
             quality: imageQuality,
           },
+          useContext,
         }),
       });
 
@@ -302,6 +322,7 @@ export function IllustrationGeneratorModal({
             quality: imageQuality,
             n: variants,
           },
+          useContext,
         }),
       });
 

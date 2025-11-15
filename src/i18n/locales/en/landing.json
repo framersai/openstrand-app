@@ -74,6 +74,17 @@
     "title": "Everything You Need to <highlight>Weave Knowledge</highlight>",
     "subtitle": "Transform fragmented datasets into clear visual narratives with accessibility, privacy, and multilingual support baked in.",
     "main": {
+      "assistant": {
+        "badge": "OS Assistant",
+        "title": "OS (Weaver): Your contextual coach",
+        "description": "A calm, coachy assistant that understands your weaves/looms and recent work. It chats in natural language, nudges via the feed with daily check-ins, and suggests goals or organizing steps when it helps.",
+        "highlights": [
+          "Per-weave awareness (projects vs collecting)",
+          "Daily check-ins for everyone",
+          "Hourly insights on paid plans",
+          "Recommendations → feed; chat/tasks → modal"
+        ]
+      },
       "hierarchies": {
         "badge": "Core engine",
         "title": "Recursive strand hierarchies",

@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
 import { Mic, MicOff, Pause, Play, RotateCcw, Upload, CheckCircle2, AlertTriangle, Languages } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -215,15 +214,8 @@ export function FloatingVoiceRecorder({ strandId, planTier, onTranscriptReady }:
   return (
     <TooltipProvider>
       <div className="pointer-events-none absolute -top-4 right-4 z-20 flex w-[280px] flex-col gap-3">
-        <AnimatePresence>
-          <motion.div
-            key={state}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Card className="pointer-events-auto space-y-3 border-primary/30 bg-background/95 p-4 shadow-xl">
+        <div className="transition-transform transition-opacity duration-150">
+          <Card className="pointer-events-auto space-y-3 border-primary/30 bg-background/95 p-4 shadow-xl">
               <div className="flex items-center justify-between">
                 <div className="text-sm font-semibold">Voice Notes</div>
                 <Badge variant={state === 'recording' ? 'default' : 'outline'} className="capitalize">
@@ -339,11 +331,17 @@ export function FloatingVoiceRecorder({ strandId, planTier, onTranscriptReady }:
               </div>
 
               {uploadMessage ? (
-                <p className={cn('text-xs', state === 'error' ? 'text-destructive' : 'text-muted-foreground')}>{uploadMessage}</p>
+                <p
+                  className={cn(
+                    'text-xs',
+                    state === 'error' ? 'text-destructive' : 'text-muted-foreground',
+                  )}
+                >
+                  {uploadMessage}
+                </p>
               ) : null}
             </Card>
-          </motion.div>
-        </AnimatePresence>
+          </div>
       </div>
     </TooltipProvider>
   );

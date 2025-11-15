@@ -32,9 +32,9 @@ interface FeaturesSectionProps {
 }
 
 const MAIN_FEATURE_CONFIG = [
+  { key: 'assistant', icon: SchemaIntelligenceIcon, gradient: 'from-violet-500 to-fuchsia-500' },
   { key: 'hierarchies', icon: KnowledgeWeavingIcon, gradient: 'from-cyan-500 to-teal-500' },
   { key: 'approvals', icon: PrivacyShieldIcon, gradient: 'from-teal-500 to-emerald-500' },
-  { key: 'ai', icon: SchemaIntelligenceIcon, gradient: 'from-emerald-500 to-green-500' },
 ] as const;
 
 const TECH_FEATURE_CONFIG = [
