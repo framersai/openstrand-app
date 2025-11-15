@@ -14,6 +14,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Image as ImageIcon, ChevronLeft, ChevronRight, Sparkles, Loader2 } from 'lucide-react';
+import Image from 'next/image';
+import { IllustrationOnboardingCard } from '@/components/illustrations/IllustrationOnboardingCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -120,11 +122,11 @@ export function PDFReaderLayout({ strandId, pages, onGenerateIllustrations }: PD
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {illustrationMode === 'none' && (
-              <Button onClick={onGenerateIllustrations} variant="outline" className="gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {illustrationMode === 'none' && onGenerateIllustrations && (
+              <Button onClick={onGenerateIllustrations} variant="outline" size="sm" className="gap-2">
                 <Sparkles className="h-4 w-4" />
-                Generate Illustrations
+                Generate illustrations
               </Button>
             )}
             {illustrationMode === 'lazy' && (
@@ -135,6 +137,9 @@ export function PDFReaderLayout({ strandId, pages, onGenerateIllustrations }: PD
             )}
           </div>
         </div>
+        {illustrationMode === 'none' && (
+          <IllustrationOnboardingCard />
+        )}
 
         {/* Navigation */}
         <div className="flex items-center justify-between mt-4">
@@ -181,7 +186,7 @@ export function PDFReaderLayout({ strandId, pages, onGenerateIllustrations }: PD
         <Separator orientation="vertical" className="h-full" />
 
         {/* Illustration Panel (Right) */}
-        <div className="w-[500px] overflow-y-auto bg-muted/30 p-8">
+        <div className="w-full max-w-[500px] overflow-y-auto bg-muted/30 p-4 sm:p-8">
           <div className="sticky top-0">
             <div className="flex items-center gap-2 mb-4">
               <ImageIcon className="h-4 w-4 text-primary" />
@@ -197,10 +202,12 @@ export function PDFReaderLayout({ strandId, pages, onGenerateIllustrations }: PD
             {page.illustration ? (
               <Card className="overflow-hidden">
                 <CardContent className="p-0">
-                  <img
+                  <Image
                     src={page.illustration.url}
                     alt={`Page ${currentPage + 1} illustration`}
-                    className="w-full h-auto"
+                    width={800}
+                    height={800}
+                    className="h-auto w-full rounded-md object-contain"
                   />
                   {page.illustration.cost && (
                     <div className="p-2 text-xs text-muted-foreground text-center bg-muted">
