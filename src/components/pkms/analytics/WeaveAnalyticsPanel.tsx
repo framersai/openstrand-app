@@ -48,7 +48,7 @@ export function WeaveAnalyticsPanel({
 
   return (
     <Card className="h-full">
-      <CardHeader className="flex flex-row items-start justify-between gap-2">
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <CardTitle className="text-base">Weave Activity</CardTitle>
           <p className="text-xs text-muted-foreground">
@@ -76,7 +76,7 @@ export function WeaveAnalyticsPanel({
           <div className="text-sm text-destructive">{error}</div>
         ) : data ? (
           <div className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
               <WeaveMetric label="Looms" value={data.metrics.totalLooms} />
               <WeaveMetric label="Strands" value={data.metrics.totalStrands} />
               <WeaveMetric
@@ -92,7 +92,7 @@ export function WeaveAnalyticsPanel({
               <CardContent>
                 <LazyChart minHeight={200}>
                   {() => (
-                    <ResponsiveContainer height={200}>
+                    <ResponsiveContainer width="100%" height={200}>
                       <BarChart data={data.metrics.usageByHour}>
                         <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                         <XAxis dataKey="hour" tickFormatter={(hour) => `${hour}h`} />
@@ -116,7 +116,7 @@ export function WeaveAnalyticsPanel({
               <CardContent>
                 <LazyChart minHeight={200}>
                   {() => (
-                    <ResponsiveContainer height={200}>
+                    <ResponsiveContainer width="100%" height={200}>
                       <BarChart data={data.metrics.cost.byProvider}>
                         <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                         <XAxis dataKey="provider" />
@@ -142,7 +142,7 @@ export function WeaveAnalyticsPanel({
               <CardContent>
                 <LazyChart minHeight={220}>
                   {() => (
-                    <ResponsiveContainer height={220}>
+                    <ResponsiveContainer width="100%" height={220}>
                       <ScatterChart>
                         <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
                         <XAxis type="number" dataKey="x" hide domain={[0, 1]} />
