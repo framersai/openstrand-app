@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Download, Scan, Save, History, Upload } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from 'react-hot-toast';
 import dynamic from 'next/dynamic';
 import { exportToBlob } from '@excalidraw/excalidraw';
 import { openstrandAPI } from '@/services/openstrand.api';

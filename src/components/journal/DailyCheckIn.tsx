@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { openstrandAPI } from '@/services/openstrand.api';
-import { toast } from 'sonner';
+import { toast } from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 
 const MOODS = [
