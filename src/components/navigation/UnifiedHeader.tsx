@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Plus, Settings, BookOpen, Code, GraduationCap } from 'lucide-react';
+import { Plus, Settings, BookOpen, Code, GraduationCap, Brain, ClipboardCheck, Star, TrendingUp, Clock } from 'lucide-react';
 import React from 'react';
 import { useTranslations } from 'next-intl';
 
@@ -39,6 +39,7 @@ import { ThemeSwitcher } from '@/components/theme-switcher';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { useFeatureFlags } from '@/lib/feature-flags';
+import { PomodoroWidget } from '@/components/productivity/PomodoroWidget';
 
 type NavItem = {
   key: string;
@@ -111,6 +112,7 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
   const [docsExpanded, setDocsExpanded] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [showPomodoro, setShowPomodoro] = useState(false);
   const pathname = usePathname();
   const localizePath = useLocalizedPath();
   const { isAuthenticated, authEnabled } = useSupabase();
@@ -176,6 +178,35 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
         label: tCommon('navigation.import'),
         icon: DatasetsIcon,
         description: tCommon('actions.import'),
+      },
+      // v1.3 Learning & Productivity
+      {
+        key: 'flashcards',
+        href: '/flashcards',
+        label: 'Flashcards',
+        icon: () => <Brain className="h-5 w-5" />,
+        description: 'Study with spaced repetition',
+      },
+      {
+        key: 'quizzes',
+        href: '/quizzes',
+        label: 'Quizzes',
+        icon: () => <ClipboardCheck className="h-5 w-5" />,
+        description: 'Test your knowledge',
+      },
+      {
+        key: 'gallery',
+        href: '/gallery',
+        label: 'Gallery',
+        icon: () => <Star className="h-5 w-5" />,
+        description: 'Browse public content',
+      },
+      {
+        key: 'productivity',
+        href: '/productivity',
+        label: 'Productivity',
+        icon: () => <TrendingUp className="h-5 w-5" />,
+        description: 'Track your progress',
       },
     ],
     [tCommon],
@@ -281,15 +312,29 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
 
     if (onOpenSettings) {
       return (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onOpenSettings}
-          className="rounded-full border border-border/60 bg-card/80 text-foreground/80 hover:text-foreground"
-          aria-label={tCommon('tooltips.openSettings')}
-        >
-          <Settings className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* Pomodoro Timer (v1.3) */}
+          {isAuthenticated && !isGuest && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowPomodoro(true)}
+              className="rounded-full border border-border/60 bg-card/80 text-foreground/80 hover:text-foreground"
+              aria-label="Pomodoro Timer"
+            >
+              <Clock className="h-4 w-4" />
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onOpenSettings}
+            className="rounded-full border border-border/60 bg-card/80 text-foreground/80 hover:text-foreground"
+            aria-label={tCommon('tooltips.openSettings')}
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
+        </div>
       );
     }
 
@@ -705,10 +750,16 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
               <Plus className="h-5 w-5" />
             </Link>
           </Button>
-        </div>
-      )}
-    </header>
-  );
+         </div>
+       )}
+
+       {/* Pomodoro Widget */}
+       <PomodoroWidget 
+         isOpen={showPomodoro} 
+         onClose={() => setShowPomodoro(false)} 
+       />
+     </header>
+   );
 }
 
 function MobileMenuIcon(props: React.SVGProps<SVGSVGElement>) {

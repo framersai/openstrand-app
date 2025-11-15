@@ -1730,6 +1730,695 @@ export const aiAPI = {
     });
     return response.json();
   },
+
+  /**
+   * List available AI providers
+   */
+  async getProviders(): Promise<Array<{
+    name: string;
+    type: 'system' | 'user';
+    models: string[];
+  }>> {
+    const response = await apiFetch('/ai/providers');
+    return response.json();
+  },
+
+  /**
+   * Add user API key (BYOK)
+   */
+  async addApiKey(provider: string, apiKey: string): Promise<void> {
+    await apiFetch('/ai/keys', {
+      method: 'POST',
+      body: JSON.stringify({ provider, apiKey }),
+    });
+  },
+
+  /**
+   * Remove user API key
+   */
+  async removeApiKey(provider: string): Promise<void> {
+    await apiFetch(`/ai/keys/${provider}`, {
+      method: 'DELETE',
+    });
+  },
+
+  /**
+   * Get AI usage statistics
+   */
+  async getUsage(startDate?: string, endDate?: string): Promise<{
+    totalCost: number;
+    byProvider: Record<string, number>;
+    byOperation: Record<string, number>;
+    dailyUsage: Array<{ date: string; cost: number; count: number }>;
+  }> {
+    const params = new URLSearchParams();
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    const response = await apiFetch(`/ai/usage?${params}`);
+    return response.json();
+  },
+};
+
+/**
+ * Flashcard Operations (v1.3)
+ */
+export const flashcardAPI = {
+  /**
+   * Create a flashcard
+   */
+  async create(data: {
+    strandId?: string;
+    front: { text: string; images?: string[]; latex?: string; audio?: string };
+    back: { text: string; images?: string[]; latex?: string; audio?: string };
+    hints?: Array<{ text: string }>;
+    deck?: string;
+    tags?: string[];
+    category?: string;
+    visibility?: 'private' | 'team' | 'public';
+  }): Promise<any> {
+    const response = await apiFetch('/flashcards', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
+  /**
+   * Get flashcard by ID
+   */
+  async get(id: string): Promise<any> {
+    const response = await apiFetch(`/flashcards/${id}`);
+    return response.json();
+  },
+
+  /**
+   * List flashcards with filters
+   */
+  async list(filters?: {
+    deck?: string;
+    tags?: string[];
+    visibility?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ data: any[]; total: number }> {
+    const params = new URLSearchParams();
+    if (filters?.deck) params.append('deck', filters.deck);
+    if (filters?.tags) filters.tags.forEach((t) => params.append('tags', t));
+    if (filters?.visibility) params.append('visibility', filters.visibility);
+    if (filters?.limit) params.append('limit', filters.limit.toString());
+    if (filters?.offset) params.append('offset', filters.offset.toString());
+    const response = await apiFetch(`/flashcards?${params}`);
+    return response.json();
+  },
+
+  /**
+   * Get due flashcards for study
+   */
+  async getDue(options?: { deck?: string; limit?: number }): Promise<any[]> {
+    const params = new URLSearchParams();
+    if (options?.deck) params.append('deck', options.deck);
+    if (options?.limit) params.append('limit', options.limit.toString());
+    const response = await apiFetch(`/flashcards/due/study?${params}`);
+    return response.json();
+  },
+
+  /**
+   * Record study session (spaced repetition)
+   */
+  async recordStudy(data: {
+    flashcardId: string;
+    rating: 'again' | 'hard' | 'good' | 'easy';
+    timeSpentMs: number;
+  }): Promise<any> {
+    const response = await apiFetch('/flashcards/study', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
+  /**
+   * Get user's decks
+   */
+  async getDecks(): Promise<Array<{
+    name: string;
+    total: number;
+    due: number;
+    new: number;
+  }>> {
+    const response = await apiFetch('/flashcards/decks/list');
+    return response.json();
+  },
+
+  /**
+   * Generate flashcards from strand (with templates)
+   */
+  async generate(strandId: string, options?: {
+    count?: number;
+    difficulty?: string;
+    includeHints?: boolean;
+    deck?: string;
+    template?: 'definition' | 'cloze' | 'qa' | 'image_recall' | 'dataset_numeric' | 'minimal' | 'auto';
+    complexity?: 1 | 2 | 3 | 4 | 5;
+    allowImages?: boolean;
+  }): Promise<any[]> {
+    const response = await apiFetch(`/flashcards/generate/${strandId}`, {
+      method: 'POST',
+      body: JSON.stringify(options || {}),
+    });
+    return response.json();
+  },
+
+  /**
+   * Update flashcard
+   */
+  async update(id: string, data: Partial<{
+    front: any;
+    back: any;
+    hints: any;
+    deck: string;
+    tags: string[];
+  }>): Promise<any> {
+    const response = await apiFetch(`/flashcards/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
+  /**
+   * Delete flashcard
+   */
+  async delete(id: string): Promise<void> {
+    await apiFetch(`/flashcards/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
+/**
+ * Quiz Operations (v1.3)
+ */
+export const quizAPI = {
+  /**
+   * Create a quiz
+   */
+  async create(data: {
+    title: string;
+    description?: string;
+    questions: any[];
+    strandIds?: string[];
+    difficulty?: string;
+    category?: string;
+    visibility?: 'private' | 'team' | 'public';
+    timeLimit?: number;
+    passingScore?: number;
+  }): Promise<any> {
+    const response = await apiFetch('/quizzes', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
+  /**
+   * Get quiz by ID
+   */
+  async get(id: string): Promise<any> {
+    const response = await apiFetch(`/quizzes/${id}`);
+    return response.json();
+  },
+
+  /**
+   * List quizzes
+   */
+  async list(filters?: {
+    difficulty?: string;
+    category?: string;
+    visibility?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ data: any[]; total: number }> {
+    const params = new URLSearchParams();
+    if (filters?.difficulty) params.append('difficulty', filters.difficulty);
+    if (filters?.category) params.append('category', filters.category);
+    if (filters?.visibility) params.append('visibility', filters.visibility);
+    if (filters?.limit) params.append('limit', filters.limit.toString());
+    if (filters?.offset) params.append('offset', filters.offset.toString());
+    const response = await apiFetch(`/quizzes?${params}`);
+    return response.json();
+  },
+
+  /**
+   * Generate quiz from strands (with templates)
+   */
+  async generate(strandIds: string[], options?: {
+    questionCount?: number;
+    types?: string[];
+    difficulty?: string;
+    timeLimit?: number;
+    template?: 'mcq_overview' | 'mixed_depth' | 'concept_check' | 'practical_code' | 'dataset_analysis' | 'minimal' | 'auto';
+    complexity?: 1 | 2 | 3 | 4 | 5;
+    allowImages?: boolean;
+  }): Promise<any> {
+    const response = await apiFetch('/quizzes/generate', {
+      method: 'POST',
+      body: JSON.stringify({ strandIds, ...options }),
+    });
+    return response.json();
+  },
+
+  /**
+   * Start quiz attempt
+   */
+  async start(quizId: string): Promise<{
+    attemptId: string;
+    questionsToAnswer: any[];
+  }> {
+    const response = await apiFetch(`/quizzes/${quizId}/start`, {
+      method: 'POST',
+    });
+    return response.json();
+  },
+
+  /**
+   * Submit quiz answers
+   */
+  async submit(attemptId: string, answers: Array<{
+    questionId: string;
+    answer: string | string[];
+    timeSpentMs: number;
+  }>): Promise<{
+    score: number;
+    passed: boolean;
+    results: any[];
+  }> {
+    const response = await apiFetch(`/quizzes/attempts/${attemptId}/submit`, {
+      method: 'POST',
+      body: JSON.stringify({ answers }),
+    });
+    return response.json();
+  },
+
+  /**
+   * Get user's quiz attempts
+   */
+  async getAttempts(): Promise<any[]> {
+    const response = await apiFetch('/quizzes/attempts/me');
+    return response.json();
+  },
+
+  /**
+   * Update quiz
+   */
+  async update(id: string, data: Partial<{
+    title: string;
+    description: string;
+    questions: any[];
+  }>): Promise<any> {
+    const response = await apiFetch(`/quizzes/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
+  /**
+   * Delete quiz
+   */
+  async delete(id: string): Promise<void> {
+    await apiFetch(`/quizzes/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
+/**
+ * Gallery Operations (v1.3)
+ */
+export const galleryAPI = {
+  /**
+   * Browse public gallery
+   */
+  async browse(filters?: {
+    type?: 'flashcard' | 'quiz';
+    sortBy?: 'top' | 'trending' | 'newest';
+    difficulty?: string;
+    category?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ data: any[]; total: number }> {
+    const params = new URLSearchParams();
+    if (filters?.type) params.append('type', filters.type);
+    if (filters?.sortBy) params.append('sortBy', filters.sortBy);
+    if (filters?.difficulty) params.append('difficulty', filters.difficulty);
+    if (filters?.category) params.append('category', filters.category);
+    if (filters?.limit) params.append('limit', filters.limit.toString());
+    if (filters?.offset) params.append('offset', filters.offset.toString());
+    const response = await apiFetch(`/gallery?${params}`);
+    return response.json();
+  },
+
+  /**
+   * Get trending content
+   */
+  async getTrending(type?: 'flashcard' | 'quiz', limit = 20): Promise<any[]> {
+    const params = new URLSearchParams({ limit: limit.toString() });
+    if (type) params.append('type', type);
+    const response = await apiFetch(`/gallery/trending?${params}`);
+    return response.json();
+  },
+
+  /**
+   * Vote on content (±1)
+   */
+  async vote(data: {
+    contentType: 'flashcard' | 'quiz';
+    contentId: string;
+    value: 1 | -1;
+  }): Promise<any> {
+    const response = await apiFetch('/gallery/vote', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
+  /**
+   * Remove vote
+   */
+  async removeVote(contentType: 'flashcard' | 'quiz', contentId: string): Promise<void> {
+    await apiFetch('/gallery/vote', {
+      method: 'DELETE',
+      body: JSON.stringify({ contentType, contentId }),
+    });
+  },
+
+  /**
+   * Get user's votes
+   */
+  async getMyVotes(): Promise<any[]> {
+    const response = await apiFetch('/gallery/votes/me');
+    return response.json();
+  },
+};
+
+/**
+ * Pomodoro Operations (v1.3)
+ */
+export const pomodoroAPI = {
+  /**
+   * Start Pomodoro session
+   */
+  async start(data: {
+    preset?: 'classic' | 'short' | 'long' | 'custom';
+    durationSec?: number;
+    label?: string;
+    strandId?: string;
+    category?: string;
+    soundEnabled?: boolean;
+    volume?: number;
+  }): Promise<any> {
+    const response = await apiFetch('/pomodoro/start', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
+  /**
+   * Get active Pomodoro session
+   */
+  async getActive(): Promise<any | null> {
+    try {
+      const response = await apiFetch('/pomodoro/active');
+      return response.json();
+    } catch (error) {
+      if (error instanceof APIError && error.status === 404) return null;
+      throw error;
+    }
+  },
+
+  /**
+   * Pause session
+   */
+  async pause(sessionId: string): Promise<any> {
+    const response = await apiFetch(`/pomodoro/${sessionId}/pause`, {
+      method: 'PATCH',
+    });
+    return response.json();
+  },
+
+  /**
+   * Resume session
+   */
+  async resume(sessionId: string): Promise<any> {
+    const response = await apiFetch(`/pomodoro/${sessionId}/resume`, {
+      method: 'PATCH',
+    });
+    return response.json();
+  },
+
+  /**
+   * Complete session
+   */
+  async complete(sessionId: string): Promise<any> {
+    const response = await apiFetch(`/pomodoro/${sessionId}/complete`, {
+      method: 'PATCH',
+    });
+    return response.json();
+  },
+
+  /**
+   * Cancel session
+   */
+  async cancel(sessionId: string): Promise<any> {
+    const response = await apiFetch(`/pomodoro/${sessionId}/cancel`, {
+      method: 'PATCH',
+    });
+    return response.json();
+  },
+
+  /**
+   * Get user's Pomodoro statistics
+   */
+  async getStats(days = 30): Promise<{
+    totalSessions: number;
+    completedSessions: number;
+    totalMinutes: number;
+    avgSessionLength: number;
+  }> {
+    const response = await apiFetch(`/pomodoro/stats?days=${days}`);
+    return response.json();
+  },
+};
+
+/**
+ * Illustration Operations (v1.3)
+ */
+export const illustrationAPI = {
+  /**
+   * Generate single illustration
+   */
+  async generateForStrand(data: {
+    strandId: string;
+    title?: string;
+    summary: string;
+    stylePreset?: 'minimal_vector' | 'flat_pastel' | 'watercolor_soft' | 'pencil_sketch' | 'comic_lineart' | 'realistic_soft' | 'custom';
+    customStylePrompt?: string;
+    safetyLevel?: 'default' | 'censored' | 'uncensored' | 'strict';
+    imageOptions?: {
+      size?: '1024x1024' | '1792x1024' | '1024x1792';
+      quality?: 'standard' | 'hd';
+      seed?: number;
+    };
+  }): Promise<{
+    images: Array<{ url: string; revisedPrompt?: string }>;
+    prompt: string;
+  }> {
+    const response = await apiFetch('/illustrations/strand', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
+  /**
+   * Estimate batch illustration cost
+   */
+  async estimateBatch(data: {
+    strandId: string;
+    pages: Array<{
+      pageNumber: number;
+      title?: string;
+      summary: string;
+    }>;
+    stylePreset?: string;
+    imageOptions?: any;
+  }): Promise<{
+    pageCount: number;
+    totalCost: number;
+    costPerPage: number;
+    breakdown: { images: number; textGeneration: number };
+  }> {
+    const response = await apiFetch('/illustrations/estimate', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
+  /**
+   * Generate preview illustrations (1-5 samples)
+   */
+  async generatePreview(data: {
+    strandId: string;
+    pages: Array<{ pageNumber: number; summary: string }>;
+    previewCount?: number;
+    stylePreset?: string;
+    safetyLevel?: string;
+    imageOptions?: any;
+  }): Promise<{
+    previews: Array<{
+      pageNumber: number;
+      image: { url: string };
+      cost: number;
+    }>;
+    totalCost: number;
+  }> {
+    const response = await apiFetch('/illustrations/preview', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
+  /**
+   * Start batch illustration job
+   */
+  async startBatch(data: {
+    strandId: string;
+    pages: Array<{ pageNumber: number; summary: string }>;
+    stylePreset?: string;
+    imageOptions?: any;
+  }): Promise<{
+    jobId: string;
+    status: string;
+  }> {
+    const response = await apiFetch('/illustrations/batch', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+
+  /**
+   * Get batch job progress
+   */
+  async getBatchProgress(jobId: string): Promise<{
+    jobId: string;
+    status: 'pending' | 'processing' | 'completed' | 'failed' | 'cancelled';
+    progress: { completed: number; total: number };
+    results: Array<{ pageNumber: number; imageUrl?: string; error?: string }>;
+    totalCost: number;
+  } | null> {
+    try {
+      const response = await apiFetch(`/illustrations/batch/${jobId}`);
+      return response.json();
+    } catch (error) {
+      if (error instanceof APIError && error.status === 404) return null;
+      throw error;
+    }
+  },
+
+  /**
+   * Cancel batch job
+   */
+  async cancelBatch(jobId: string): Promise<void> {
+    await apiFetch(`/illustrations/batch/${jobId}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
+/**
+ * Productivity Analytics (v1.3)
+ */
+export const productivityAPI = {
+  /**
+   * Get dashboard metrics
+   */
+  async getDashboard(): Promise<{
+    streaks: {
+      current: number;
+      longest: number;
+      lastActive: string | null;
+    };
+    today: {
+      pomodoroCount: number;
+      studyMinutes: number;
+      flashcardsReviewed: number;
+      quizzesTaken: number;
+    };
+    allTime: {
+      totalPomodoros: number;
+      totalStudyMinutes: number;
+      totalFlashcards: number;
+      totalQuizzes: number;
+    };
+  }> {
+    const response = await apiFetch('/analytics/dashboard');
+    return response.json();
+  },
+
+  /**
+   * Get streak history (for heatmap)
+   */
+  async getStreakHistory(days = 365): Promise<Array<{
+    date: string;
+    pomodoroCount: number;
+    studyMinutes: number;
+    active: boolean;
+  }>> {
+    const response = await apiFetch(`/analytics/streaks/history?days=${days}`);
+    return response.json();
+  },
+
+  /**
+   * Get current streak
+   */
+  async getCurrentStreak(): Promise<{
+    currentStreak: number;
+    longestStreak: number;
+    lastActive: string | null;
+  }> {
+    const response = await apiFetch('/analytics/streaks/current');
+    return response.json();
+  },
+
+  /**
+   * Get productivity insights
+   */
+  async getInsights(): Promise<{
+    insights: Array<{
+      type: 'streak' | 'milestone' | 'suggestion';
+      message: string;
+      data?: any;
+    }>;
+  }> {
+    const response = await apiFetch('/analytics/insights');
+    return response.json();
+  },
+
+  /**
+   * Record activity
+   */
+  async recordActivity(activityType: string): Promise<void> {
+    await apiFetch('/analytics/activity', {
+      method: 'POST',
+      body: JSON.stringify({ activityType }),
+    });
+  },
 };
 
 /**
@@ -1967,6 +2656,13 @@ export const openstrandAPI = {
   export: exportAPI,
   system: systemAPI,
   team: teamAdminAPI,
+  // v1.3 Learning & Productivity APIs
+  flashcards: flashcardAPI,
+  quizzes: quizAPI,
+  gallery: galleryAPI,
+  pomodoro: pomodoroAPI,
+  illustrations: illustrationAPI,
+  productivity: productivityAPI,
   ocr: {
     /**
      * Extract text from an image (PNG, JPEG, etc.) using the OCR service.
