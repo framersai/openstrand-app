@@ -7,19 +7,16 @@
  */
 
 import React from 'react';
+import Image from 'next/image';
 import { Users, BarChart3, Building2, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FeatureFlag, useFeatureFlags, getFeatureStatus } from '@/lib/feature-flags';
-import { useTranslations } from 'next-intl';
-import { cn } from '@/lib/utils';
 
 /**
  * Team workspace switcher - only shown in team edition
  */
 export function TeamWorkspaceSwitcher() {
-  const t = useTranslations('team');
-  
   return (
     <FeatureFlag feature="teamWorkspaces">
       <div className="flex items-center gap-2 border-l pl-4">
@@ -135,7 +132,7 @@ export function TeamAnalyticsDashboard() {
  * SSO configuration - enterprise only
  */
 export function SSOConfiguration() {
-  const { features, userPlan, variant } = useFeatureFlags();
+  const { userPlan, variant } = useFeatureFlags();
   const enabled = getFeatureStatus('sso', userPlan, variant);
   
   return (
@@ -168,11 +165,11 @@ export function SSOConfiguration() {
           {/* SSO configuration UI */}
           <div className="space-y-4">
             <Button variant="outline" className="w-full justify-start">
-              <img src="/okta.svg" alt="Okta" className="h-4 w-4 mr-2" />
+              <Image src="/okta.svg" alt="Okta" width={16} height={16} className="h-4 w-4 mr-2" />
               Configure Okta
             </Button>
             <Button variant="outline" className="w-full justify-start">
-              <img src="/azure.svg" alt="Azure" className="h-4 w-4 mr-2" />
+              <Image src="/azure.svg" alt="Azure" width={16} height={16} className="h-4 w-4 mr-2" />
               Configure Azure AD
             </Button>
           </div>
