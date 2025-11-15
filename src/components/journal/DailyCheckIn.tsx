@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { openstrandAPI } from '@/services/openstrand.api';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 const MOODS = [
   { emoji: '😊', label: 'happy', value: 'happy' },
@@ -119,14 +120,15 @@ export function DailyCheckIn({ date }: DailyCheckInProps) {
       </CardHeader>
       <CardContent>
         <p className="text-sm text-muted-foreground mb-4">{t('question')}</p>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 gap-2 sm:gap-3">
           {MOODS.map((mood) => (
             <Button
               key={mood.value}
               variant={selectedMood === mood.value ? 'default' : 'outline'}
-              className={`h-16 text-3xl transition-all ${
-                selectedMood === mood.value ? 'scale-110 shadow-lg' : 'hover:scale-105'
-              }`}
+              className={cn(
+                'h-14 sm:h-16 text-2xl sm:text-3xl transition-all',
+                selectedMood === mood.value ? 'scale-110 shadow-lg ring-2 ring-primary ring-offset-2' : 'hover:scale-105'
+              )}
               onClick={() => handleMoodSelect(mood.value)}
               aria-label={t(`moods.${mood.label}`)}
               title={t(`moods.${mood.label}`)}
