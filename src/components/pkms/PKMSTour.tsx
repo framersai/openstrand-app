@@ -93,7 +93,7 @@ export function PKMSTour({ forceOpen }: PKMSTourProps) {
       )}
     >
       <div className="pointer-events-auto w-full max-w-xl">
-        <Card className="border-border/60 bg-background/95 shadow-lg backdrop-blur">
+        <Card className="border-border/60 bg-card shadow-lg backdrop-blur">
           <CardHeader className="flex flex-row items-center gap-3 pb-2">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
               <Sparkles className="h-4 w-4 text-primary" />
@@ -113,13 +113,13 @@ export function PKMSTour({ forceOpen }: PKMSTourProps) {
           </CardHeader>
           <CardContent className="space-y-3 pb-4">
             <div className="space-y-1">
-              <div className="text-sm font-medium">{step.title}</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-sm font-semibold text-foreground">{step.title}</div>
+              <p className="text-sm text-muted-foreground">
                 {step.description}
               </p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <HelpCircle className="h-3 w-3" />
                 <span>
                   You can replay this tour from the Help menu in the PKMS dashboard.
