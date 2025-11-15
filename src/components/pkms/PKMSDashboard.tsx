@@ -44,6 +44,7 @@ import { StrandDeleteButton } from '@/components/pkms/StrandDeleteButton';
 import { StrandAnalyticsPanel } from '@/components/pkms/analytics/StrandAnalyticsPanel';
 import { LoomAnalyticsPanel } from '@/components/pkms/analytics/LoomAnalyticsPanel';
 import { WeaveAnalyticsPanel } from '@/components/pkms/analytics/WeaveAnalyticsPanel';
+import { PKMSTour } from '@/components/pkms/PKMSTour';
 
 type ViewMode = 'grid' | 'list';
 
@@ -170,6 +171,7 @@ export function PKMSDashboard() {
       <PKMSWelcomeModal triggerOpen={aboutOpen} onOpenChange={setAboutOpen} />
       <PKMSHelpModal open={helpOpen} onOpenChange={setHelpOpen} />
       <PKMSPreferencesModal open={prefsOpen} onOpenChange={setPrefsOpen} />
+      <PKMSTour />
       
       {/* Chat Panel */}
       {showChat && (
