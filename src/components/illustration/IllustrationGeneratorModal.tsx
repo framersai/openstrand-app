@@ -12,7 +12,7 @@
  * - Cost estimates displayed throughout
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Sparkles, 
   Settings, 
@@ -35,6 +35,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface PageSummary {
   pageNumber: number;
@@ -80,14 +81,17 @@ export function IllustrationGeneratorModal({
   onComplete,
 }: IllustrationGeneratorModalProps) {
   const [activeTab, setActiveTab] = useState<'settings' | 'preview' | 'batch'>('settings');
-  
+
   // Settings
   const [stylePreset, setStylePreset] = useState('flat_pastel');
   const [customStyle, setCustomStyle] = useState('');
   const [safetyLevel, setSafetyLevel] = useState('default');
   const [imageSize, setImageSize] = useState<'1024x1024' | '1792x1024' | '1024x1792'>('1024x1024');
   const [imageQuality, setImageQuality] = useState<'standard' | 'hd'>('standard');
-  
+  const [variants, setVariants] = useState<number>(1);
+  const [pageStart, setPageStart] = useState<number>(1);
+  const [pageEnd, setPageEnd] = useState<number>(pages.length || 1);
+
   // Preview
   const [previewCount, setPreviewCount] = useState(3);
   const [previews, setPreviews] = useState<PreviewResult[]>([]);
@@ -98,13 +102,75 @@ export function IllustrationGeneratorModal({
   const [estimating, setEstimating] = useState(false);
   const [batchJobId, setBatchJobId] = useState<string | null>(null);
   const [batchProgress, setBatchProgress] = useState<BatchProgress | null>(null);
+
+  const { toast } = useToast();
+
+  // Persist basic illustration preferences locally so users get a cohesive style by default.
+  useEffect(() => {
+    if (!isOpen) return;
+
+    try {
+      const raw = window.localStorage.getItem('openstrand:illustration:prefs');
+      if (!raw) return;
+      const prefs = JSON.parse(raw) as {
+        stylePreset?: string;
+        safetyLevel?: string;
+        imageSize?: '1024x1024' | '1792x1024' | '1024x1792';
+        imageQuality?: 'standard' | 'hd';
+      };
+      if (prefs.stylePreset) setStylePreset(prefs.stylePreset);
+      if (prefs.safetyLevel) setSafetyLevel(prefs.safetyLevel);
+      if (prefs.imageSize) setImageSize(prefs.imageSize);
+      if (prefs.imageQuality) setImageQuality(prefs.imageQuality);
+    } catch {
+      // ignore malformed prefs
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    try {
+      const payload = JSON.stringify({
+        stylePreset,
+        safetyLevel,
+        imageSize,
+        imageQuality,
+      });
+      window.localStorage.setItem('openstrand:illustration:prefs', payload);
+    } catch {
+      // ignore
+    }
+  }, [stylePreset, safetyLevel, imageSize, imageQuality]);
+
+  const resetPreferences = () => {
+    setStylePreset('flat_pastel');
+    setSafetyLevel('default');
+    setImageSize('1024x1024');
+    setImageQuality('standard');
+    setVariants(1);
+    setPageStart(1);
+    setPageEnd(pages.length || 1);
+    try {
+      window.localStorage.removeItem('openstrand:illustration:prefs');
+    } catch {
+      // ignore
+    }
+  };
+
+  const selectedPages = useMemo(() => {
+    if (!pages.length) return [];
+    const clampedStart = Math.max(1, Math.min(pageStart, pages.length));
+    const clampedEnd = Math.max(clampedStart, Math.min(pageEnd, pages.length));
+    return pages.filter(
+      (p) => p.pageNumber >= clampedStart && p.pageNumber <= clampedEnd,
+    );
+  }, [pages, pageStart, pageEnd]);
   
   // Load cost estimate when modal opens
   useEffect(() => {
     if (isOpen && activeTab === 'batch') {
       loadCostEstimate();
     }
-  }, [isOpen, activeTab, stylePreset, imageSize, imageQuality]);
+  }, [isOpen, activeTab, stylePreset, imageSize, imageQuality, safetyLevel, variants, selectedPages.length]);
 
   // Poll batch progress
   useEffect(() => {
@@ -118,6 +184,7 @@ export function IllustrationGeneratorModal({
   }, [batchJobId]);
 
   const loadCostEstimate = async () => {
+    if (!selectedPages.length) return;
     try {
       setEstimating(true);
       const response = await fetch('/api/v1/illustrations/estimate', {
@@ -128,7 +195,7 @@ export function IllustrationGeneratorModal({
         },
         body: JSON.stringify({
           strandId,
-          pages,
+          pages: selectedPages,
           stylePreset,
           safetyLevel,
           imageOptions: {
@@ -141,15 +208,29 @@ export function IllustrationGeneratorModal({
       if (response.ok) {
         const data = await response.json();
         setCostEstimate(data.data);
+        toast({
+          title: 'Illustration cost estimated',
+          description: `~$${data.data.totalCost.toFixed(2)} for ${data.data.pageCount} page(s).`,
+        });
+      } else {
+        toast({
+          title: 'Failed to estimate cost',
+          description: 'The server could not compute an estimate. Please try again.',
+        });
       }
     } catch (error) {
       console.error('Failed to load cost estimate:', error);
+      toast({
+        title: 'Failed to estimate cost',
+        description: 'Network error while contacting the illustration service.',
+      });
     } finally {
       setEstimating(false);
     }
   };
 
   const generatePreviews = async () => {
+    if (!selectedPages.length) return;
     try {
       setGeneratingPreview(true);
       const response = await fetch('/api/v1/illustrations/preview', {
@@ -160,7 +241,7 @@ export function IllustrationGeneratorModal({
         },
         body: JSON.stringify({
           strandId,
-          pages,
+          pages: selectedPages,
           previewCount,
           stylePreset,
           customStylePrompt: customStyle || undefined,
@@ -180,15 +261,29 @@ export function IllustrationGeneratorModal({
           cost: p.cost,
         })));
         setActiveTab('preview');
+        toast({
+          title: 'Previews generated',
+          description: `Generated ${data.data.previews.length} preview image(s).`,
+        });
+      } else {
+        toast({
+          title: 'Failed to generate previews',
+          description: 'The illustration service returned an error.',
+        });
       }
     } catch (error) {
       console.error('Failed to generate previews:', error);
+      toast({
+        title: 'Failed to generate previews',
+        description: 'Network error while contacting the illustration service.',
+      });
     } finally {
       setGeneratingPreview(false);
     }
   };
 
   const startBatchJob = async () => {
+    if (!selectedPages.length) return;
     try {
       const response = await fetch('/api/v1/illustrations/batch', {
         method: 'POST',
@@ -198,13 +293,14 @@ export function IllustrationGeneratorModal({
         },
         body: JSON.stringify({
           strandId,
-          pages,
+          pages: selectedPages,
           stylePreset,
           customStylePrompt: customStyle || undefined,
           safetyLevel,
           imageOptions: {
             size: imageSize,
             quality: imageQuality,
+            n: variants,
           },
         }),
       });
@@ -212,9 +308,22 @@ export function IllustrationGeneratorModal({
       if (response.ok) {
         const data = await response.json();
         setBatchJobId(data.data.jobId);
+        toast({
+          title: 'Batch started',
+          description: `Generating illustrations for ${selectedPages.length} page(s)…`,
+        });
+      } else {
+        toast({
+          title: 'Failed to start batch',
+          description: 'The illustration service returned an error.',
+        });
       }
     } catch (error) {
       console.error('Failed to start batch job:', error);
+      toast({
+        title: 'Failed to start batch',
+        description: 'Network error while contacting the illustration service.',
+      });
     }
   };
 
@@ -234,7 +343,14 @@ export function IllustrationGeneratorModal({
 
         if (data.data.status === 'completed') {
           onComplete?.(batchJobId);
+          toast({
+            title: 'Illustrations ready',
+            description: `All ${data.data.progress.total} illustrations have been generated.`,
+          });
         }
+      } else if (response.status === 404) {
+        setBatchJobId(null);
+        setBatchProgress(null);
       }
     } catch (error) {
       console.error('Failed to load batch progress:', error);
@@ -245,15 +361,21 @@ export function IllustrationGeneratorModal({
     if (!batchJobId) return;
 
     try {
-      await fetch(`/api/v1/illustrations/batch/${batchJobId}`, {
+      const response = await fetch(`/api/v1/illustrations/batch/${batchJobId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
       });
 
-      setBatchJobId(null);
-      setBatchProgress(null);
+      if (response.ok) {
+        setBatchJobId(null);
+        setBatchProgress(null);
+        toast({
+          title: 'Batch cancelled',
+          description: 'The illustration batch job was cancelled.',
+        });
+      }
     } catch (error) {
       console.error('Failed to cancel batch job:', error);
     }
@@ -301,6 +423,11 @@ export function IllustrationGeneratorModal({
                   <SelectItem value="pencil_sketch">Pencil Sketch</SelectItem>
                   <SelectItem value="comic_lineart">Comic Line Art</SelectItem>
                   <SelectItem value="realistic_soft">Soft Realistic</SelectItem>
+                <SelectItem value="chalkboard">Chalkboard Diagram</SelectItem>
+                <SelectItem value="blueprint">Blueprint Schematic</SelectItem>
+                <SelectItem value="retro_comic">Retro Comic</SelectItem>
+                <SelectItem value="noir_mono">Noir Monochrome</SelectItem>
+                <SelectItem value="digital_paint">Digital Painting</SelectItem>
                   <SelectItem value="custom">Custom</SelectItem>
                 </SelectContent>
               </Select>
@@ -378,6 +505,59 @@ export function IllustrationGeneratorModal({
               </p>
             </div>
 
+            {/* Variants per page */}
+            <div className="space-y-2">
+              <Label>Variants per Page (1-4)</Label>
+              <Slider
+                value={[variants]}
+                onValueChange={([v]) => setVariants(v)}
+                min={1}
+                max={4}
+                step={1}
+              />
+              <p className="text-xs text-muted-foreground">
+                Generate up to {variants} variation{variants > 1 ? 's' : ''} per page in the background batch.
+              </p>
+            </div>
+
+            {/* Page Range */}
+            <div className="space-y-2">
+              <Label>Page Range</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  min={1}
+                  max={pages.length || 1}
+                  value={pageStart}
+                  onChange={(e) => setPageStart(Number(e.target.value) || 1)}
+                  className="w-24"
+                />
+                <span className="text-xs text-muted-foreground">to</span>
+                <Input
+                  type="number"
+                  min={1}
+                  max={pages.length || 1}
+                  value={pageEnd}
+                  onChange={(e) => setPageEnd(Number(e.target.value) || 1)}
+                  className="w-24"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-2"
+                  onClick={() => {
+                    setPageStart(1);
+                    setPageEnd(pages.length || 1);
+                  }}
+                >
+                  Use all ({pages.length})
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Currently targeting {selectedPages.length} page{selectedPages.length === 1 ? '' : 's'} for preview and batch.
+              </p>
+            </div>
+
             {/* Actions */}
             <div className="flex gap-3 pt-4">
               <Button onClick={generatePreviews} disabled={generatingPreview} className="flex-1">
@@ -392,6 +572,9 @@ export function IllustrationGeneratorModal({
                     Generate Preview
                   </>
                 )}
+              </Button>
+              <Button variant="ghost" type="button" onClick={resetPreferences}>
+                Reset settings
               </Button>
             </div>
           </TabsContent>
