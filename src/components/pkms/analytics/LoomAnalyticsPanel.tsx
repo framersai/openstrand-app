@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -8,8 +9,10 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { RefreshCcw } from 'lucide-react';
+import { RefreshCcw, GraduationCap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 import {
   Area,
   AreaChart,
@@ -40,11 +43,52 @@ const TOPIC_COLORS = ['#0EA5E9', '#6366F1', '#F472B6', '#F97316', '#22C55E', '#1
  * directly inside PKMS dashboard alongside the strand + weave panels.
  */
 export function LoomAnalyticsPanel({ scopeId, title }: LoomAnalyticsPanelProps) {
+  const { toast } = useToast();
+  const [generatingStudy, setGeneratingStudy] = useState(false);
   const { data, loading, error, refresh } = useLoomAnalytics(scopeId ?? null);
+
+  const handleGenerateStudy = async () => {
+    if (!scopeId) return;
+
+    setGeneratingStudy(true);
+    try {
+      const response = await fetch('/api/v1/analytics/study/loom', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          loomId: scopeId,
+          type: 'both',
+          count: 20,
+          difficulty: 'intermediate',
+          focusAreas: ['topics', 'entities', 'keywords'],
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        toast({
+          title: 'Study materials created',
+          description: `Generated ${result.data?.flashcards?.length || 0} flashcards and ${result.data?.quiz ? '1 quiz' : '0 quizzes'}`,
+        });
+      } else {
+        throw new Error('Failed to generate study materials');
+      }
+    } catch (err) {
+      toast({
+        title: 'Generation failed',
+        description: err instanceof Error ? err.message : 'Unable to create study materials',
+      });
+    } finally {
+      setGeneratingStudy(false);
+    }
+  };
 
   return (
     <Card className="h-full">
-      <CardHeader className="flex flex-row items-start justify-between gap-2">
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <CardTitle className="text-base">
             {title ?? data?.name ?? 'Loom Overview'}
@@ -53,15 +97,27 @@ export function LoomAnalyticsPanel({ scopeId, title }: LoomAnalyticsPanelProps) 
             Aggregated KPIs for the active project scope
           </p>
         </div>
-        <Button
-          size="icon"
-          variant="ghost"
-          aria-label="Refresh loom analytics"
-          disabled={!scopeId || loading}
-          onClick={() => void refresh({ force: true })}
-        >
-          <RefreshCcw className={loading ? 'h-4 w-4 animate-spin' : 'h-4 w-4'} />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className="gap-2"
+            onClick={handleGenerateStudy}
+            disabled={!data || generatingStudy}
+          >
+            <GraduationCap className={cn('h-4 w-4', generatingStudy && 'animate-pulse')} />
+            <span className="hidden sm:inline">Study this</span>
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            aria-label="Refresh loom analytics"
+            disabled={!scopeId || loading}
+            onClick={() => void refresh({ force: true })}
+          >
+            <RefreshCcw className={loading ? 'h-4 w-4 animate-spin' : 'h-4 w-4'} />
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         {!scopeId ? (
@@ -74,7 +130,7 @@ export function LoomAnalyticsPanel({ scopeId, title }: LoomAnalyticsPanelProps) 
           <div className="text-sm text-destructive">{error}</div>
         ) : data ? (
           <div className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
               <LoomMetric label="Strands" value={data.metrics.totalStrands} />
               <LoomMetric
                 label="Tokens"
@@ -87,7 +143,7 @@ export function LoomAnalyticsPanel({ scopeId, title }: LoomAnalyticsPanelProps) 
               />
             </div>
 
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
               <Card className="border-border/60 bg-muted/20">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-semibold">
@@ -97,7 +153,7 @@ export function LoomAnalyticsPanel({ scopeId, title }: LoomAnalyticsPanelProps) 
                 <CardContent>
                   <LazyChart minHeight={200}>
                     {() => (
-                      <ResponsiveContainer height={200}>
+                      <ResponsiveContainer width="100%" height={200}>
                         <PieChart>
                           <Tooltip />
                           <Pie
@@ -129,7 +185,7 @@ export function LoomAnalyticsPanel({ scopeId, title }: LoomAnalyticsPanelProps) 
                 <CardContent>
                   <LazyChart minHeight={200}>
                     {() => (
-                      <ResponsiveContainer height={200}>
+                      <ResponsiveContainer width="100%" height={200}>
                         <AreaChart data={data.metrics.vocabularyGrowth}>
                           <defs>
                             <linearGradient id="tokenArea" x1="0" y1="0" x2="0" y2="1">

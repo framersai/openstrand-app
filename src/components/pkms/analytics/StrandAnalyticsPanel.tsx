@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Card,
   CardHeader,
@@ -18,7 +18,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
-import { RefreshCcw } from 'lucide-react';
+import { RefreshCcw, GraduationCap } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import { scaleLinear } from 'd3-scale';
 import {
   Bar,
@@ -59,6 +60,9 @@ export function StrandAnalyticsPanel({
   selectedStrandId,
   onSelect,
 }: StrandAnalyticsPanelProps) {
+  const { toast } = useToast();
+  const [generatingStudy, setGeneratingStudy] = useState(false);
+
   const strandOptions = strands.map((strand) => ({
     id: strand.id,
     label: strand.title || strand.slug || strand.id,
@@ -71,6 +75,45 @@ export function StrandAnalyticsPanel({
 
   const { data, loading, error, refresh } = useStrandAnalytics(selectedStrand?.id);
 
+  const handleGenerateStudy = async () => {
+    if (!selectedStrand?.id) return;
+
+    setGeneratingStudy(true);
+    try {
+      const response = await fetch('/api/v1/analytics/study/strand', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({
+          strandId: selectedStrand.id,
+          type: 'flashcards',
+          count: 10,
+          difficulty: 'intermediate',
+          focusAreas: ['entities', 'keywords'],
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        toast({
+          title: 'Study materials created',
+          description: `Generated ${result.data?.flashcards?.length || 0} flashcards from analytics`,
+        });
+      } else {
+        throw new Error('Failed to generate study materials');
+      }
+    } catch (err) {
+      toast({
+        title: 'Generation failed',
+        description: err instanceof Error ? err.message : 'Unable to create study materials',
+      });
+    } finally {
+      setGeneratingStudy(false);
+    }
+  };
+
   const keywordScale = useMemo(() => {
     if (!data?.metrics.keywords?.length) {
       return scaleLinear().domain([0, 1]).range([0.9, 1.25]);
@@ -82,14 +125,14 @@ export function StrandAnalyticsPanel({
   return (
     <Card className="h-full">
       <CardHeader className="space-y-4 pb-2">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle className="text-base">Strand Insights</CardTitle>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Select
               value={selectedStrand?.id}
               onValueChange={(value) => onSelect(value)}
             >
-              <SelectTrigger className="w-[200px] text-sm">
+              <SelectTrigger className="w-full sm:w-[200px] text-sm">
                 <SelectValue placeholder="Select strand" />
               </SelectTrigger>
               <SelectContent>
@@ -100,6 +143,16 @@ export function StrandAnalyticsPanel({
                 ))}
               </SelectContent>
             </Select>
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-2"
+              onClick={handleGenerateStudy}
+              disabled={!data || generatingStudy}
+            >
+              <GraduationCap className={cn('h-4 w-4', generatingStudy && 'animate-pulse')} />
+              <span className="hidden sm:inline">Study this</span>
+            </Button>
             <Button
               size="icon"
               variant="ghost"
@@ -128,7 +181,7 @@ export function StrandAnalyticsPanel({
           <div className="text-sm text-destructive">{error}</div>
         ) : data ? (
           <div className="space-y-4">
-            <div className="grid gap-3 md:grid-cols-4">
+            <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
               <MetricCard label="Tokens" value={data.metrics.tokenCount.toLocaleString()} />
               <MetricCard label="Words" value={data.metrics.wordCount.toLocaleString()} />
               <MetricCard
@@ -142,7 +195,7 @@ export function StrandAnalyticsPanel({
               />
             </div>
 
-            <div className="grid gap-4 lg:grid-cols-2">
+            <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
               <Card className="border-border/60 bg-muted/30">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-semibold">Entity histogram</CardTitle>
@@ -150,7 +203,7 @@ export function StrandAnalyticsPanel({
                 <CardContent>
                   <LazyChart minHeight={220}>
                     {() => (
-                      <ResponsiveContainer height={220}>
+                      <ResponsiveContainer width="100%" height={220}>
                         <BarChart data={data.metrics.entityHistogram}>
                           <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
                           <XAxis dataKey="type" tick={{ fontSize: 11 }} />
@@ -173,7 +226,7 @@ export function StrandAnalyticsPanel({
                 <CardContent>
                   <LazyChart minHeight={220}>
                     {() => (
-                      <ResponsiveContainer height={220}>
+                      <ResponsiveContainer width="100%" height={220}>
                         <PieChart>
                           <Tooltip />
                           <Pie
