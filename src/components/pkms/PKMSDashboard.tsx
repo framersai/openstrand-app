@@ -175,7 +175,7 @@ export function PKMSDashboard() {
       
       {/* Chat Panel */}
       {showChat && (
-        <div className="fixed bottom-4 right-4 z-50 h-[600px] w-[400px]">
+        <div className="fixed inset-x-2 bottom-4 z-50 h-[70vh] max-h-[640px] sm:inset-x-auto sm:right-4 sm:h-[600px] sm:w-[400px]">
           <ChatPanel loomId={activeLoomId} onClose={() => setShowChat(false)} />
         </div>
       )}
