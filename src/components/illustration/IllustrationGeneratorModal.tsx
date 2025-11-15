@@ -404,27 +404,27 @@ export function IllustrationGeneratorModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col mx-4">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            Generate Illustrations
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Sparkles className="h-5 w-5 text-primary shrink-0" />
+            <span>Generate Illustrations</span>
           </DialogTitle>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="flex-1 flex flex-col">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="settings" className="gap-2">
-              <Settings className="h-4 w-4" />
-              Settings
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)} className="flex-1 flex flex-col min-h-0">
+          <TabsList className="grid w-full grid-cols-3 shrink-0">
+            <TabsTrigger value="settings" className="gap-1 sm:gap-2 text-xs sm:text-sm">
+              <Settings className="h-4 w-4 shrink-0" />
+              <span className="hidden sm:inline">Settings</span>
             </TabsTrigger>
-            <TabsTrigger value="preview" className="gap-2">
-              <Eye className="h-4 w-4" />
-              Preview ({previews.length})
+            <TabsTrigger value="preview" className="gap-1 sm:gap-2 text-xs sm:text-sm">
+              <Eye className="h-4 w-4 shrink-0" />
+              <span className="hidden sm:inline">Preview</span> ({previews.length})
             </TabsTrigger>
-            <TabsTrigger value="batch" className="gap-2">
-              <Zap className="h-4 w-4" />
-              Batch
+            <TabsTrigger value="batch" className="gap-1 sm:gap-2 text-xs sm:text-sm">
+              <Zap className="h-4 w-4 shrink-0" />
+              <span className="hidden sm:inline">Batch</span>
             </TabsTrigger>
           </TabsList>
 
