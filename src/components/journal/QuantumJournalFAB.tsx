@@ -45,9 +45,15 @@ const InboxIcon: React.FC<{ className?: string }> = ({ className }) => (
 );
 
 // Main FAB icon – simple spiral with CSS-driven rotation
-const SpiralIcon: React.FC<{ className?: string }> = ({ className }) => (
+const SpiralIcon: React.FC<{ className?: string; prefersReducedMotion?: boolean }> = ({ 
+  className, 
+  prefersReducedMotion 
+}) => (
   <svg viewBox="0 0 24 24" fill="none" className={className}>
-    <g className="origin-center">
+    <g className={cn(
+      "origin-center transition-transform duration-300",
+      !prefersReducedMotion && "group-hover:rotate-45"
+    )}>
       <path
         d="M12 3c0 0 0 4.5 4.5 4.5S21 12 21 12s0 4.5-4.5 4.5S12 21 12 21s0-4.5-4.5-4.5S3 12 3 12s0-4.5 4.5-4.5S12 3 12 3z"
         className="stroke-current stroke-2"
@@ -60,9 +66,31 @@ const SpiralIcon: React.FC<{ className?: string }> = ({ className }) => (
 export function QuantumJournalFAB() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<string | null>(null);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const router = useRouter();
   const localizePath = useLocalizedPath();
   const fabRef = useRef<HTMLDivElement>(null);
+
+  // Load last active tab from localStorage
+  useEffect(() => {
+    const savedTab = localStorage.getItem('fab-last-tab');
+    if (savedTab) {
+      setActiveTab(savedTab);
+    }
+  }, []);
+
+  // Check for reduced motion preference
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mediaQuery.matches);
+
+    const handleChange = (e: MediaQueryListEvent) => {
+      setPrefersReducedMotion(e.matches);
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
 
   const tabs: TabItem[] = [
     { key: 'daily', label: 'Daily', href: '/daily', icon: DailyIcon },
@@ -88,6 +116,7 @@ export function QuantumJournalFAB() {
 
   const handleTabClick = (tab: TabItem) => {
     setActiveTab(tab.key);
+    localStorage.setItem('fab-last-tab', tab.key);
     router.push(localizePath(tab.href));
     // Collapse after short delay so navigation feels snappy but not jarring
     setTimeout(() => {
@@ -148,16 +177,16 @@ export function QuantumJournalFAB() {
         type="button"
         onClick={() => setIsExpanded((prev) => !prev)}
         className={cn(
-          'relative flex h-14 w-14 items-center justify-center rounded-full border',
+          'group relative flex h-14 w-14 items-center justify-center rounded-full border',
           'bg-primary text-primary-foreground',
           'border-primary/70 shadow-lg transition-transform transition-shadow duration-150',
-          'hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 active:shadow-md',
+          !prefersReducedMotion && 'hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 active:shadow-md',
         )}
         aria-label="Open journaling shortcuts"
         aria-expanded={isExpanded}
       >
         <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary-foreground/10">
-          <SpiralIcon className="h-7 w-7 animate-spin-slow" />
+          <SpiralIcon className="h-7 w-7" prefersReducedMotion={prefersReducedMotion} />
         </div>
       </button>
     </div>
