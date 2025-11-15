@@ -8,6 +8,7 @@ import { JournalEntry } from '@/components/journal/JournalEntry';
 import { GoalsCard } from '@/components/journal/GoalsCard';
 import { AccomplishmentsCard } from '@/components/journal/AccomplishmentsCard';
 import { RecommendationsFeed } from '@/components/journal/RecommendationsFeed';
+import { JournalReflectionCard } from '@/components/journal/JournalReflectionCard';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
@@ -105,8 +106,9 @@ export default function DailyPage() {
           </div>
         </div>
 
-        {/* Right Column - Recommendations & Notifications */}
-        <div className="lg:col-span-1">
+        {/* Right Column - Recommendations & Reflections */}
+        <div className="lg:col-span-1 space-y-6">
+          <JournalReflectionCard />
           <RecommendationsFeed />
         </div>
       </div>
