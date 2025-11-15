@@ -150,7 +150,16 @@ export function WeaveAnalyticsPanel({
                         <ZAxis type="number" dataKey="size" range={[60, 200]} />
                         <Tooltip
                           cursor={{ strokeDasharray: '3 3' }}
-                          formatter={(value, _, entry) => [entry?.payload?.label ?? '', '']}
+                          content={({ payload }) => {
+                            if (!payload?.[0]) return null;
+                            return (
+                              <div className="rounded-lg border bg-background p-2 shadow-md">
+                                <div className="text-xs font-medium text-foreground">
+                                  {payload[0].payload?.label || 'Strand'}
+                                </div>
+                              </div>
+                            );
+                          }}
                         />
                         <Scatter
                           name="Strands"
