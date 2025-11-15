@@ -22,7 +22,9 @@ import {
   AlertCircle,
   Check,
   X,
-  Loader2
+  Loader2,
+  Info,
+  HelpCircle
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -34,8 +36,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { StylePresetCard, STYLE_PRESETS } from './StylePresetCard';
 
 interface PageSummary {
   pageNumber: number;
@@ -429,29 +434,32 @@ export function IllustrationGeneratorModal({
           </TabsList>
 
           {/* Settings Tab */}
-          <TabsContent value="settings" className="flex-1 overflow-y-auto space-y-6 p-6">
-            {/* Style Preset */}
-            <div className="space-y-2">
-              <Label>Art Style</Label>
-              <Select value={stylePreset} onValueChange={setStylePreset}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="minimal_vector">Minimal Vector</SelectItem>
-                  <SelectItem value="flat_pastel">Flat Pastel (Recommended)</SelectItem>
-                  <SelectItem value="watercolor_soft">Soft Watercolor</SelectItem>
-                  <SelectItem value="pencil_sketch">Pencil Sketch</SelectItem>
-                  <SelectItem value="comic_lineart">Comic Line Art</SelectItem>
-                  <SelectItem value="realistic_soft">Soft Realistic</SelectItem>
-                <SelectItem value="chalkboard">Chalkboard Diagram</SelectItem>
-                <SelectItem value="blueprint">Blueprint Schematic</SelectItem>
-                <SelectItem value="retro_comic">Retro Comic</SelectItem>
-                <SelectItem value="noir_mono">Noir Monochrome</SelectItem>
-                <SelectItem value="digital_paint">Digital Painting</SelectItem>
-                  <SelectItem value="custom">Custom</SelectItem>
-                </SelectContent>
-              </Select>
+          <TabsContent value="settings" className="flex-1 overflow-y-auto space-y-6 p-4 sm:p-6">
+            {/* Style Preset Gallery */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-semibold text-foreground">Art Style</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs text-xs">
+                      Choose a visual style that matches your content. Hover over each preset for details and best practices.
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                {STYLE_PRESETS.map((preset) => (
+                  <StylePresetCard
+                    key={preset.value}
+                    preset={preset}
+                    selected={stylePreset === preset.value}
+                    onSelect={() => setStylePreset(preset.value)}
+                  />
+                ))}
+              </div>
             </div>
 
             {/* Custom Style */}
@@ -468,7 +476,24 @@ export function IllustrationGeneratorModal({
 
             {/* Safety Level */}
             <div className="space-y-2">
-              <Label>Content Safety</Label>
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium text-foreground">Content Safety</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs text-xs">
+                      <div className="space-y-1">
+                        <div><strong>Strict:</strong> K-12 safe, no sensitive topics</div>
+                        <div><strong>Censored:</strong> All ages appropriate</div>
+                        <div><strong>Default:</strong> Moderate filtering</div>
+                        <div><strong>Uncensored:</strong> More creative freedom</div>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
               <Select value={safetyLevel} onValueChange={setSafetyLevel}>
                 <SelectTrigger>
                   <SelectValue />
@@ -484,7 +509,23 @@ export function IllustrationGeneratorModal({
 
             {/* Image Size */}
             <div className="space-y-2">
-              <Label>Image Size</Label>
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium text-foreground">Image Size</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs text-xs">
+                      <div className="space-y-1">
+                        <div><strong>Square (1024×1024):</strong> Best for diagrams, icons, general use</div>
+                        <div><strong>Landscape (1792×1024):</strong> Wide scenes, timelines, panoramas</div>
+                        <div><strong>Portrait (1024×1792):</strong> Tall diagrams, mobile screens, infographics</div>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
               <Select value={imageSize} onValueChange={(v: any) => setImageSize(v)}>
                 <SelectTrigger>
                   <SelectValue />
@@ -499,7 +540,23 @@ export function IllustrationGeneratorModal({
 
             {/* Quality */}
             <div className="space-y-2">
-              <Label>Quality</Label>
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium text-foreground">Quality</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs text-xs">
+                      <div className="space-y-1">
+                        <div><strong>Standard:</strong> Faster generation, lower cost (~$0.04/image)</div>
+                        <div><strong>HD:</strong> Higher fidelity, more detail (~$0.08/image)</div>
+                        <div>💡 Standard is usually sufficient for educational content</div>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
               <Select value={imageQuality} onValueChange={(v: any) => setImageQuality(v)}>
                 <SelectTrigger>
                   <SelectValue />
@@ -513,13 +570,17 @@ export function IllustrationGeneratorModal({
 
             {/* Preview Count */}
             <div className="space-y-2">
-              <Label>Preview Images (1-5)</Label>
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium text-foreground">Preview Images</Label>
+                <Badge variant="outline" className="text-xs">{previewCount}</Badge>
+              </div>
               <Slider
                 value={[previewCount]}
                 onValueChange={([v]) => setPreviewCount(v)}
                 min={1}
                 max={5}
                 step={1}
+                className="py-2"
               />
               <p className="text-xs text-muted-foreground">
                 Generate {previewCount} sample{previewCount > 1 ? 's' : ''} to verify style before batch
@@ -528,13 +589,29 @@ export function IllustrationGeneratorModal({
 
             {/* Variants per page */}
             <div className="space-y-2">
-              <Label>Variants per Page (1-4)</Label>
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium text-foreground">Variants per Page</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="flex items-center gap-1.5">
+                        <Badge variant="outline" className="text-xs">{variants}</Badge>
+                        <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs text-xs">
+                      Generate multiple variations per page. You can pick the best one later. Note: costs multiply by variant count.
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
               <Slider
                 value={[variants]}
                 onValueChange={([v]) => setVariants(v)}
                 min={1}
                 max={4}
                 step={1}
+                className="py-2"
               />
               <p className="text-xs text-muted-foreground">
                 Generate up to {variants} variation{variants > 1 ? 's' : ''} per page in the background batch.
@@ -543,15 +620,28 @@ export function IllustrationGeneratorModal({
 
             {/* Page Range */}
             <div className="space-y-2">
-              <Label>Page Range</Label>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium text-foreground">Page Range</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs text-xs">
+                      Select a subset of pages to illustrate. Useful for testing styles on a chapter before generating the entire document.
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
                 <Input
                   type="number"
                   min={1}
                   max={pages.length || 1}
                   value={pageStart}
                   onChange={(e) => setPageStart(Number(e.target.value) || 1)}
-                  className="w-24"
+                  className="w-20 sm:w-24"
+                  aria-label="Start page"
                 />
                 <span className="text-xs text-muted-foreground">to</span>
                 <Input
@@ -560,23 +650,54 @@ export function IllustrationGeneratorModal({
                   max={pages.length || 1}
                   value={pageEnd}
                   onChange={(e) => setPageEnd(Number(e.target.value) || 1)}
-                  className="w-24"
+                  className="w-20 sm:w-24"
+                  aria-label="End page"
                 />
                 <Button
                   variant="outline"
                   size="sm"
-                  className="ml-2"
                   onClick={() => {
                     setPageStart(1);
                     setPageEnd(pages.length || 1);
                   }}
                 >
-                  Use all ({pages.length})
+                  All ({pages.length})
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
                 Currently targeting {selectedPages.length} page{selectedPages.length === 1 ? '' : 's'} for preview and batch.
               </p>
+            </div>
+
+            {/* Use Context Toggle */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm font-medium text-foreground">Use Knowledge Context</Label>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs text-xs">
+                      <div className="space-y-1">
+                        <div>When enabled, illustrations will match your project's visual language and incorporate context from related strands.</div>
+                        <div>💡 Improves cohesiveness across multi-page documents</div>
+                        <div>⚠️ Slightly increases generation time</div>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <div className="flex items-center gap-3">
+                <Switch
+                  checked={useContext}
+                  onCheckedChange={setUseContext}
+                  aria-label="Toggle knowledge context"
+                />
+                <span className="text-sm text-muted-foreground">
+                  {useContext ? 'Using RAG context for cohesive style' : 'Standard generation (faster)'}
+                </span>
+              </div>
             </div>
 
             {/* Actions */}
