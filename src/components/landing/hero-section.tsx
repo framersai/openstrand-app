@@ -25,19 +25,19 @@ export function HeroSection({ id, className }: HeroSectionProps) {
     () => [
       {
         icon: ShieldCheck,
-        label: t('highlights.privacy'),
+        label: 'Recursive Organization - No folders, just Strands with infinite nesting',
       },
       {
         icon: BarChart,
-        label: t('highlights.analysis'),
+        label: 'Knowledge Graphs - Navigate by hierarchy OR conceptual relationships',
       },
       {
         icon: Bot,
-        label: t('highlights.generativeOptional'),
+        label: 'AI Intelligence - Hybrid recommendations, RAG Q&A, graph analytics',
       },
       {
         icon: WifiOff,
-        label: t('highlights.offline'),
+        label: 'Import Anything - Folders, Git repos, Obsidian vaults with structure preserved',
       },
     ],
     [t],
@@ -53,23 +53,23 @@ export function HeroSection({ id, className }: HeroSectionProps) {
       <div className="container mx-auto grid gap-10 px-4 pb-20 pt-24 lg:grid-cols-2 lg:items-center">
         <div className="space-y-8">
           <div className="flex flex-wrap items-center gap-3">
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-50/50 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm backdrop-blur dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300">
+            <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-50/50 px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm backdrop-blur dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-300">
               <InfinityIcon className="h-4 w-4" />
-              Free Forever • No Credit Card • Works Offline
+              Everything is a Strand. Structure is relationship, not type.
             </div>
             <GitHubStats variant="compact" />
           </div>
           <h1 className="max-w-2xl text-balance text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-            {t.rich('headline', {
-              highlight: (chunks) => (
-                <span className="relative">
-                  <span className="relative z-10 text-gradient">{chunks}</span>
-                </span>
-              ),
-            })}
+            Build Your Living{' '}
+            <span className="relative">
+              <span className="relative z-10 text-gradient">Knowledge Graph</span>
+            </span>
           </h1>
           <p className="max-w-2xl text-lg text-muted-foreground md:text-xl">
-            {hydratedMode === 'offline' ? t('descriptionOffline') : t('descriptionOnline')}
+            Transform folders into <strong className="text-primary">Looms</strong>, files into <strong className="text-primary">Strands</strong>, 
+            and connections into <strong className="text-primary">Weaves</strong>. 
+            OpenStrand turns your notes, research, and code into an intelligent fabric of knowledge 
+            with AI-powered recommendations and RAG-powered Q&A.
           </p>
 
           <div className="flex flex-col gap-4 sm:flex-row">
@@ -80,7 +80,7 @@ export function HeroSection({ id, className }: HeroSectionProps) {
             >
               <a href="/" className="group">
                 <span className="inline-flex items-center gap-2">
-                  Start Free Forever
+                  Start Building Your Codex
                   <ExternalLink className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </span>
               </a>
@@ -102,7 +102,7 @@ export function HeroSection({ id, className }: HeroSectionProps) {
 
           <div className="space-y-4">
             <p className="text-sm font-medium text-muted-foreground">
-              Trusted by developers and teams worldwide:
+              One primitive. Infinite possibilities:
             </p>
             <ul className="grid gap-3 sm:grid-cols-2">
               {heroHighlights.map(({ icon: Icon, label }) => (
@@ -142,18 +142,18 @@ export function HeroSection({ id, className }: HeroSectionProps) {
               <div className="grid gap-6">
                 <div className="rounded-2xl border border-border/60 bg-background/90 p-5 shadow-sm">
                   <p className="text-sm font-semibold text-muted-foreground">
-                    {t('callout.offlineTitle')}
+                    Multi-Hierarchy Organization
                   </p>
                   <p className="mt-2 text-base text-foreground">
-                    {t('callout.offlineDescription')}
+                    Same Strand can appear in multiple Looms with different parents. Tag-like flexibility with tree structure benefits.
                   </p>
                 </div>
                 <div className="rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/10 via-primary/5 to-secondary/10 p-5 shadow-md">
                   <p className="text-sm font-semibold text-primary">
-                    {t('callout.aiTitle')}
+                    RAG-Powered Knowledge Base
                   </p>
                   <p className="mt-2 text-base text-foreground">
-                    {t('callout.aiDescription')}
+                    Ask your knowledge base anything. Get answers grounded in your Strands with citations. LLM + embeddings + graph traversal.
                   </p>
                 </div>
               </div>

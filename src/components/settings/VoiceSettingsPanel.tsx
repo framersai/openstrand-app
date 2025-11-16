@@ -18,6 +18,8 @@ import { Badge } from '@/components/ui/badge';
 import { Mic, Volume2, Settings2, Download, Trash2, Play, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
+import { useParams } from 'next/navigation';
+import { getVoiceLanguageForLocale, syncVoiceWithLocale } from '@/lib/voice-i18n';
 
 export interface VoiceSettings {
   id: string;
@@ -68,9 +70,18 @@ export function VoiceSettingsPanel() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [testingVoice, setTestingVoice] = useState(false);
+  const [autoSwitchLocale, setAutoSwitchLocale] = useState(true);
 
+  const params = useParams();
+  const currentLocale = (params?.locale as string) || 'en';
   const { toast } = useToast();
   const { speak } = useTextToSpeech();
+
+  // Load auto-switch preference
+  useEffect(() => {
+    const saved = localStorage.getItem('voiceAutoSwitchLocale');
+    setAutoSwitchLocale(saved === null ? true : saved === 'true');
+  }, []);
 
   useEffect(() => {
     loadSettings();
@@ -286,6 +297,44 @@ export function VoiceSettingsPanel() {
               </SelectContent>
             </Select>
           </div>
+
+          {/* Auto-Switch with UI Locale */}
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label>Auto-switch with UI language</Label>
+              <p className="text-sm text-muted-foreground">
+                Automatically change voice language when you change UI locale
+              </p>
+            </div>
+            <Switch
+              checked={autoSwitchLocale}
+              onCheckedChange={(checked) => {
+                setAutoSwitchLocale(checked);
+                localStorage.setItem('voiceAutoSwitchLocale', String(checked));
+                
+                if (checked) {
+                  // Sync now
+                  const newLang = getVoiceLanguageForLocale(currentLocale);
+                  setSettings({ ...settings, ttsLanguage: newLang, sttLanguage: newLang });
+                  toast({
+                    title: 'Auto-switch enabled',
+                    description: `Voice language synced to ${currentLocale}`,
+                  });
+                }
+              }}
+            />
+          </div>
+
+          {autoSwitchLocale && (
+            <div className="p-3 bg-primary/10 rounded-lg text-sm">
+              <p className="text-primary font-medium">
+                🌐 Voice language auto-synced to UI locale: {currentLocale} → {getVoiceLanguageForLocale(currentLocale)}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Change your UI language in the appearance settings to automatically switch voice language
+              </p>
+            </div>
+          )}
 
           {/* Auto-Narrate */}
           <div className="flex items-center justify-between">
