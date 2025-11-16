@@ -14,7 +14,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { ClipboardCheck, Clock, ChevronRight, Check, X, AlertCircle } from 'lucide-react';
+import { ClipboardCheck, Clock, ChevronRight, Check, X, AlertCircle, Volume2, VolumeX, Mic, MicOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -23,6 +23,8 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { quizAPI } from '@/services/openstrand.api';
 import { useToast } from '@/hooks/use-toast';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
+import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 import { MathRenderer } from './MathRenderer';
 
 type QuestionImage =
@@ -86,7 +88,36 @@ export function QuizPlayer({ quizId, onComplete }: QuizPlayerProps) {
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [startTime] = useState(Date.now());
   const [generatingQuestionId, setGeneratingQuestionId] = useState<string | null>(null);
+  const [autoReadQuestions, setAutoReadQuestions] = useState(false);
+  
   const { toast } = useToast();
+  const { speak, playing, stop: stopSpeaking } = useTextToSpeech();
+  const { 
+    transcript, 
+    isListening, 
+    isSupported: micSupported, 
+    start: startListening, 
+    stop: stopListening,
+    reset: resetTranscript 
+  } = useSpeechRecognition({
+    onInterim: (text) => {
+      // Update answer in real-time for short answer questions
+      const currentQuestion = quiz?.questions[currentQuestionIndex];
+      if (currentQuestion?.type === 'short_answer' || currentQuestion?.type === 'fill_blank') {
+        setAnswers((prev) => ({ ...prev, [currentQuestion.id]: text }));
+      }
+    },
+    onFinalize: (text) => {
+      const currentQuestion = quiz?.questions[currentQuestionIndex];
+      if (currentQuestion) {
+        setAnswers((prev) => ({ ...prev, [currentQuestion.id]: text }));
+        toast({
+          title: 'Answer recorded',
+          description: 'Voice answer captured successfully',
+        });
+      }
+    },
+  });
 
   // Load quiz and start attempt
   useEffect(() => {
@@ -109,6 +140,13 @@ export function QuizPlayer({ quizId, onComplete }: QuizPlayerProps) {
 
     return () => clearInterval(timer);
   }, [timeLeft, results, handleSubmit]);
+
+  // Auto-read question when changed
+  useEffect(() => {
+    if (autoReadQuestions && currentQuestion) {
+      speak(currentQuestion.question);
+    }
+  }, [currentQuestionIndex, autoReadQuestions, currentQuestion, speak]);
 
   const startQuiz = useCallback(async () => {
     try {
@@ -380,7 +418,50 @@ export function QuizPlayer({ quizId, onComplete }: QuizPlayerProps) {
           <ClipboardCheck className="h-5 w-5 text-primary" />
           <span className="font-medium">{quiz.title}</span>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          {/* Voice Controls */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              if (playing) {
+                stopSpeaking();
+              } else {
+                speak(currentQuestion.question);
+              }
+            }}
+            title="Read question aloud"
+          >
+            {playing ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </Button>
+
+          {micSupported && (currentQuestion.type === 'short_answer' || currentQuestion.type === 'fill_blank') && (
+            <Button
+              variant={isListening ? 'destructive' : 'ghost'}
+              size="icon"
+              onClick={() => {
+                if (isListening) {
+                  stopListening();
+                } else {
+                  resetTranscript();
+                  startListening();
+                }
+              }}
+              title="Voice answer"
+            >
+              {isListening ? <MicOff className="h-4 w-4 animate-pulse" /> : <Mic className="h-4 w-4" />}
+            </Button>
+          )}
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setAutoReadQuestions(!autoReadQuestions)}
+            className={cn(autoReadQuestions && 'bg-primary/10')}
+          >
+            {autoReadQuestions ? 'Auto 🔊' : 'Auto 🔇'}
+          </Button>
+
           {timeLeft !== null && (
             <div className={cn(
               "flex items-center gap-2",
