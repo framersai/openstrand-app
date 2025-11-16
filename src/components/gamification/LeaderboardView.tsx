@@ -270,3 +270,4 @@ export function LeaderboardView({ teamId, currentUserId, className }: Leaderboar
   );
 }
 
+
