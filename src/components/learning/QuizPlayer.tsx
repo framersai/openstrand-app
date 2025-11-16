@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 /**
@@ -12,15 +13,25 @@
  * - Results with explanations
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ClipboardCheck, Clock, ChevronRight, Check, X, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
+import { quizAPI } from '@/services/openstrand.api';
+import { useToast } from '@/hooks/use-toast';
+import { MathRenderer } from './MathRenderer';
+
+type QuestionImage =
+  | string
+  | {
+      url: string;
+      alt?: string;
+      prompt?: string;
+    };
 
 interface Question {
   id: string;
@@ -30,6 +41,7 @@ interface Question {
   options?: string[];
   hints?: string[];
   imageUrl?: string;
+  images?: QuestionImage[];
 }
 
 interface Quiz {
@@ -73,11 +85,13 @@ export function QuizPlayer({ quizId, onComplete }: QuizPlayerProps) {
   const [results, setResults] = useState<QuizResults | null>(null);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [startTime] = useState(Date.now());
+  const [generatingQuestionId, setGeneratingQuestionId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   // Load quiz and start attempt
   useEffect(() => {
     startQuiz();
-  }, [quizId]);
+  }, [startQuiz]);
 
   // Timer countdown
   useEffect(() => {
@@ -94,9 +108,9 @@ export function QuizPlayer({ quizId, onComplete }: QuizPlayerProps) {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeLeft, results]);
+  }, [timeLeft, results, handleSubmit]);
 
-  const startQuiz = async () => {
+  const startQuiz = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/v1/quizzes/${quizId}/start`, {
@@ -120,7 +134,7 @@ export function QuizPlayer({ quizId, onComplete }: QuizPlayerProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [quizId]);
 
   const handleAnswer = (questionId: string, answer: any) => {
     setAnswers((prev) => ({ ...prev, [questionId]: answer }));
@@ -132,13 +146,48 @@ export function QuizPlayer({ quizId, onComplete }: QuizPlayerProps) {
     }
   };
 
+  const renderQuestionImages = (images?: QuestionImage[], fallback?: string) => {
+    if (images && images.length > 0) {
+      return (
+        <div className="space-y-2">
+          {images.map((img, index) => {
+            const src = typeof img === 'string' ? img : img.url;
+            if (!src) return null;
+            const alt =
+              typeof img === 'string' ? 'Question illustration' : img.alt || 'Question illustration';
+            return (
+              <img
+                key={`${src}-${index}`}
+                src={src}
+                alt={alt}
+                className="max-w-full h-auto rounded-lg"
+              />
+            );
+          })}
+        </div>
+      );
+    }
+
+    if (fallback) {
+      return (
+        <img
+          src={fallback}
+          alt="Question"
+          className="max-w-full h-auto rounded-lg"
+        />
+      );
+    }
+
+    return null;
+  };
+
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     if (!quiz || !attemptId || submitting) return;
 
     try {
@@ -174,12 +223,40 @@ export function QuizPlayer({ quizId, onComplete }: QuizPlayerProps) {
     } finally {
       setSubmitting(false);
     }
-  };
+  }, [quiz, attemptId, submitting, startTime, answers, quizId, onComplete]);
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleGenerateQuestionIllustration = async (questionId: string) => {
+    if (!quiz) return;
+    try {
+      setGeneratingQuestionId(questionId);
+      const response = await quizAPI.generateIllustrations(quiz.id, {
+        questionIds: [questionId],
+        stylePreset: 'flat_pastel',
+      });
+      const updatedQuiz = response?.data ?? response;
+      if (updatedQuiz?.questions) {
+        setQuiz(updatedQuiz);
+        toast({
+          title: 'Illustration added',
+          description: 'Question illustration generated successfully.',
+        });
+      }
+    } catch (error) {
+      console.error('Failed to generate quiz illustration:', error);
+      toast({
+        title: 'Generation failed',
+        description: 'Unable to generate illustration.',
+        variant: 'destructive',
+      });
+    } finally {
+      setGeneratingQuestionId(null);
+    }
   };
 
   if (loading) {
@@ -329,17 +406,21 @@ export function QuizPlayer({ quizId, onComplete }: QuizPlayerProps) {
           <div className="space-y-4">
             <div className="flex items-start justify-between">
               <h3 className="text-xl font-semibold flex-1">
-                {currentQuestion.question}
+                <MathRenderer content={currentQuestion.question} />
               </h3>
               <Badge>{currentQuestion.points}pts</Badge>
             </div>
-            {currentQuestion.imageUrl && (
-              <img
-                src={currentQuestion.imageUrl}
-                alt="Question"
-                className="max-w-full h-auto rounded-lg"
-              />
-            )}
+            {renderQuestionImages(currentQuestion.images, currentQuestion.imageUrl)}
+            <div className="flex justify-start">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleGenerateQuestionIllustration(currentQuestion.id)}
+                disabled={generatingQuestionId === currentQuestion.id}
+              >
+                {generatingQuestionId === currentQuestion.id ? 'Generating…' : 'Illustrate Question'}
+              </Button>
+            </div>
           </div>
 
           {/* Answer Input */}
@@ -356,7 +437,7 @@ export function QuizPlayer({ quizId, onComplete }: QuizPlayerProps) {
                     <span className="mr-3 font-semibold">
                       {String.fromCharCode(65 + index)}.
                     </span>
-                    {option}
+                    <MathRenderer content={option} />
                   </Button>
                 ))}
               </div>

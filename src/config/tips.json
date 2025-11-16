@@ -1,0 +1,55 @@
+{
+  "tips": {
+    "flashcards_keyboard": {
+      "title": "Did you know?",
+      "body": "Use keyboard shortcuts while studying: Space to flip, 1-4 for ratings!",
+      "contexts": ["flashcards", "study"]
+    },
+    "flashcards_spaced_repetition": {
+      "title": "Pro Tip: Spaced Repetition",
+      "body": "Our SuperMemo 2 algorithm schedules reviews at optimal intervals. Cards you find 'Easy' appear less often, while 'Again' cards come back sooner.",
+      "contexts": ["flashcards", "study"]
+    },
+    "quiz_adaptive": {
+      "title": "Try Adaptive Quizzes",
+      "body": "Enable adaptive mode to use the Leitner system—questions you miss will appear more frequently until mastered.",
+      "contexts": ["quizzes"]
+    },
+    "illustrations_pdf": {
+      "title": "Generate Book Illustrations",
+      "body": "For PDFs and EPUBs, you can generate cohesive illustrations for every page! Preview 1-5 pages first to lock in the art style.",
+      "contexts": ["pdf", "epub", "strands"]
+    },
+    "pomodoro_productivity": {
+      "title": "Track Your Productivity",
+      "body": "Use the Pomodoro timer (Clock icon in header) to track study sessions. We'll show you daily streaks and analytics!",
+      "contexts": ["productivity", "dashboard"]
+    },
+    "gallery_discover": {
+      "title": "Discover Community Content",
+      "body": "The Gallery shows the best public flashcards and quizzes—upvote your favorites to help others learn!",
+      "contexts": ["gallery"]
+    },
+    "generation_cost": {
+      "title": "Cost Transparency",
+      "body": "All AI generation shows estimated costs upfront. Use BYOK (Bring Your Own Key) to control spending and pick your provider.",
+      "contexts": ["generation", "settings"]
+    },
+    "latex_support": {
+      "title": "Math & LaTeX Support",
+      "body": "Flashcards and quizzes fully support LaTeX! Use $inline$ or $$display$$ notation for beautiful equations.",
+      "contexts": ["flashcards", "quizzes", "editor"]
+    },
+    "bulk_editing": {
+      "title": "Bulk Operations",
+      "body": "Select multiple cards to tag, suspend, or delete them all at once. Drag to reorder decks instantly!",
+      "contexts": ["flashcards", "quizzes", "editor"]
+    },
+    "difficulty_heatmap": {
+      "title": "Difficulty Heat Map",
+      "body": "Green cards are mastered, red ones need work. Filter your deck by difficulty to focus on problem areas.",
+      "contexts": ["flashcards", "analytics"]
+    }
+  }
+}
+

@@ -19,6 +19,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { flashcardAPI } from '@/services/openstrand.api';
+import { TipBeacon } from '@/components/tips/TipBeacon';
 import Link from 'next/link';
 
 interface Deck {
@@ -52,6 +53,14 @@ export default function FlashcardsPage() {
 
   return (
     <div className="container max-w-7xl mx-auto py-8 space-y-8">
+      {/* Tips */}
+      <TipBeacon
+        tipId="flashcards_keyboard"
+        title="Did you know?"
+        body="Use keyboard shortcuts while studying: Space to flip cards, then press 1 (Again), 2 (Hard), 3 (Good), or 4 (Easy) to rate!"
+        position="bottom-right"
+      />
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

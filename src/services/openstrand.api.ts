@@ -84,6 +84,56 @@ export interface OcrResult {
   processingTime: number;
 }
 
+export interface FlashcardIllustrationOptions {
+  flashcardIds?: string[];
+  side?: 'front' | 'back' | 'both';
+  stylePreset?:
+    | 'minimal_vector'
+    | 'flat_pastel'
+    | 'watercolor_soft'
+    | 'pencil_sketch'
+    | 'comic_lineart'
+    | 'realistic_soft'
+    | 'chalkboard'
+    | 'blueprint'
+    | 'retro_comic'
+    | 'noir_mono'
+    | 'digital_paint'
+    | 'pixel_8bit'
+    | 'pixel_16bit'
+    | 'ps1_lowpoly'
+    | 'vaporwave'
+    | 'anime_cel'
+    | 'anime_soft'
+    | 'manga_ink'
+    | 'render_3d'
+    | 'photorealistic'
+    | 'clay_render'
+    | 'isometric'
+    | 'paper_cutout'
+    | 'stained_glass'
+    | 'neon_sign'
+    | 'custom';
+  customStylePrompt?: string;
+  safetyLevel?: 'default' | 'censored' | 'uncensored' | 'strict';
+  imageOptions?: {
+    size?: '256x256' | '512x512' | '1024x1024' | '1792x1024' | '1024x1792';
+    quality?: 'standard' | 'hd';
+    style?: 'natural' | 'vivid';
+    n?: number;
+    responseFormat?: 'url' | 'b64_json';
+    seed?: number;
+  };
+  overwrite?: boolean;
+  includeAnswerContext?: boolean;
+}
+
+export interface QuizIllustrationOptions
+  extends Omit<FlashcardIllustrationOptions, 'flashcardIds' | 'side' | 'includeAnswerContext'> {
+  questionIds?: string[];
+  includeExplanation?: boolean;
+}
+
 /**
  * API Error class for better error handling
  */
@@ -1914,6 +1964,33 @@ export const flashcardAPI = {
       method: 'DELETE',
     });
   },
+
+  /**
+   * Generate illustration for a flashcard
+   */
+  async generateIllustration(
+    id: string,
+    options?: FlashcardIllustrationOptions
+  ): Promise<any> {
+    const response = await apiFetch(`/flashcards/${id}/illustrations`, {
+      method: 'POST',
+      body: JSON.stringify(options || {}),
+    });
+    return response.json();
+  },
+
+  /**
+   * Batch-generate illustrations for multiple flashcards
+   */
+  async generateIllustrationsBatch(
+    payload: FlashcardIllustrationOptions & { flashcardIds: string[] }
+  ): Promise<any> {
+    const response = await apiFetch('/flashcards/illustrations/generate', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+    return response.json();
+  },
 };
 
 /**
@@ -2050,6 +2127,20 @@ export const quizAPI = {
     await apiFetch(`/quizzes/${id}`, {
       method: 'DELETE',
     });
+  },
+
+  /**
+   * Generate illustrations for quiz questions
+   */
+  async generateIllustrations(
+    id: string,
+    options?: QuizIllustrationOptions
+  ): Promise<any> {
+    const response = await apiFetch(`/quizzes/${id}/illustrations`, {
+      method: 'POST',
+      body: JSON.stringify(options || {}),
+    });
+    return response.json();
   },
 };
 

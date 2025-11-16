@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 /**
@@ -13,17 +14,30 @@
  * - Study session statistics
  */
 
-import React, { useState, useEffect } from 'react';
-import { Brain, RotateCcw, ChevronLeft, ChevronRight, Check, X, Lightbulb } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Brain, RotateCcw, Check, X, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { flashcardAPI } from '@/services/openstrand.api';
+import { useToast } from '@/hooks/use-toast';
+import { MathRenderer } from './MathRenderer';
+
+type FlashcardImage =
+  | string
+  | {
+      url: string;
+      alt?: string;
+      prompt?: string;
+      stylePreset?: string;
+      safetyLevel?: string;
+    };
 
 interface FlashcardContent {
   text: string;
-  images?: string[];
+  images?: FlashcardImage[];
   latex?: string;
   audio?: string;
 }
@@ -68,11 +82,13 @@ export function FlashcardPlayer({ deckName, onComplete }: FlashcardPlayerProps) 
     totalTimeMs: 0,
   });
   const [cardStartTime, setCardStartTime] = useState(Date.now());
+  const [generatingSide, setGeneratingSide] = useState<'front' | 'back' | null>(null);
+  const { toast } = useToast();
 
   // Load due flashcards
   useEffect(() => {
     loadFlashcards();
-  }, [deckName]);
+  }, [loadFlashcards]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -100,9 +116,9 @@ export function FlashcardPlayer({ deckName, onComplete }: FlashcardPlayerProps) 
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isFlipped, currentIndex]);
+  }, [isFlipped, handleRating]);
 
-  const loadFlashcards = async () => {
+  const loadFlashcards = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -127,9 +143,9 @@ export function FlashcardPlayer({ deckName, onComplete }: FlashcardPlayerProps) 
     } finally {
       setLoading(false);
     }
-  };
+  }, [deckName]);
 
-  const handleRating = async (rating: 'again' | 'hard' | 'good' | 'easy') => {
+  const handleRating = useCallback(async (rating: 'again' | 'hard' | 'good' | 'easy') => {
     const currentCard = flashcards[currentIndex];
     if (!currentCard) return;
 
@@ -174,6 +190,63 @@ export function FlashcardPlayer({ deckName, onComplete }: FlashcardPlayerProps) 
     } catch (error) {
       console.error('Failed to record study:', error);
     }
+  }, [flashcards, currentIndex, cardStartTime, results, onComplete]);
+
+  const handleGenerateIllustration = async (side: 'front' | 'back') => {
+    const currentCard = flashcards[currentIndex];
+    if (!currentCard) return;
+
+    try {
+      setGeneratingSide(side);
+      const response = await flashcardAPI.generateIllustration(currentCard.id, {
+        side,
+        stylePreset: 'flat_pastel',
+        includeAnswerContext: side === 'front',
+      });
+      const updatedCard = response?.data ?? response;
+      if (updatedCard?.id) {
+        setFlashcards((prev) =>
+          prev.map((card) => (card.id === updatedCard.id ? updatedCard : card))
+        );
+        toast({
+          title: 'Illustration added',
+          description: `A ${side} illustration was generated.`,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to generate illustration:', error);
+      toast({
+        title: 'Generation failed',
+        description: 'Unable to generate illustration right now.',
+        variant: 'destructive',
+      });
+    } finally {
+      setGeneratingSide(null);
+    }
+  };
+
+  const renderImages = (images?: FlashcardImage[]) => {
+    if (!images || images.length === 0) return null;
+    return (
+      <div className="space-y-2">
+        {images.map((img, i) => {
+          const src = typeof img === 'string' ? img : img.url;
+          if (!src) return null;
+          const alt =
+            typeof img === 'string'
+              ? 'Flashcard illustration'
+              : img.alt || 'Flashcard illustration';
+          return (
+            <img
+              key={`${src}-${i}`}
+              src={src}
+              alt={alt}
+              className="max-w-full h-auto rounded-lg mx-auto"
+            />
+          );
+        })}
+      </div>
+    );
   };
 
   const currentCard = flashcards[currentIndex];
@@ -260,20 +333,9 @@ export function FlashcardPlayer({ deckName, onComplete }: FlashcardPlayerProps) 
               // Front side
               <div className="text-center space-y-4 w-full">
                 <div className="text-2xl font-medium">
-                  {currentCard.front.text}
+                  <MathRenderer content={currentCard.front.text} />
                 </div>
-                {currentCard.front.images && currentCard.front.images.length > 0 && (
-                  <div className="space-y-2">
-                    {currentCard.front.images.map((img, i) => (
-                      <img
-                        key={i}
-                        src={img}
-                        alt="Flashcard front"
-                        className="max-w-full h-auto rounded-lg mx-auto"
-                      />
-                    ))}
-                  </div>
-                )}
+                {renderImages(currentCard.front.images)}
                 {currentCard.hints.length > 0 && !showHint && (
                   <Button
                     variant="ghost"
@@ -290,9 +352,22 @@ export function FlashcardPlayer({ deckName, onComplete }: FlashcardPlayerProps) 
                 )}
                 {showHint && currentCard.hints[0] && (
                   <div className="mt-4 p-4 bg-accent/50 rounded-lg text-sm text-muted-foreground">
-                    💡 {currentCard.hints[0].text}
+                    💡 <MathRenderer content={currentCard.hints[0].text} />
                   </div>
                 )}
+                <div className="mt-4 flex justify-center">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleGenerateIllustration('front');
+                    }}
+                    disabled={generatingSide === 'front'}
+                  >
+                    {generatingSide === 'front' ? 'Generating…' : 'Illustrate Front'}
+                  </Button>
+                </div>
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-sm text-muted-foreground">
                   Press Space to flip
                 </div>
@@ -301,20 +376,22 @@ export function FlashcardPlayer({ deckName, onComplete }: FlashcardPlayerProps) 
               // Back side
               <div className="text-center space-y-6 w-full">
                 <div className="text-xl">
-                  {currentCard.back.text}
+                  <MathRenderer content={currentCard.back.text} />
                 </div>
-                {currentCard.back.images && currentCard.back.images.length > 0 && (
-                  <div className="space-y-2">
-                    {currentCard.back.images.map((img, i) => (
-                      <img
-                        key={i}
-                        src={img}
-                        alt="Flashcard back"
-                        className="max-w-full h-auto rounded-lg mx-auto"
-                      />
-                    ))}
-                  </div>
-                )}
+                {renderImages(currentCard.back.images)}
+                <div className="pt-2 flex justify-center">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleGenerateIllustration('back');
+                    }}
+                    disabled={generatingSide === 'back'}
+                  >
+                    {generatingSide === 'back' ? 'Generating…' : 'Illustrate Back'}
+                  </Button>
+                </div>
               </div>
             )}
           </CardContent>
