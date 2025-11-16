@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Brain, RotateCcw, Check, X, Lightbulb } from 'lucide-react';
+import { Brain, RotateCcw, Check, X, Lightbulb, Volume2, VolumeX, Mic, MicOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -23,6 +23,8 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { flashcardAPI } from '@/services/openstrand.api';
 import { useToast } from '@/hooks/use-toast';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
+import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 import { MathRenderer } from './MathRenderer';
 
 type FlashcardImage =
@@ -83,12 +85,42 @@ export function FlashcardPlayer({ deckName, onComplete }: FlashcardPlayerProps) 
   });
   const [cardStartTime, setCardStartTime] = useState(Date.now());
   const [generatingSide, setGeneratingSide] = useState<'front' | 'back' | null>(null);
+  const [autoNarrate, setAutoNarrate] = useState(false);
+  const [voiceAnswer, setVoiceAnswer] = useState('');
+  
   const { toast } = useToast();
+  const { speak, playing, stop: stopSpeaking } = useTextToSpeech();
+  const { 
+    transcript, 
+    isListening, 
+    isSupported: micSupported, 
+    start: startListening, 
+    stop: stopListening,
+    reset: resetTranscript 
+  } = useSpeechRecognition({
+    onFinalize: (text) => {
+      setVoiceAnswer(text);
+      toast({
+        title: 'Answer recorded',
+        description: 'Flip card to check',
+      });
+    },
+  });
 
   // Load due flashcards
   useEffect(() => {
     loadFlashcards();
   }, [loadFlashcards]);
+
+  // Auto-narrate on flip
+  useEffect(() => {
+    if (autoNarrate && currentCard) {
+      const textToRead = isFlipped ? currentCard.back.text : currentCard.front.text;
+      if (textToRead) {
+        speak(textToRead);
+      }
+    }
+  }, [isFlipped, currentIndex, autoNarrate, currentCard, speak]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -310,13 +342,76 @@ export function FlashcardPlayer({ deckName, onComplete }: FlashcardPlayerProps) 
             {currentIndex + 1} / {flashcards.length}
           </Badge>
         </div>
-        <div className="text-sm text-muted-foreground">
-          Reviews: {currentCard.reviews}
+        <div className="flex items-center gap-2">
+          {/* Voice Controls */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              if (playing) {
+                stopSpeaking();
+              } else {
+                const text = isFlipped ? currentCard.back.text : currentCard.front.text;
+                speak(text);
+              }
+            }}
+            title="Read card aloud"
+          >
+            {playing ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+          </Button>
+
+          {micSupported && (
+            <Button
+              variant={isListening ? 'destructive' : 'ghost'}
+              size="icon"
+              onClick={() => {
+                if (isListening) {
+                  stopListening();
+                } else {
+                  resetTranscript();
+                  startListening();
+                }
+              }}
+              title="Voice answer"
+            >
+              {isListening ? <MicOff className="h-4 w-4 animate-pulse" /> : <Mic className="h-4 w-4" />}
+            </Button>
+          )}
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setAutoNarrate(!autoNarrate)}
+            className={cn(autoNarrate && 'bg-primary/10')}
+          >
+            {autoNarrate ? 'Auto 🔊' : 'Auto 🔇'}
+          </Button>
+
+          <span className="text-sm text-muted-foreground">
+            Reviews: {currentCard.reviews}
+          </span>
         </div>
       </div>
 
       {/* Progress Bar */}
       <Progress value={progress} className="h-2" />
+
+      {/* Voice Answer Display */}
+      {(voiceAnswer || transcript) && !isFlipped && (
+        <Card className="border-primary/50 bg-primary/5">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-2">
+              <Mic className="h-5 w-5 text-primary mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-primary">Your voice answer:</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {voiceAnswer || transcript}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Flashcard */}
       <div className="relative">
