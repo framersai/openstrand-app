@@ -1,10 +1,10 @@
-import dynamic from 'next/dynamic';
+import dynamicImport from 'next/dynamic';
 import { Suspense } from 'react';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-const FlashcardsStudyClient = dynamic(() => import('./FlashcardsStudyClient'), {
+const FlashcardsStudyClient = dynamicImport(() => import('./FlashcardsStudyClient'), {
   ssr: false,
   loading: () => (
     <div className="flex min-h-screen items-center justify-center">
