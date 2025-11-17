@@ -1,0 +1,189 @@
+{
+  "hero": {
+    "badge": {
+      "community": "永久免費 • 社群版"
+    },
+    "headline": "離線優先的 AI 知識作業系統，配備 <highlight>REST API 和 TypeScript SDK</highlight>",
+    "subheadline": "建構可在任何地方工作的知識圖譜——瀏覽器、桌面、行動裝置。自動產生 REST API、離線同步和企業 RBAC。<strong>永久免費。離線可用。無需信用卡。</strong>",
+    "cta": {
+      "primary": "免費開始",
+      "secondary": "檢視定價",
+      "manage": "登入和管理",
+      "launchDemo": "啟動遞迴鏈"
+    },
+    "explore": "更喜歡先探索？<repo>為儲存庫加星</repo>或瀏覽<docs>文件</docs>。",
+    "highlightsTitle": "為什麼團隊選擇 OpenStrand",
+    "highlights": {
+      "hierarchies": {
+        "title": "遞迴鏈階層結構",
+        "description": "每個集合具有可重複使用父級的範圍安全 DAG。"
+      },
+      "approvals": {
+        "title": "可稽核的審批",
+        "description": "請求、審查和記錄每個結構變更。"
+      },
+      "ai": {
+        "title": "AI 建議的位置",
+        "description": "管道自動提出結構請求。"
+      },
+      "offline": {
+        "title": "離線優先自動同步",
+        "description": "在瀏覽器、桌面、行動裝置中工作。線上時同步。"
+      },
+      "api": {
+        "title": "自動產生的 REST API",
+        "description": "每個使用者都獲得個人 API 金鑰。包括完整的 SDK。"
+      },
+      "sdk": {
+        "title": "TypeScript SDK",
+        "description": "適用於 Node.js 和瀏覽器的型別安全用戶端。npm install @framers/openstrand-sdk"
+      },
+      "nlp": {
+        "title": "自然語言處理",
+        "description": "使用 AI 理解和處理自然語言查詢。"
+      }
+    },
+    "journey": {
+      "title": "資料之旅",
+      "items": {
+        "map": "對應結構",
+        "approve": "請求批准",
+        "cascade": "級聯可見性",
+        "placeholder": "預留位置預覽"
+      }
+    },
+    "metrics": {
+      "approvals": {
+        "title": "本週審批",
+        "detail": "97% 在您的 SLA 視窗內解決"
+      },
+      "placeholders": {
+        "title": "預留位置覆蓋",
+        "detail": "級聯保持每個範圍的受眾安全"
+      }
+    },
+    "trust": {
+      "gdpr": "符合 GDPR",
+      "selfHosted": "自主架設",
+      "mit": "MIT 授權",
+      "badge": "永久免費"
+    },
+    "card": {
+      "title": "社群版",
+      "subtitle": "永久免費 • 離線工作"
+    }
+  },
+  "features": {
+    "eyebrow": "為現代知識團隊打造",
+    "title": "編織知識所需的<highlight>一切</highlight>",
+    "subtitle": "透過內建的可存取性、隱私和多語言支援，將零散的資料集轉換為清晰的視覺敘述。",
+    "main": {
+      "assistant": {
+        "badge": "OS 助手",
+        "title": "OS（編織者）：您的情境教練",
+        "description": "一個冷靜的輔導助手，了解您的編織/織機和最近的工作。它以自然語言聊天，透過每日簽到在訂閱源中提示，並在有幫助時建議目標或組織步驟。",
+        "highlights": [
+          "每個編織的意識（專案與收集）",
+          "為每個人提供每日簽到",
+          "付費方案的每小時見解",
+          "建議 → 訂閱源；聊天/任務 → 模態"
+        ]
+      },
+      "hierarchies": {
+        "badge": "核心引擎",
+        "title": "遞迴鏈階層結構",
+        "description": "使用每個範圍的單一父級和跨程式的可重複使用後代對多範圍 DAG 進行建模。",
+        "highlights": [
+          "每個範圍單一父級",
+          "循環偵測",
+          "跨範圍重複使用"
+        ]
+      },
+      "approvals": {
+        "badge": "治理",
+        "title": "審批工作台",
+        "description": "使用完整的稽核追蹤和 webhook 掛勾佇列、審查和解決結構請求。",
+        "highlights": [
+          "範圍審批佇列",
+          "SLA 追蹤",
+          "Webhook + Slack 掛勾"
+        ]
+      },
+      "ai": {
+        "badge": "AI 驅動",
+        "title": "AI 輔助建模",
+        "description": "在團隊審查之前，智慧提出位置、預留位置副本和衝突預防。",
+        "highlights": [
+          "建議的位置",
+          "預留位置草稿",
+          "衝突避免"
+        ]
+      },
+      "learnMore": "深入了解"
+    },
+    "technical": {
+      "title": "為規模和可靠性而建構",
+      "typescript": {
+        "title": "端到端 TypeScript",
+        "description": "跨 Prisma、Fastify、Next.js 和 SDK 共用架構型別保持審批型別安全。",
+        "metric": "層之間零漂移"
+      },
+      "dedupe": {
+        "title": "智慧去重覆寫",
+        "description": "內容雜湊阻止意外重複，而編輯器有意使用稽核日誌複製。",
+        "metric": "每次上傳強制或覆寫"
+      },
+      "offline": {
+        "title": "離線優先 + 雲端就緒",
+        "description": "本機使用 PGlite，生產中使用 PostgreSQL。級聯在兩者中的行為相同。",
+        "metric": "一個遷移路徑"
+      },
+      "placeholders": {
+        "title": "預留位置策略引擎",
+        "description": "可見性快取計算誰看到真實內容與每個範圍和受眾的預留位置。",
+        "metric": "毫秒評估"
+      },
+      "api": {
+        "title": "結構請求 API",
+        "description": "從應用程式、SDK 或自動化工作流程提交、列出和解決結構請求。",
+        "metric": "REST + SDK 對等"
+      },
+      "pipeline": {
+        "title": "AI 建議管道",
+        "description": "啟發式和模型提出新的父級、替換和預留位置副本。",
+        "metric": "可設定的提供者"
+      },
+      "telemetry": {
+        "title": "稽核就緒遙測",
+        "description": "可見性級聯為儀表板、警示和合規性匯出發出指標和日誌。",
+        "metric": "Prometheus 友善"
+      }
+    },
+    "comparison": {
+      "title": "OpenStrand 的比較",
+      "featureColumn": "功能",
+      "products": {
+        "openstrand": "OpenStrand",
+        "notion": "Notion",
+        "obsidian": "Obsidian",
+        "tableau": "Tableau"
+      },
+      "rows": [
+        { "feature": "遞迴鏈", "openstrand": true, "notion": false, "obsidian": true, "tableau": false },
+        { "feature": "結構審批", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "可見性級聯", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "預留位置策略", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "SDK 對等", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "自主架設和離線", "openstrand": true, "notion": false, "obsidian": true, "tableau": false },
+        { "feature": "稽核追蹤", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "AI 建議", "openstrand": true, "notion": false, "obsidian": false, "tableau": false }
+      ],
+      "notAvailable": "—"
+    },
+    "cta": {
+      "note": "社群版 • 永久免費 • 無需信用卡 • 離線工作",
+      "button": "永久免費下載"
+    }
+  }
+}
+

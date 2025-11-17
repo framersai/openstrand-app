@@ -8,6 +8,7 @@ export const defaultLocale = 'en' as const;
 export const locales = [
   'en',      // English (base)
   'zh-CN',   // Chinese Simplified
+  'zh-TW',   // Chinese Traditional (Taiwan)
   'es',      // Spanish
   'hi',      // Hindi
   'ar',      // Arabic (RTL)
@@ -38,6 +39,12 @@ export const languageMetadata: Record<Locale, {
     nativeName: '简体中文',
     direction: 'ltr',
     flag: '🇨🇳',
+  },
+  'zh-TW': {
+    name: 'Chinese (Traditional)',
+    nativeName: '繁體中文',
+    direction: 'ltr',
+    flag: '🇹🇼',
   },
   'es': {
     name: 'Spanish',
@@ -134,6 +141,7 @@ export const formats = {
 export const localeCurrencies: Record<Locale, string> = {
   'en': 'USD',
   'zh-CN': 'CNY',
+  'zh-TW': 'TWD',
   'es': 'EUR',
   'hi': 'INR',
   'ar': 'SAR',
@@ -148,6 +156,7 @@ export const localeCurrencies: Record<Locale, string> = {
 export const localeDateFormats: Record<Locale, string> = {
   'en': 'MM/DD/YYYY',
   'zh-CN': 'YYYY年MM月DD日',
+  'zh-TW': 'YYYY年MM月DD日',
   'es': 'DD/MM/YYYY',
   'hi': 'DD/MM/YYYY',
   'ar': 'DD/MM/YYYY',
@@ -165,6 +174,7 @@ export const localeNumberFormats: Record<Locale, {
 }> = {
   'en': { decimal: '.', thousand: ',' },
   'zh-CN': { decimal: '.', thousand: ',' },
+  'zh-TW': { decimal: '.', thousand: ',' },
   'es': { decimal: ',', thousand: '.' },
   'hi': { decimal: '.', thousand: ',' },
   'ar': { decimal: '٫', thousand: '٬' },
@@ -179,6 +189,7 @@ export const localeNumberFormats: Record<Locale, {
 export const localeFonts: Record<Locale, string> = {
   'en': 'Inter, system-ui, -apple-system, sans-serif',
   'zh-CN': '"Noto Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif',
+  'zh-TW': '"Noto Sans TC", "Microsoft JhengHei", "PingFang TC", sans-serif',
   'es': 'Inter, system-ui, -apple-system, sans-serif',
   'hi': '"Noto Sans Devanagari", "Mangal", sans-serif',
   'ar': '"Noto Sans Arabic", "Segoe UI Arabic", "Tahoma", sans-serif',
@@ -204,6 +215,11 @@ export const localeSEO: Record<Locale, {
     title: 'OpenStrand - AI驱动的个人知识管理平台',
     description: '使用自然语言将您的数据转化为洞察。使用AI构建图表、表格和可视化。',
     keywords: ['数据可视化', '人工智能', '图表', '分析', '商业智能'],
+  },
+  'zh-TW': {
+    title: 'OpenStrand - AI驅動的個人知識管理平台',
+    description: '使用自然語言將您的資料轉化為洞察。使用AI建構圖表、表格和視覺化。',
+    keywords: ['資料視覺化', '人工智慧', '圖表', '分析', '商業智慧'],
   },
   'es': {
     title: 'OpenStrand - Plataforma de Gestión del Conocimiento con IA',
