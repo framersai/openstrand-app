@@ -5,9 +5,43 @@
  */
 
 import * as React from 'react';
-import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
+
+type SlotProps = React.HTMLAttributes<HTMLElement> & {
+  children?: React.ReactNode;
+};
+
+function composeRefs<T>(...refs: Array<React.Ref<T> | undefined>) {
+  return (value: T) => {
+    refs.forEach((ref) => {
+      if (!ref) return;
+      if (typeof ref === 'function') {
+        ref(value);
+      } else {
+        (ref as React.MutableRefObject<T | null>).current = value;
+      }
+    });
+  };
+}
+
+const Slot = React.forwardRef<HTMLElement, SlotProps>(({ children, className, ...props }, forwardedRef) => {
+  if (!React.isValidElement(children)) {
+    return (
+      <span ref={forwardedRef as React.Ref<HTMLSpanElement>} className={className} {...props}>
+        {children}
+      </span>
+    );
+  }
+
+  const mergedClassName = cn(children.props.className, className);
+  return React.cloneElement(children, {
+    ...props,
+    className: mergedClassName || undefined,
+    ref: composeRefs(children.ref, forwardedRef),
+  });
+});
+Slot.displayName = 'Slot';
 
 const buttonVariants = cva(
   'inline-flex select-none items-center justify-center whitespace-nowrap rounded-full text-sm font-semibold tracking-tight ring-offset-background shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--focus-ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 motion-safe:transition-all motion-safe:duration-200 motion-safe:ease-out motion-safe:hover:-translate-y-[1px] motion-safe:active:translate-y-0 motion-safe:active:scale-[0.98]',
