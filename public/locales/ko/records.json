@@ -1,0 +1,15 @@
+{
+  "title": "Records & Analytics",
+  "subtitle": "Insights into your journaling habits",
+  "export": "Export",
+  "moodTrends": {
+    "title": "Mood Trends"
+  },
+  "activityHeatmap": {
+    "title": "Activity Heatmap"
+  },
+  "accomplishmentsTimeline": {
+    "title": "Accomplishments Timeline"
+  }
+}
+

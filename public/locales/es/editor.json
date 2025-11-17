@@ -1,0 +1,32 @@
+{
+  "whiteboard": {
+    "quality": "Export Quality",
+    "qualityMedium": "Medium (70%)",
+    "qualityHigh": "High (100%)",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Whiteboard saved!",
+    "lastSaved": "Last saved at {time}",
+    "unsavedChanges": "You have unsaved changes",
+    "exported": "Exported as {format}",
+    "ocr": "Run OCR",
+    "ocrRunning": "Running OCR...",
+    "ocrSuccess": "OCR extracted {wordCount} words ({confidence}% confidence)",
+    "ocrWarning": {
+      "noText": "No text detected in whiteboard"
+    },
+    "ocrError": {
+      "empty": "Whiteboard is empty",
+      "generic": "OCR failed. Please try again."
+    },
+    "exportError": {
+      "empty": "Cannot export empty whiteboard",
+      "generic": "Export failed. Please try again."
+    },
+    "saveError": {
+      "noStrand": "No strand ID provided. Save the strand first.",
+      "generic": "Failed to save whiteboard"
+    }
+  }
+}
+

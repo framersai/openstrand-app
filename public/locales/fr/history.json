@@ -1,0 +1,51 @@
+{
+  "title": "History & Analytics",
+  "subtitle": "Your complete OpenStrand journey",
+  "tabs": {
+    "overview": "Overview",
+    "journal": "Journal",
+    "activity": "Activity",
+    "versions": "Versions",
+    "accomplishments": "Accomplishments"
+  },
+  "kpi": {
+    "streak": "Current Streak",
+    "days": "days",
+    "totalEntries": "Journal Entries",
+    "notes": "notes",
+    "avgMood": "Average Mood",
+    "totalStrands": "Total Strands",
+    "created": "created"
+  },
+  "overview": {
+    "activityHeatmap": "Activity Heatmap",
+    "recentActivity": "Recent Activity",
+    "topTags": "Top Tags"
+  },
+  "journal": {
+    "moodTrends": "Mood Trends",
+    "moodDistribution": "Mood Distribution",
+    "yourMood": "Your Mood",
+    "average": "Average"
+  },
+  "activity": {
+    "heatmap": "Activity Heatmap",
+    "feed": "Activity Feed",
+    "less": "Less",
+    "more": "More",
+    "created": "Created",
+    "updated": "Updated",
+    "deleted": "Deleted"
+  },
+  "versions": {
+    "title": "Version History",
+    "description": "Track all changes to your strands over time",
+    "noVersions": "No version history yet",
+    "restore": "Restore"
+  },
+  "accomplishments": {
+    "title": "Accomplishments Timeline",
+    "noAccomplishments": "No accomplishments yet. Start tracking your wins!"
+  }
+}
+
