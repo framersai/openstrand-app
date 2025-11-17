@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * @module FlashcardsStudyPage
  * @description Flashcard study session page
