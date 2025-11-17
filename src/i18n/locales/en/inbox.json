@@ -1,0 +1,25 @@
+{
+  "title": "Quick Capture Inbox",
+  "subtitle": "Organize your captured ideas and thoughts",
+  "loading": "Loading inbox...",
+  "empty": "Your inbox is empty. Capture ideas using the quick capture tools!",
+  "filters": {
+    "pending": "Pending",
+    "linked": "Linked",
+    "archived": "Archived",
+    "all": "All Items"
+  },
+  "status": {
+    "pending": "Pending",
+    "linked": "Linked",
+    "archived": "Archived"
+  },
+  "actions": {
+    "linkToStrand": "Link to Strand",
+    "archive": "Archive",
+    "delete": "Delete",
+    "viewDetails": "View Details"
+  }
+}
+
+

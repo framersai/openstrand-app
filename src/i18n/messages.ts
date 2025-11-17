@@ -16,6 +16,10 @@ const namespaces = [
   'landing',
   'footer',
   'tutorials',
+  // Feature-specific namespaces
+  'history',
+  'daily',
+  'inbox',
 ] as const;
 
 type Namespace = (typeof namespaces)[number];
@@ -65,6 +69,12 @@ async function importNamespace(locale: Locale, namespace: Namespace) {
       return (await import(`@/i18n/locales/${locale}/footer.json`)).default;
     case 'tutorials':
       return (await import(`@/i18n/locales/${locale}/tutorials.json`)).default;
+    case 'history':
+      return (await import(`@/i18n/locales/${locale}/history.json`)).default;
+    case 'daily':
+      return (await import(`@/i18n/locales/${locale}/daily.json`)).default;
+    case 'inbox':
+      return (await import(`@/i18n/locales/${locale}/inbox.json`)).default;
     default:
       return {};
   }
