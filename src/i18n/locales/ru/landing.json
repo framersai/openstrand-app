@@ -37,6 +37,10 @@
       "sdk": {
         "title": "TypeScript SDK",
         "description": "Type-safe client for Node.js and browsers. npm install @framers/openstrand-sdk"
+      },
+      "nlp": {
+        "title": "Обработка естественного языка",
+        "description": "Используйте ИИ для понимания и обработки запросов на естественном языке."
       }
     },
     "journey": {
