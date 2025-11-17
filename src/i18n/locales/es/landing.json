@@ -1,0 +1,189 @@
+{
+  "hero": {
+    "badge": {
+      "community": "Gratis para siempre • Edición Community"
+    },
+    "headline": "SO de Conocimiento AI Offline-First con <highlight>API REST y SDK de TypeScript</highlight>",
+    "subheadline": "Construye grafos de conocimiento que funcionan en todos lados: navegador, escritorio, móvil. API REST autogenerada, sincronización offline y RBAC empresarial. <strong>Gratis para siempre. Funciona offline. Sin tarjeta de crédito.</strong>",
+    "cta": {
+      "primary": "Comenzar gratis",
+      "secondary": "Ver precios",
+      "manage": "Iniciar sesión y gestionar",
+      "launchDemo": "Lanzar Tramas Recursivas"
+    },
+    "explore": "¿Prefieres explorar primero? <repo>Dale estrella al repo</repo> o navega por los <docs>documentos</docs>.",
+    "highlightsTitle": "Por qué los equipos eligen OpenStrand",
+    "highlights": {
+      "hierarchies": {
+        "title": "Jerarquías de tramas recursivas",
+        "description": "DAGs seguros de alcance con padres reutilizables por colección."
+      },
+      "approvals": {
+        "title": "Aprobaciones auditables",
+        "description": "Solicita, revisa y registra cada cambio estructural."
+      },
+      "ai": {
+        "title": "Colocaciones sugeridas por IA",
+        "description": "Los pipelines proponen solicitudes de estructura automáticamente."
+      },
+      "offline": {
+        "title": "Offline-first con auto-sincronización",
+        "description": "Funciona en navegador, escritorio, móvil. Se sincroniza cuando está en línea."
+      },
+      "api": {
+        "title": "API REST autogenerada",
+        "description": "Cada usuario obtiene una clave API personal. SDK completo incluido."
+      },
+      "sdk": {
+        "title": "SDK de TypeScript",
+        "description": "Cliente tipado para Node.js y navegadores. npm install @framers/openstrand-sdk"
+      },
+      "nlp": {
+        "title": "Procesamiento de lenguaje natural",
+        "description": "Usa IA para comprender y procesar consultas en lenguaje natural."
+      }
+    },
+    "journey": {
+      "title": "Viaje de datos",
+      "items": {
+        "map": "Mapear estructura",
+        "approve": "Solicitar aprobación",
+        "cascade": "Cascada de visibilidad",
+        "placeholder": "Vista previa de marcador"
+      }
+    },
+    "metrics": {
+      "approvals": {
+        "title": "Aprobaciones esta semana",
+        "detail": "97% resuelto dentro de tus ventanas SLA"
+      },
+      "placeholders": {
+        "title": "Cobertura de marcadores",
+        "detail": "Las cascadas mantienen cada alcance seguro para la audiencia"
+      }
+    },
+    "trust": {
+      "gdpr": "Listo para GDPR",
+      "selfHosted": "Auto-alojado",
+      "mit": "Licencia MIT",
+      "badge": "GRATIS PARA SIEMPRE"
+    },
+    "card": {
+      "title": "Edición Community",
+      "subtitle": "Siempre Gratis • Funciona Offline"
+    }
+  },
+  "features": {
+    "eyebrow": "Construido para equipos de conocimiento modernos",
+    "title": "Todo lo que necesitas para <highlight>Tejer Conocimiento</highlight>",
+    "subtitle": "Transforma conjuntos de datos fragmentados en narrativas visuales claras con accesibilidad, privacidad y soporte multilingüe integrados.",
+    "main": {
+      "assistant": {
+        "badge": "Asistente SO",
+        "title": "SO (Tejedor): Tu entrenador contextual",
+        "description": "Un asistente tranquilo y de coaching que comprende tus tejidos/telares y trabajo reciente. Chatea en lenguaje natural, empuja a través del feed con registros diarios y sugiere objetivos o pasos de organización cuando ayuda.",
+        "highlights": [
+          "Conciencia por tejido (proyectos vs recopilación)",
+          "Registros diarios para todos",
+          "Insights cada hora en planes pagos",
+          "Recomendaciones → feed; chat/tareas → modal"
+        ]
+      },
+      "hierarchies": {
+        "badge": "Motor central",
+        "title": "Jerarquías de tramas recursivas",
+        "description": "Modela DAGs de múltiples alcances con padres únicos por alcance y descendientes reutilizables entre programas.",
+        "highlights": [
+          "Padre único por alcance",
+          "Detección de ciclos",
+          "Reutilización entre alcances"
+        ]
+      },
+      "approvals": {
+        "badge": "Gobernanza",
+        "title": "Banco de trabajo de aprobación",
+        "description": "Encola, revisa y resuelve solicitudes de estructura con rastros de auditoría completos y ganchos de webhook.",
+        "highlights": [
+          "Colas de aprobación con alcance",
+          "Seguimiento de SLA",
+          "Ganchos Webhook + Slack"
+        ]
+      },
+      "ai": {
+        "badge": "Impulsado por IA",
+        "title": "Modelado asistido por IA",
+        "description": "La inteligencia propone colocaciones, copias de marcadores y prevención de conflictos antes de que los equipos revisen.",
+        "highlights": [
+          "Colocaciones sugeridas",
+          "Borradores de marcadores",
+          "Evitación de conflictos"
+        ]
+      },
+      "learnMore": "Aprende más"
+    },
+    "technical": {
+      "title": "Construido para escala y confiabilidad",
+      "typescript": {
+        "title": "TypeScript de extremo a extremo",
+        "description": "Los tipos de esquema compartidos en Prisma, Fastify, Next.js y el SDK mantienen las aprobaciones seguras de tipos.",
+        "metric": "Cero deriva entre capas"
+      },
+      "dedupe": {
+        "title": "Anulaciones de deduplicación inteligentes",
+        "description": "Los hashes de contenido bloquean duplicados accidentales mientras los editores clonan intencionalmente con registros de auditoría.",
+        "metric": "Forzar o anular por carga"
+      },
+      "offline": {
+        "title": "Offline-first + listo para la nube",
+        "description": "PGlite localmente, PostgreSQL en producción. Las cascadas se comportan de manera idéntica en ambos.",
+        "metric": "Una ruta de migración"
+      },
+      "placeholders": {
+        "title": "Motor de políticas de marcadores",
+        "description": "Los cachés de visibilidad calculan quién ve contenido real vs marcadores por alcance y audiencia.",
+        "metric": "Milisegundos para evaluar"
+      },
+      "api": {
+        "title": "APIs de solicitud de estructura",
+        "description": "Envía, lista y resuelve solicitudes de estructura desde la app, SDK o flujos de trabajo de automatización.",
+        "metric": "Paridad REST + SDK"
+      },
+      "pipeline": {
+        "title": "Pipeline de sugerencias de IA",
+        "description": "Heurísticas y modelos proponen nuevos padres, reemplazos y copias de marcadores.",
+        "metric": "Proveedores configurables"
+      },
+      "telemetry": {
+        "title": "Telemetría lista para auditoría",
+        "description": "Las cascadas de visibilidad emiten métricas y registros para paneles, alertas y exportaciones de cumplimiento.",
+        "metric": "Amigable con Prometheus"
+      }
+    },
+    "comparison": {
+      "title": "Cómo se compara OpenStrand",
+      "featureColumn": "Función",
+      "products": {
+        "openstrand": "OpenStrand",
+        "notion": "Notion",
+        "obsidian": "Obsidian",
+        "tableau": "Tableau"
+      },
+      "rows": [
+        { "feature": "Tramas recursivas", "openstrand": true, "notion": false, "obsidian": true, "tableau": false },
+        { "feature": "Aprobaciones de estructura", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "Cascadas de visibilidad", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "Políticas de marcadores", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "Paridad SDK", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "Auto-alojamiento y offline", "openstrand": true, "notion": false, "obsidian": true, "tableau": false },
+        { "feature": "Rastros de auditoría", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "Sugerencias de IA", "openstrand": true, "notion": false, "obsidian": false, "tableau": false }
+      ],
+      "notAvailable": "—"
+    },
+    "cta": {
+      "note": "Edición Community • Gratis para siempre • Sin tarjeta de crédito • Funciona offline",
+      "button": "Descargar gratis para siempre"
+    }
+  }
+}
+

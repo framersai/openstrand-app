@@ -6,6 +6,7 @@
   },
   "navigation": {
     "home": "الرئيسية",
+    "features": "الميزات",
     "datasets": "مجموعات البيانات",
     "visualizations": "التصورات",
     "pricing": "الأسعار",
@@ -21,13 +22,11 @@
     "landing": "الصفحة الرئيسية",
     "feed": "الخلاصة",
     "strands": "الخيوط",
-    "features": "الميزات"
-  },
-  "navigationDescriptions": {
-    "feed": "أحدث السلاسل والتحديثات",
-    "visualizations": "رسوم بيانية، شروحات، وقصص مدعومة بالذكاء الاصطناعي",
-    "strands": "مركز PKMS والنسج",
-    "datasets": "المصادر، الاستيراد، والتحسين"
+    "import": "استيراد المشروع",
+    "daily": "يومي",
+    "history": "التاريخ",
+    "records": "التحليلات",
+    "inbox": "صندوق الوارد"
   },
   "actions": {
     "upload": "رفع",
@@ -47,43 +46,6 @@
     "submit": "إرسال",
     "submitting": "جاري الإرسال...",
     "create": "إنشاء",
-    "copy": "نسخ",
-    "openDashboard": "فتح اللوحة",
-    "startFree": "ابدأ مجاناً",
-    "openLogin": "فتح تسجيل الدخول",
-    "show": "إظهار",
-    "hide": "إخفاء",
-    "autoInsights": "رؤى تلقائية",
-    "commandPalette": "لوحة الأوامر",
-    "changeLayout": "تغيير التخطيط"
-  },
-  "docs": {
-    "product": {
-      "label": "دليل المنتج",
-      "description": "الهندسة، استراتيجيات النمذجة، وملاحظات الإصدارات"
-    },
-    "tutorials": {
-      "label": "شروحات وأدلة",
-      "description": "بناء الهياكل، الموافقات، والهجرة خطوة بخطوة"
-    },
-    "api": {
-      "label": "مرجع API (OpenAPI)",
-      "description": "مخطط Fastify مباشر مع أمثلة للطلبات والاستجابات",
-      "unavailable": "اضبط NEXT_PUBLIC_API_URL لإظهار التوثيق"
-    },
-    "sdk": {
-      "label": "أنواع SDK (TSDoc)",
-      "description": "عميل آمن الأنواع وأدوات للسلاسل والنسج والموافقات"
-    }
-  },
-  "tooltips": {
-    "openSettings": "فتح الإعدادات",
-    "toggleNavigation": "تبديل قائمة التنقل",
-    "closeNavigation": "إغلاق التنقل",
-    "themeSwitch": "السمة: {theme} (اضغط للتبديل إلى {nextTheme})",
-    "backToLanding": "العودة إلى الصفحة الرئيسية"
-  },
-  "labels": {
-    "workspace": "مساحة العمل"
+    "copy": "نسخ"
   }
 }

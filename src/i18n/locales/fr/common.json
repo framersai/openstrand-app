@@ -1,11 +1,32 @@
 {
+  "app": {
+    "name": "OpenStrand",
+    "tagline": "Histoires de données, plus rapides",
+    "description": "Analytique hors ligne d'abord avec surcouches génératives optionnelles et narration guidée."
+  },
   "navigation": {
+    "home": "Accueil",
+    "features": "Fonctionnalités",
+    "datasets": "Ensembles de données",
+    "visualizations": "Visualisations",
+    "pricing": "Tarifs",
+    "docs": "Documentation",
+    "overview": "Aperçu",
+    "useCases": "Cas d'usage",
+    "roadmap": "Feuille de route",
+    "support": "Support",
+    "about": "À propos",
+    "product": "Produit",
     "teamsApi": "Équipes et API",
     "pkms": "PKMS",
     "landing": "Accueil",
     "feed": "Flux",
     "strands": "Trames",
-    "features": "Fonctionnalités"
+    "import": "Importer le projet",
+    "daily": "Quotidien",
+    "history": "Historique",
+    "records": "Analyses",
+    "inbox": "Boîte de réception"
   },
   "navigationDescriptions": {
     "feed": "Dernières hebras et mises à jour",
@@ -14,6 +35,38 @@
     "datasets": "Sources, importations et enrichissements"
   },
   "actions": {
+    "upload": "Télécharger",
+    "download": "Télécharger",
+    "generate": "Générer",
+    "processing": "Traitement en cours",
+    "clear": "Effacer",
+    "clearAll": "Tout effacer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "apply": "Appliquer",
+    "refresh": "Actualiser",
+    "load": "Charger",
+    "use": "Utiliser",
+    "submit": "Soumettre",
+    "submitting": "Soumission...",
+    "create": "Créer",
+    "copy": "Copier",
+    "maximize": "Agrandir",
+    "minimize": "Réduire",
+    "close": "Fermer",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "sort": "Trier",
+    "export": "Exporter",
+    "import": "Importer",
+    "share": "Partager",
+    "duplicate": "Dupliquer",
+    "archive": "Archiver",
     "openDashboard": "Ouvrir le tableau de bord",
     "startFree": "Commencer gratuitement",
     "openLogin": "Ouvrir la connexion",
@@ -42,15 +95,115 @@
       "description": "Client typé et utilitaires pour hebras, trames et approbations"
     }
   },
+  "tabs": {
+    "data": "Données",
+    "visualize": "Visualiser"
+  },
+  "status": {
+    "loading": "Chargement...",
+    "ready": "Prêt",
+    "processing": "Traitement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "pending": "En attente",
+    "active": "Actif",
+    "inactive": "Inactif",
+    "default": "Par défaut",
+    "public": "Public",
+    "private": "Privé",
+    "premium": "Premium",
+    "approved": "Approuvé",
+    "rejected": "Rejeté",
+    "archived": "Archivé"
+  },
+  "time": {
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "tomorrow": "Demain",
+    "thisWeek": "Cette semaine",
+    "lastWeek": "Semaine dernière",
+    "thisMonth": "Ce mois-ci",
+    "lastMonth": "Le mois dernier",
+    "thisYear": "Cette année",
+    "lastYear": "L'année dernière",
+    "seconds": "secondes",
+    "minutes": "minutes",
+    "hours": "heures",
+    "days": "jours",
+    "weeks": "semaines",
+    "months": "mois",
+    "years": "années",
+    "ago": "il y a",
+    "in": "dans",
+    "now": "Maintenant",
+    "never": "Jamais"
+  },
+  "footer": {
+    "copyright": "Copyright {year} OpenStrand. Tous droits réservés.",
+    "guidedStories": "Histoires de données guidées",
+    "social": {
+      "twitter": "Twitter",
+      "github": "GitHub",
+      "linkedin": "LinkedIn",
+      "email": "Email"
+    }
+  },
   "tooltips": {
     "openSettings": "Ouvrir les paramètres",
     "toggleNavigation": "Afficher le menu de navigation",
     "closeNavigation": "Fermer la navigation",
+    "toggleHeuristic": "Activer/désactiver l'assistant heuristique",
+    "toggleDebug": "Activer/désactiver les détails de débogage",
+    "realTimeSpend": "Dépense de jetons en temps réel pour cette session",
+    "providerSettings": "Paramètres du fournisseur et basculement de l'assistant heuristique",
     "themeSwitch": "Thème : {theme} (cliquer pour passer à {nextTheme})",
-    "backToLanding": "Retour à la page d’accueil"
+    "backToLanding": "Retour à la page d'accueil"
+  },
+  "empty": {
+    "noData": "Aucune donnée disponible",
+    "noResults": "Aucun résultat trouvé",
+    "noItems": "Aucun élément à afficher",
+    "tryAgain": "Réessayer"
+  },
+  "units": {
+    "rows": "lignes",
+    "columns": "colonnes",
+    "fields": "champs",
+    "requests": "demandes",
+    "items": "éléments",
+    "files": "fichiers",
+    "bytes": "octets",
+    "kb": "Ko",
+    "mb": "Mo",
+    "gb": "Go"
   },
   "labels": {
+    "name": "Nom",
+    "description": "Description",
+    "type": "Type",
+    "status": "Statut",
+    "created": "Créé",
+    "updated": "Mis à jour",
+    "size": "Taille",
+    "date": "Date",
+    "time": "Heure",
+    "duration": "Durée",
+    "progress": "Progression",
+    "version": "Version",
+    "category": "Catégorie",
+    "tags": "Étiquettes",
+    "visibility": "Visibilité",
+    "provider": "Fournisseur",
+    "cost": "Coût",
+    "samples": "Échantillons",
+    "metadata": "Métadonnées",
     "workspace": "Espace de travail"
+  },
+  "gdpr": {
+    "title": "Nous utilisons des analyses pour améliorer OpenStrand",
+    "description": "Aidez-nous à mesurer les performances et l'utilisation du produit afin que nous puissions prioriser les bonnes améliorations. Vous pouvez vous désinscrire à tout moment - les analyses ne sont jamais requises pour utiliser OpenStrand.",
+    "privacyLink": "Lire notre politique de confidentialité",
+    "accept": "Accepter les analyses",
+    "decline": "Refuser"
   }
 }
-

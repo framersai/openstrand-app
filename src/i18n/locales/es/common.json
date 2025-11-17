@@ -6,6 +6,7 @@
   },
   "navigation": {
     "home": "Inicio",
+    "features": "Funciones",
     "datasets": "Conjuntos de datos",
     "visualizations": "Visualizaciones",
     "pricing": "Precios",
@@ -21,13 +22,11 @@
     "landing": "Landing",
     "feed": "Novedades",
     "strands": "Tramas",
-    "features": "Funciones"
-  },
-  "navigationDescriptions": {
-    "feed": "Últimas hebras y actualizaciones",
-    "visualizations": "Gráficos, explicaciones y piezas generadas por IA",
-    "strands": "Centro PKMS y tejidos",
-    "datasets": "Fuentes, importaciones y enriquecimientos"
+    "import": "Importar Proyecto",
+    "daily": "Diario",
+    "history": "Historial",
+    "records": "Analíticas",
+    "inbox": "Bandeja de entrada"
   },
   "actions": {
     "upload": "Cargar",
@@ -61,34 +60,7 @@
     "import": "Importar",
     "share": "Compartir",
     "duplicate": "Duplicar",
-    "archive": "Archivar",
-    "openDashboard": "Abrir panel",
-    "startFree": "Comenzar gratis",
-    "openLogin": "Abrir inicio de sesión",
-    "show": "Mostrar",
-    "hide": "Ocultar",
-    "autoInsights": "Ideas automáticas",
-    "commandPalette": "Paleta de comandos",
-    "changeLayout": "Cambiar diseño"
-  },
-  "docs": {
-    "product": {
-      "label": "Documentación del producto",
-      "description": "Arquitectura, estrategias de modelado y notas de lanzamiento"
-    },
-    "tutorials": {
-      "label": "Tutoriales y guías",
-      "description": "Jerarquías, aprobaciones y migraciones paso a paso"
-    },
-    "api": {
-      "label": "Referencia API (OpenAPI)",
-      "description": "Esquema Fastify en vivo con ejemplos",
-      "unavailable": "Configura NEXT_PUBLIC_API_URL para exponer la documentación"
-    },
-    "sdk": {
-      "label": "Tipados del SDK (TSDoc)",
-      "description": "Cliente tipado y utilidades para hebras, tejidos y aprobaciones"
-    }
+    "archive": "Archivar"
   },
   "status": {
     "loading": "Cargando...",
@@ -106,19 +78,5 @@
     "approved": "Aprobado",
     "rejected": "Rechazado",
     "archived": "Archivado"
-  },
-  "tooltips": {
-    "openSettings": "Abrir ajustes",
-    "toggleNavigation": "Mostrar menú de navegación",
-    "closeNavigation": "Cerrar navegación",
-    "toggleHeuristic": "Alternar asistente heurístico",
-    "toggleDebug": "Alternar detalles de depuración",
-    "realTimeSpend": "Gasto de tokens en tiempo real para esta sesión",
-    "providerSettings": "Ajustes de proveedores y asistente heurístico",
-    "themeSwitch": "Tema: {theme} (clic para cambiar a {nextTheme})",
-    "backToLanding": "Volver a la página principal"
-  },
-  "labels": {
-    "workspace": "Espacio de trabajo"
   }
 }

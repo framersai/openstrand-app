@@ -6,6 +6,7 @@
   },
   "navigation": {
     "home": "首页",
+    "features": "功能",
     "datasets": "数据集",
     "visualizations": "可视化",
     "pricing": "价格",
@@ -21,7 +22,11 @@
     "landing": "登录页",
     "feed": "动态",
     "strands": "知识线",
-    "features": "功能"
+    "import": "导入项目",
+    "daily": "每日",
+    "history": "历史",
+    "records": "分析",
+    "inbox": "收件箱"
   },
   "navigationDescriptions": {
     "feed": "最新的主题与更新",
@@ -193,5 +198,16 @@
     "samples": "样本",
     "metadata": "元数据",
     "workspace": "工作区"
+  },
+  "tabs": {
+    "data": "数据",
+    "visualize": "可视化"
+  },
+  "gdpr": {
+    "title": "我们使用分析来改进 OpenStrand",
+    "description": "帮助我们衡量性能和产品使用情况，以便我们优先考虑正确的改进。您可以随时选择退出 - 分析永远不是使用 OpenStrand 的必需条件。",
+    "privacyLink": "阅读我们的隐私政策",
+    "accept": "接受分析",
+    "decline": "拒绝"
   }
 }

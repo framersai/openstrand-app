@@ -1,0 +1,184 @@
+{
+  "hero": {
+    "badge": {
+      "community": "Free Forever • Community Edition"
+    },
+    "headline": "Offline-First AI Knowledge OS with <highlight>REST API & TypeScript SDK</highlight>",
+    "subheadline": "Build knowledge graphs that work everywhere—browser, desktop, mobile. Auto-generated REST API, offline sync, and enterprise RBAC. <strong>Free forever. Works offline. No credit card.</strong>",
+    "cta": {
+      "primary": "Start free",
+      "secondary": "View Pricing",
+      "manage": "Sign in & manage",
+      "launchDemo": "Launch Recursive Strands"
+    },
+    "explore": "Prefer exploring first? <repo>Star the repo</repo> or browse the <docs>docs</docs>.",
+    "highlightsTitle": "Why teams choose OpenStrand",
+    "highlights": {
+      "hierarchies": {
+        "title": "Recursive strand hierarchies",
+        "description": "Scope-safe DAGs with reusable parents per collection."
+      },
+      "approvals": {
+        "title": "Auditable approvals",
+        "description": "Request, review, and log every structural change."
+      },
+      "ai": {
+        "title": "AI-suggested placements",
+        "description": "Pipelines propose structure requests automatically."
+      },
+      "offline": {
+        "title": "Offline-first with auto-sync",
+        "description": "Works in browser, desktop, mobile. Syncs when online."
+      },
+      "api": {
+        "title": "Auto-generated REST API",
+        "description": "Every user gets a personal API key. Full SDK included."
+      },
+      "sdk": {
+        "title": "TypeScript SDK",
+        "description": "Type-safe client for Node.js and browsers. npm install @framers/openstrand-sdk"
+      }
+    },
+    "journey": {
+      "title": "Data Journey",
+      "items": {
+        "map": "Map structure",
+        "approve": "Request approval",
+        "cascade": "Cascade visibility",
+        "placeholder": "Placeholder preview"
+      }
+    },
+    "metrics": {
+      "approvals": {
+        "title": "Approvals this week",
+        "detail": "97% resolved inside your SLA windows"
+      },
+      "placeholders": {
+        "title": "Placeholder coverage",
+        "detail": "Cascades keep every scope audience-safe"
+      }
+    },
+    "trust": {
+      "gdpr": "GDPR Ready",
+      "selfHosted": "Self-Hosted",
+      "mit": "MIT License",
+      "badge": "FREE FOREVER"
+    },
+    "card": {
+      "title": "Community Edition",
+      "subtitle": "Always Free • Works Offline"
+    }
+  },
+  "features": {
+    "eyebrow": "Built for modern knowledge teams",
+    "title": "Everything You Need to <highlight>Weave Knowledge</highlight>",
+    "subtitle": "Transform fragmented datasets into clear visual narratives with accessibility, privacy, and multilingual support baked in.",
+    "main": {
+      "assistant": {
+        "badge": "OS Assistant",
+        "title": "OS (Weaver): Your contextual coach",
+        "description": "A calm, coachy assistant that understands your weaves/looms and recent work. It chats in natural language, nudges via the feed with daily check-ins, and suggests goals or organizing steps when it helps.",
+        "highlights": [
+          "Per-weave awareness (projects vs collecting)",
+          "Daily check-ins for everyone",
+          "Hourly insights on paid plans",
+          "Recommendations → feed; chat/tasks → modal"
+        ]
+      },
+      "hierarchies": {
+        "badge": "Core engine",
+        "title": "Recursive strand hierarchies",
+        "description": "Model multi-scope DAGs with single parents per scope and reusable descendants across programs.",
+        "highlights": [
+          "Per-scope single parent",
+          "Cycle detection",
+          "Cross-scope reuse"
+        ]
+      },
+      "approvals": {
+        "badge": "Governance",
+        "title": "Approval workbench",
+        "description": "Queue, review, and resolve structure requests with full audit trails and webhook hooks.",
+        "highlights": [
+          "Scoped approval queues",
+          "SLA tracking",
+          "Webhook + Slack hooks"
+        ]
+      },
+      "ai": {
+        "badge": "AI-powered",
+        "title": "AI-assisted modelling",
+        "description": "Intelligence proposes placements, placeholder copy, and conflict prevention before teams review.",
+        "highlights": [
+          "Suggested placements",
+          "Placeholder drafts",
+          "Conflict avoidance"
+        ]
+      },
+      "learnMore": "Learn more"
+    },
+    "technical": {
+      "title": "Built for Scale & Reliability",
+      "typescript": {
+        "title": "End-to-end TypeScript",
+        "description": "Shared schema types across Prisma, Fastify, Next.js, and the SDK keep approvals type-safe.",
+        "metric": "Zero drift between layers"
+      },
+      "dedupe": {
+        "title": "Smart dedupe overrides",
+        "description": "Content hashes block accidental duplicates while editors intentionally clone with audit logs.",
+        "metric": "Enforce or override per upload"
+      },
+      "offline": {
+        "title": "Offline-first + cloud ready",
+        "description": "PGlite locally, PostgreSQL in production. Cascades behave identically in both.",
+        "metric": "One migration path"
+      },
+      "placeholders": {
+        "title": "Placeholder policy engine",
+        "description": "Visibility caches compute who sees real content vs placeholders per scope and audience.",
+        "metric": "Milliseconds to evaluate"
+      },
+      "api": {
+        "title": "Structure request APIs",
+        "description": "Submit, list, and resolve structure requests from the app, SDK, or automation workflows.",
+        "metric": "REST + SDK parity"
+      },
+      "pipeline": {
+        "title": "AI suggestion pipeline",
+        "description": "Heuristics and models propose new parents, replacements, and placeholder copy.",
+        "metric": "Configurable providers"
+      },
+      "telemetry": {
+        "title": "Audit-ready telemetry",
+        "description": "Visibility cascades emit metrics and logs for dashboards, alerts, and compliance exports.",
+        "metric": "Prometheus-friendly"
+      }
+    },
+    "comparison": {
+      "title": "How OpenStrand Compares",
+      "featureColumn": "Feature",
+      "products": {
+        "openstrand": "OpenStrand",
+        "notion": "Notion",
+        "obsidian": "Obsidian",
+        "tableau": "Tableau"
+      },
+      "rows": [
+        { "feature": "Recursive strands", "openstrand": true, "notion": false, "obsidian": true, "tableau": false },
+        { "feature": "Structure approvals", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "Visibility cascades", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "Placeholder policies", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "SDK parity", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "Self-host & offline", "openstrand": true, "notion": false, "obsidian": true, "tableau": false },
+        { "feature": "Audit trails", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "AI suggestions", "openstrand": true, "notion": false, "obsidian": false, "tableau": false }
+      ],
+      "notAvailable": "—"
+    },
+    "cta": {
+      "note": "Community Edition • Free Forever • No Credit Card • Works Offline",
+      "button": "Download Free Forever"
+    }
+  }
+}

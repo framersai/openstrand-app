@@ -1,0 +1,189 @@
+{
+  "hero": {
+    "badge": {
+      "community": "永久免费 • 社区版"
+    },
+    "headline": "离线优先的 AI 知识操作系统，配备 <highlight>REST API 和 TypeScript SDK</highlight>",
+    "subheadline": "构建可在任何地方工作的知识图谱——浏览器、桌面、移动设备。自动生成 REST API、离线同步和企业 RBAC。<strong>永久免费。离线可用。无需信用卡。</strong>",
+    "cta": {
+      "primary": "免费开始",
+      "secondary": "查看定价",
+      "manage": "登录和管理",
+      "launchDemo": "启动递归链"
+    },
+    "explore": "更喜欢先探索？<repo>为仓库加星</repo>或浏览<docs>文档</docs>。",
+    "highlightsTitle": "为什么团队选择 OpenStrand",
+    "highlights": {
+      "hierarchies": {
+        "title": "递归链层次结构",
+        "description": "每个集合具有可重用父级的范围安全 DAG。"
+      },
+      "approvals": {
+        "title": "可审计的审批",
+        "description": "请求、审查和记录每个结构更改。"
+      },
+      "ai": {
+        "title": "AI 建议的位置",
+        "description": "管道自动提出结构请求。"
+      },
+      "offline": {
+        "title": "离线优先自动同步",
+        "description": "在浏览器、桌面、移动设备中工作。在线时同步。"
+      },
+      "api": {
+        "title": "自动生成的 REST API",
+        "description": "每个用户都获得个人 API 密钥。包括完整的 SDK。"
+      },
+      "sdk": {
+        "title": "TypeScript SDK",
+        "description": "适用于 Node.js 和浏览器的类型安全客户端。npm install @framers/openstrand-sdk"
+      },
+      "nlp": {
+        "title": "自然语言处理",
+        "description": "使用 AI 理解和处理自然语言查询。"
+      }
+    },
+    "journey": {
+      "title": "数据之旅",
+      "items": {
+        "map": "映射结构",
+        "approve": "请求批准",
+        "cascade": "级联可见性",
+        "placeholder": "占位符预览"
+      }
+    },
+    "metrics": {
+      "approvals": {
+        "title": "本周审批",
+        "detail": "97% 在您的 SLA 窗口内解决"
+      },
+      "placeholders": {
+        "title": "占位符覆盖",
+        "detail": "级联保持每个范围的受众安全"
+      }
+    },
+    "trust": {
+      "gdpr": "符合 GDPR",
+      "selfHosted": "自托管",
+      "mit": "MIT 许可证",
+      "badge": "永久免费"
+    },
+    "card": {
+      "title": "社区版",
+      "subtitle": "永久免费 • 离线工作"
+    }
+  },
+  "features": {
+    "eyebrow": "为现代知识团队打造",
+    "title": "编织知识所需的<highlight>一切</highlight>",
+    "subtitle": "通过内置的可访问性、隐私和多语言支持，将零散的数据集转换为清晰的视觉叙述。",
+    "main": {
+      "assistant": {
+        "badge": "OS 助手",
+        "title": "OS（编织者）：您的上下文教练",
+        "description": "一个冷静的辅导助手，了解您的编织/织机和最近的工作。它以自然语言聊天，通过每日签到在订阅源中提示，并在有帮助时建议目标或组织步骤。",
+        "highlights": [
+          "每个编织的意识（项目与收集）",
+          "为每个人提供每日签到",
+          "付费计划的每小时见解",
+          "推荐 → 订阅源；聊天/任务 → 模态"
+        ]
+      },
+      "hierarchies": {
+        "badge": "核心引擎",
+        "title": "递归链层次结构",
+        "description": "使用每个范围的单个父级和跨程序的可重用后代对多范围 DAG 进行建模。",
+        "highlights": [
+          "每个范围单个父级",
+          "循环检测",
+          "跨范围重用"
+        ]
+      },
+      "approvals": {
+        "badge": "治理",
+        "title": "审批工作台",
+        "description": "使用完整的审计跟踪和 webhook 钩子队列、审查和解决结构请求。",
+        "highlights": [
+          "范围审批队列",
+          "SLA 跟踪",
+          "Webhook + Slack 钩子"
+        ]
+      },
+      "ai": {
+        "badge": "AI 驱动",
+        "title": "AI 辅助建模",
+        "description": "在团队审查之前，智能提出位置、占位符副本和冲突预防。",
+        "highlights": [
+          "建议的位置",
+          "占位符草稿",
+          "冲突避免"
+        ]
+      },
+      "learnMore": "了解更多"
+    },
+    "technical": {
+      "title": "为规模和可靠性而构建",
+      "typescript": {
+        "title": "端到端 TypeScript",
+        "description": "跨 Prisma、Fastify、Next.js 和 SDK 共享架构类型保持审批类型安全。",
+        "metric": "层之间零漂移"
+      },
+      "dedupe": {
+        "title": "智能去重覆盖",
+        "description": "内容哈希阻止意外重复，而编辑器有意使用审计日志克隆。",
+        "metric": "每次上传强制或覆盖"
+      },
+      "offline": {
+        "title": "离线优先 + 云就绪",
+        "description": "本地使用 PGlite，生产中使用 PostgreSQL。级联在两者中的行为相同。",
+        "metric": "一个迁移路径"
+      },
+      "placeholders": {
+        "title": "占位符策略引擎",
+        "description": "可见性缓存计算谁看到真实内容与每个范围和受众的占位符。",
+        "metric": "毫秒评估"
+      },
+      "api": {
+        "title": "结构请求 API",
+        "description": "从应用程序、SDK 或自动化工作流提交、列出和解决结构请求。",
+        "metric": "REST + SDK 对等"
+      },
+      "pipeline": {
+        "title": "AI 建议管道",
+        "description": "启发式和模型提出新的父级、替换和占位符副本。",
+        "metric": "可配置的提供商"
+      },
+      "telemetry": {
+        "title": "审计就绪遥测",
+        "description": "可见性级联为仪表板、警报和合规性导出发出指标和日志。",
+        "metric": "Prometheus 友好"
+      }
+    },
+    "comparison": {
+      "title": "OpenStrand 的比较",
+      "featureColumn": "功能",
+      "products": {
+        "openstrand": "OpenStrand",
+        "notion": "Notion",
+        "obsidian": "Obsidian",
+        "tableau": "Tableau"
+      },
+      "rows": [
+        { "feature": "递归链", "openstrand": true, "notion": false, "obsidian": true, "tableau": false },
+        { "feature": "结构审批", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "可见性级联", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "占位符策略", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "SDK 对等", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "自托管和离线", "openstrand": true, "notion": false, "obsidian": true, "tableau": false },
+        { "feature": "审计跟踪", "openstrand": true, "notion": false, "obsidian": false, "tableau": false },
+        { "feature": "AI 建议", "openstrand": true, "notion": false, "obsidian": false, "tableau": false }
+      ],
+      "notAvailable": "—"
+    },
+    "cta": {
+      "note": "社区版 • 永久免费 • 无需信用卡 • 离线工作",
+      "button": "永久免费下载"
+    }
+  }
+}
+
