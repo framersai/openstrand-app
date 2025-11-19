@@ -55,6 +55,7 @@ import { useAppMode } from '@/hooks/useAppMode';
 import { useOpenStrandStore } from '@/store/openstrand.store';
 import { useTranslations } from 'next-intl';
 import { SiteFooter } from '@/components/site-footer';
+import { usePluginRuntime } from '@/components/plugins';
 
 export default function DashboardPage() {
   const {
@@ -344,6 +345,9 @@ export default function DashboardPage() {
 
   // Note: visualize panel availability derived directly from dataset where needed
 
+  const { getExtensions } = usePluginRuntime();
+  const sidebarExtensions = getExtensions('dashboard.sidebar.after');
+
   return (
     <div className="dashboard-page min-h-screen flex flex-col bg-background">
       <GuidedTour />
@@ -542,6 +546,28 @@ export default function DashboardPage() {
                 )}
               </Tabs>
             </div>
+
+            {/* Plugin Widgets */}
+            {!isSidebarCollapsed && sidebarExtensions.length > 0 && (
+              <div className="flex-none border-t border-border/50 p-3 space-y-3 overflow-y-auto max-h-[300px]">
+                {sidebarExtensions.map(({ component: Component, plugin }, i) => (
+                  <div key={`${plugin.name}-${i}`}>
+                    <Component context={{ 
+                      ui: { 
+                        showNotification: (msg: string, type: any) => {
+                          // Simple toast wrapper
+                          const { toast } = require('react-hot-toast');
+                          if (type === 'error') toast.error(msg);
+                          else if (type === 'success') toast.success(msg);
+                          else toast(msg);
+                        } 
+                      },
+                      settings: plugin.settings 
+                    }} />
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Compact metrics panel at bottom */}
             {!isSidebarCollapsed && (

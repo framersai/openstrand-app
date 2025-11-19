@@ -15,9 +15,9 @@ function getLocale(request: NextRequest): string {
   request.headers.forEach((value, key) => (negotiatorHeaders[key] = value));
 
   const languages = new Negotiator({ headers: negotiatorHeaders }).languages();
-
   try {
-    return matchLocale(languages, locales as any, defaultLocale);
+    const matched = matchLocale(languages, locales, defaultLocale);
+    return matched || defaultLocale;
   } catch {
     return defaultLocale;
   }

@@ -11,6 +11,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { AnalyticsManager } from '@/components/analytics/analytics-manager';
 import { GDPRConsentBanner } from '@/components/privacy/gdpr-consent-banner';
 import { SupabaseProvider } from '@/features/auth';
+import { PluginRuntimeProvider } from '@/components/plugins';
 import { ScrollToTop } from '@/components/landing/scroll-to-top';
 import { QuantumJournalFABWrapper } from '@/components/journal/QuantumJournalFABWrapper';
 import { AssistantModalWrapper } from '@/components/assistant/AssistantModalWrapper';
@@ -116,40 +117,42 @@ export default async function LocaleLayout({
             disableTransitionOnChange
           >
             <SupabaseProvider>
-              <TooltipProvider delayDuration={200}>
-                <div className="flex min-h-screen flex-col">
-                  <main className="flex-1">{children}</main>
-                  <SiteFooter />
-                </div>
-              </TooltipProvider>
-              <ScrollToTop />
-              <QuantumJournalFABWrapper />
-              <AssistantModalWrapper />
-              <Toaster
-                position="bottom-right"
-                toastOptions={{
-                  duration: 4000,
-                  style: {
-                    background: 'var(--background)',
-                    color: 'var(--foreground)',
-                    border: '1px solid var(--border)',
-                  },
-                  success: {
-                    iconTheme: {
-                      primary: '#10b981',
-                      secondary: '#ffffff',
+              <PluginRuntimeProvider>
+                <TooltipProvider delayDuration={200}>
+                  <div className="flex min-h-screen flex-col">
+                    <main className="flex-1">{children}</main>
+                    <SiteFooter />
+                  </div>
+                </TooltipProvider>
+                <ScrollToTop />
+                <QuantumJournalFABWrapper />
+                <AssistantModalWrapper />
+                <Toaster
+                  position="bottom-right"
+                  toastOptions={{
+                    duration: 4000,
+                    style: {
+                      background: 'var(--background)',
+                      color: 'var(--foreground)',
+                      border: '1px solid var(--border)',
                     },
-                  },
-                  error: {
-                    iconTheme: {
-                      primary: '#ef4444',
-                      secondary: '#ffffff',
+                    success: {
+                      iconTheme: {
+                        primary: '#10b981',
+                        secondary: '#ffffff',
+                      },
                     },
-                  },
-                }}
-              />
-              <GDPRConsentBanner />
-              <AnalyticsManager />
+                    error: {
+                      iconTheme: {
+                        primary: '#ef4444',
+                        secondary: '#ffffff',
+                      },
+                    },
+                  }}
+                />
+                <GDPRConsentBanner />
+                <AnalyticsManager />
+              </PluginRuntimeProvider>
             </SupabaseProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

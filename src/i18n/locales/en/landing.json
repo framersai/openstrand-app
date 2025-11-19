@@ -157,6 +157,11 @@
         "title": "Audit-ready telemetry",
         "description": "Visibility cascades emit metrics and logs for dashboards, alerts, and compliance exports.",
         "metric": "Prometheus-friendly"
+      },
+      "plugins": {
+        "title": "Extensible Plugin System",
+        "description": "Extend the UI, add commands, and integrate custom workflows with the plugin API.",
+        "metric": "React + Web Workers"
       }
     },
     "comparison": {

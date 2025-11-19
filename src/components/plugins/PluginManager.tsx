@@ -37,6 +37,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { useFeatureFlags } from '@/lib/feature-flags';
+import { api } from '@/services/api';
 
 interface Plugin {
   id: string;
@@ -83,21 +84,8 @@ export function PluginManager() {
     setIsLoading(true);
 
     try {
-      const token = localStorage.getItem('auth_token');
-      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
-      const response = await fetch(`${backendUrl}/api/plugins`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setPlugins(data);
-      } else {
-        toast.error('Failed to load plugins');
-      }
+      const data = await api.listPlugins();
+      setPlugins(data as unknown as Plugin[]);
     } catch (error) {
       console.error('Failed to load plugins:', error);
       toast.error('Failed to load plugins');
@@ -111,19 +99,8 @@ export function PluginManager() {
    */
   const loadConflicts = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
-      const response = await fetch(`${backendUrl}/api/plugins/conflicts`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setConflicts(data.conflicts || []);
-      }
+      const data = await api.getPluginConflicts();
+      setConflicts(data.conflicts || []);
     } catch (error) {
       console.error('Failed to load conflicts:', error);
     }
@@ -134,30 +111,17 @@ export function PluginManager() {
    */
   const handleToggle = async (plugin: Plugin) => {
     try {
-      const token = localStorage.getItem('auth_token');
-      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
-      const response = await fetch(`${backendUrl}/api/plugins/${plugin.name}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          enabled: !plugin.enabled,
-        }),
+      // Default to user scope if not specified (or pass explicitly if we had a scope prop)
+      await api.updatePlugin(plugin.name, { 
+        enabled: !plugin.enabled,
+        scope: 'user' // Hardcoded default for now, should be dynamic in full implementation
       });
-
-      if (response.ok) {
-        setPlugins((prev) =>
-          prev.map((p) =>
-            p.id === plugin.id ? { ...p, enabled: !p.enabled } : p
-          )
-        );
-        toast.success(`Plugin ${plugin.enabled ? 'disabled' : 'enabled'}`);
-      } else {
-        toast.error('Failed to update plugin');
-      }
+      setPlugins((prev) =>
+        prev.map((p) =>
+          p.id === plugin.id ? { ...p, enabled: !p.enabled } : p
+        )
+      );
+      toast.success(`Plugin ${plugin.enabled ? 'disabled' : 'enabled'}`);
     } catch (error) {
       console.error('Failed to toggle plugin:', error);
       toast.error('Failed to update plugin');
@@ -171,22 +135,10 @@ export function PluginManager() {
     if (!pluginToUninstall) return;
 
     try {
-      const token = localStorage.getItem('auth_token');
-      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-
-      const response = await fetch(`${backendUrl}/api/plugins/${pluginToUninstall.name}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        setPlugins((prev) => prev.filter((p) => p.id !== pluginToUninstall.id));
-        toast.success('Plugin uninstalled');
-      } else {
-        toast.error('Failed to uninstall plugin');
-      }
+      // Default to user scope
+      await api.uninstallPlugin(pluginToUninstall.name, 'user');
+      setPlugins((prev) => prev.filter((p) => p.id !== pluginToUninstall.id));
+      toast.success('Plugin uninstalled');
     } catch (error) {
       console.error('Failed to uninstall plugin:', error);
       toast.error('Failed to uninstall plugin');

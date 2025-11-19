@@ -1232,6 +1232,115 @@ class ApiService {
 
     return response.json();
   }
+
+  // Plugins
+  async listPlugins(options?: { teamId?: string }): Promise<Array<{
+    id: string;
+    packageId: string;
+    name: string;
+    version: string;
+    displayName?: string | null;
+    description?: string | null;
+    author?: string | null;
+    source?: string | null;
+    enabled: boolean;
+    settings: Record<string, any>;
+    scope: 'instance' | 'team' | 'user';
+    locked: boolean;
+    manifestUrl?: string;
+    entryUrl?: string;
+    permissions: string[];
+  }>> {
+    const params = new URLSearchParams();
+    if (options?.teamId) params.set('teamId', options.teamId);
+    const response = await fetchWithTimeout(
+      `${this.baseUrl}/api/v1/plugins${params.toString() ? `?${params}` : ''}`,
+      this.withAuth()
+    );
+    return response.json();
+  }
+
+  async getPluginConflicts(): Promise<{ conflicts: Array<{ selector: string; type: string; plugins: string[] }> }> {
+    const response = await fetchWithTimeout(
+      `${this.baseUrl}/api/v1/plugins/conflicts`,
+      this.withAuth()
+    );
+    return response.json();
+  }
+
+  async installPlugin(payload: {
+    scope: 'instance' | 'team' | 'user';
+    teamId?: string;
+    name: string;
+    version: string;
+    source: 'npm' | 'git' | 'local';
+    path: string;
+    displayName?: string;
+    description?: string;
+    author?: string;
+    permissions?: string[];
+  }): Promise<{ id: string; name: string; message: string }> {
+    const response = await fetchWithTimeout(
+      `${this.baseUrl}/api/v1/plugins`,
+      this.withAuth({
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+    );
+    return response.json();
+  }
+
+  async updatePlugin(name: string, payload: Partial<{ 
+    scope: 'instance' | 'team' | 'user';
+    teamId?: string;
+    enabled: boolean; 
+    loadOrder: number; 
+    settings: Record<string, unknown>;
+    locked: boolean;
+  }>): Promise<{ message: string }> {
+    const response = await fetchWithTimeout(
+      `${this.baseUrl}/api/v1/plugins/${encodeURIComponent(name)}`,
+      this.withAuth({
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+    );
+    return response.json();
+  }
+
+  async uninstallPlugin(name: string, scope: 'instance' | 'team' | 'user', teamId?: string): Promise<{ message: string }> {
+    const params = new URLSearchParams();
+    params.set('scope', scope);
+    if (teamId) params.set('teamId', teamId);
+    
+    const response = await fetchWithTimeout(
+      `${this.baseUrl}/api/v1/plugins/${encodeURIComponent(name)}?${params}`,
+      this.withAuth({ method: 'DELETE' })
+    );
+    return response.json();
+  }
+
+  async getPluginLibrary(): Promise<{ plugins: Array<{
+    name: string;
+    version: string;
+    displayName?: string;
+    description?: string;
+    author?: string;
+    source: 'npm' | 'git' | 'local';
+    path: string;
+    icon?: string;
+    permissions?: string[];
+    isSigned?: boolean;
+    signedBy?: string;
+  }> }> {
+    const response = await fetchWithTimeout(
+      `${this.baseUrl}/api/v1/plugins/library`,
+      this.withAuth()
+    );
+    return response.json();
+  }
 }
 
 // Type definitions for the new visualization system

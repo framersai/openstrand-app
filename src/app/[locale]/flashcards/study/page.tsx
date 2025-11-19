@@ -14,7 +14,7 @@ const FlashcardsStudyClient = dynamicImport(() => import('./FlashcardsStudyClien
 });
 
 export default function FlashcardsStudyPage() {
-  return (
+    return (
     <Suspense fallback={<div className="min-h-screen" />}>
       <FlashcardsStudyClient />
     </Suspense>

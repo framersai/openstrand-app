@@ -11,7 +11,8 @@ import {
   FileText,
   Download,
   Clock,
-  ChevronRight
+  ChevronRight,
+  Puzzle
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -45,6 +46,7 @@ const TECH_FEATURE_CONFIG = [
   { key: 'api', icon: KnowledgeWeavingIcon, gradient: 'from-teal-500/10 to-cyan-500/10' },
   { key: 'pipeline', icon: SchemaIntelligenceIcon, gradient: 'from-emerald-500/10 to-green-500/10' },
   { key: 'telemetry', icon: CommunityGraphIcon, gradient: 'from-indigo-500/10 to-blue-500/10' },
+  { key: 'plugins', icon: Puzzle, gradient: 'from-purple-500/10 to-pink-500/10' },
 ] as const;
 
 const COMPARISON_PRODUCTS = ['openstrand', 'notion', 'obsidian', 'tableau'] as const;

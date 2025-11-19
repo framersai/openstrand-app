@@ -7,7 +7,9 @@
 import { Metadata } from 'next';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { VoiceSettingsPanel } from '@/components/settings/VoiceSettingsPanel';
-import { User, Volume2, Bell, Shield, Palette } from 'lucide-react';
+import { User, Volume2, Bell, Shield, Palette, Puzzle } from 'lucide-react';
+import { PluginManager } from '@/components/plugins/PluginManager';
+import { PluginLibrary } from '@/components/plugins/PluginLibrary';
 
 export const metadata: Metadata = {
   title: 'Settings | OpenStrand',
@@ -25,7 +27,7 @@ export default function SettingsPage() {
       </div>
 
       <Tabs defaultValue="voice" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="profile">
             <User className="h-4 w-4 mr-2" />
             Profile
@@ -45,6 +47,10 @@ export default function SettingsPage() {
           <TabsTrigger value="appearance">
             <Palette className="h-4 w-4 mr-2" />
             Appearance
+          </TabsTrigger>
+          <TabsTrigger value="plugins">
+            <Puzzle className="h-4 w-4 mr-2" />
+            Plugins
           </TabsTrigger>
         </TabsList>
 
@@ -74,6 +80,11 @@ export default function SettingsPage() {
           <div className="text-center text-muted-foreground py-12">
             Appearance settings coming soon
           </div>
+        </TabsContent>
+
+        <TabsContent value="plugins" className="mt-6 space-y-8">
+          <PluginManager />
+          <PluginLibrary />
         </TabsContent>
       </Tabs>
     </div>
