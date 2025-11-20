@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
 import { api } from '@/services/api';
 import { toast } from 'react-hot-toast';
+import { appEvents } from '@/lib/events';
 
 // Types matching the API response
 export interface ResolvedPlugin {
@@ -29,6 +30,9 @@ interface PluginRuntimeContextValue {
   // Key: Extension Point ID (e.g., 'layout.header.right')
   // Value: Array of components/configs from plugins
   getExtensions: (pointId: string) => Array<{ component: any, plugin: ResolvedPlugin }>;
+
+  // Event Bus
+  emit: (event: string, data: any) => Promise<void>;
 }
 
 const PluginRuntimeContext = createContext<PluginRuntimeContextValue | undefined>(undefined);
@@ -41,6 +45,37 @@ export function PluginRuntimeProvider({ children }: { children: React.ReactNode 
   // Registry for loaded module exports
   // pluginName -> module exports
   const [loadedModules, setLoadedModules] = useState<Map<string, any>>(new Map());
+
+  const emit = useCallback(async (event: string, data: any) => {
+    const promises: Promise<void>[] = [];
+    
+    loadedModules.forEach((module, name) => {
+      const hooks = module.default?.hooks || module.hooks;
+      if (hooks && typeof hooks[event] === 'function') {
+        promises.push(
+          Promise.resolve(hooks[event]({ 
+            plugin: { name }, 
+            settings: plugins.find(p => p.name === name)?.settings || {},
+            api
+          }, data)).catch(err => {
+            console.error(`Error in plugin ${name} hook ${event}:`, err);
+          })
+        );
+      }
+    });
+
+    await Promise.all(promises);
+  }, [loadedModules, plugins]);
+
+  // Listen to global app events and forward to plugins
+  useEffect(() => {
+    const onStrandCreated = (data: any) => emit('strand.created', data);
+    appEvents.on('strand.created', onStrandCreated);
+    
+    return () => {
+      appEvents.off('strand.created', onStrandCreated);
+    };
+  }, [emit]);
 
   const loadPluginModule = async (plugin: ResolvedPlugin) => {
     if (!plugin.entryUrl) return;
@@ -139,8 +174,9 @@ export function PluginRuntimeProvider({ children }: { children: React.ReactNode 
     loading,
     error,
     refresh,
-    getExtensions
-  }), [plugins, loading, error, refresh, getExtensions]);
+    getExtensions,
+    emit
+  }), [plugins, loading, error, refresh, getExtensions, emit]);
 
   return (
     <PluginRuntimeContext.Provider value={value}>

@@ -6,6 +6,7 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { openstrandAPI, APIError } from '@/services/openstrand.api';
+import { appEvents } from '@/lib/events';
 import type {
   Strand,
   DailySchedule,
@@ -146,6 +147,7 @@ export const useOpenStrandStore = create<OpenStrandStore>()(
           set({ loading: true, error: null });
           try {
             const newStrand = await openstrandAPI.strands.create(strand);
+            appEvents.emitAsync('strand.created', newStrand);
             set((state) => ({
               strands: [...state.strands, newStrand],
               currentStrand: newStrand,
