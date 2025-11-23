@@ -5,7 +5,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import { createLowlight } from 'lowlight';
+import { lowlight } from 'lowlight/lib/common';
 // Register a sensible default set of popular languages for highlighting
 import ts from 'highlight.js/lib/languages/typescript';
 import js from 'highlight.js/lib/languages/javascript';
@@ -30,8 +30,6 @@ import html from 'highlight.js/lib/languages/xml';
 import css from 'highlight.js/lib/languages/css';
 import { FileText, Save, Sparkles, Tag } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-
-const lowlight = createLowlight();
 
 lowlight.registerLanguage('typescript', ts);
 lowlight.registerLanguage('javascript', js);

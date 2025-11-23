@@ -1100,7 +1100,7 @@ class ApiService {
     dataSummary?: any
   ): Promise<TierClassification> {
     const response = await fetchWithTimeout(
-      `${this.baseUrl}/api/v1/visualize/classify`,
+      `${this.baseUrl}/visualize/classify`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1120,9 +1120,7 @@ class ApiService {
   }
 
   async getTierInformation(): Promise<any> {
-    const response = await fetchWithTimeout(
-      `${this.baseUrl}/api/v1/visualizations/tier-info`
-    );
+    const response = await fetchWithTimeout(`${this.baseUrl}/visualizations/tier-info`);
 
     if (!response.ok) {
       throw new ApiError('Failed to get tier information', response.status);
@@ -1193,7 +1191,7 @@ class ApiService {
     };
 
     const response = await fetchWithTimeout(
-      `${this.baseUrl}/api/v1/ai/artisan`,
+      `${this.baseUrl}/ai/artisan`,
       this.withAuth({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1222,8 +1220,8 @@ class ApiService {
 
   async getAIArtisanRemaining(): Promise<AIArtisanQuota> {
     const response = await fetchWithTimeout(
-      `${this.baseUrl}/api/v1/ai/artisan/remaining`,
-      this.withAuth({})
+      `${this.baseUrl}/ai/artisan/remaining`,
+      this.withAuth({}),
     );
 
     if (!response.ok) {
@@ -1254,16 +1252,16 @@ class ApiService {
     const params = new URLSearchParams();
     if (options?.teamId) params.set('teamId', options.teamId);
     const response = await fetchWithTimeout(
-      `${this.baseUrl}/api/v1/plugins${params.toString() ? `?${params}` : ''}`,
-      this.withAuth()
+      `${this.baseUrl}/plugins${params.toString() ? `?${params}` : ''}`,
+      this.withAuth(),
     );
     return response.json();
   }
 
   async getPluginConflicts(): Promise<{ conflicts: Array<{ selector: string; type: string; plugins: string[] }> }> {
     const response = await fetchWithTimeout(
-      `${this.baseUrl}/api/v1/plugins/conflicts`,
-      this.withAuth()
+      `${this.baseUrl}/plugins/conflicts`,
+      this.withAuth(),
     );
     return response.json();
   }
@@ -1281,7 +1279,7 @@ class ApiService {
     permissions?: string[];
   }): Promise<{ id: string; name: string; message: string }> {
     const response = await fetchWithTimeout(
-      `${this.baseUrl}/api/v1/plugins`,
+      `${this.baseUrl}/plugins`,
       this.withAuth({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1300,7 +1298,7 @@ class ApiService {
     locked: boolean;
   }>): Promise<{ message: string }> {
     const response = await fetchWithTimeout(
-      `${this.baseUrl}/api/v1/plugins/${encodeURIComponent(name)}`,
+      `${this.baseUrl}/plugins/${encodeURIComponent(name)}`,
       this.withAuth({
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -1316,8 +1314,8 @@ class ApiService {
     if (teamId) params.set('teamId', teamId);
     
     const response = await fetchWithTimeout(
-      `${this.baseUrl}/api/v1/plugins/${encodeURIComponent(name)}?${params}`,
-      this.withAuth({ method: 'DELETE' })
+      `${this.baseUrl}/plugins/${encodeURIComponent(name)}?${params}`,
+      this.withAuth({ method: 'DELETE' }),
     );
     return response.json();
   }
@@ -1336,8 +1334,8 @@ class ApiService {
     signedBy?: string;
   }> }> {
     const response = await fetchWithTimeout(
-      `${this.baseUrl}/api/v1/plugins/library`,
-      this.withAuth()
+      `${this.baseUrl}/plugins/library`,
+      this.withAuth(),
     );
     return response.json();
   }
