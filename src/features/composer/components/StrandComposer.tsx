@@ -5,8 +5,8 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import { lowlight } from 'lowlight/lib/common';
-// Register a sensible default set of popular languages for highlighting
+import { lowlight } from 'lowlight';
+// Register a sensible default set of popular languages for highlighting (guarded for safety)
 import ts from 'highlight.js/lib/languages/typescript';
 import js from 'highlight.js/lib/languages/javascript';
 import json from 'highlight.js/lib/languages/json';
@@ -31,30 +31,37 @@ import css from 'highlight.js/lib/languages/css';
 import { FileText, Save, Sparkles, Tag } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
-lowlight.registerLanguage('typescript', ts);
-lowlight.registerLanguage('javascript', js);
-lowlight.registerLanguage('json', json);
-lowlight.registerLanguage('bash', bash);
-lowlight.registerLanguage('shell', bash);
-lowlight.registerLanguage('python', python);
-lowlight.registerLanguage('md', markdown);
-lowlight.registerLanguage('markdown', markdown);
-lowlight.registerLanguage('c', c);
-lowlight.registerLanguage('cpp', cpp);
-lowlight.registerLanguage('java', java);
-lowlight.registerLanguage('go', go);
-lowlight.registerLanguage('rust', rust);
-lowlight.registerLanguage('ruby', ruby);
-lowlight.registerLanguage('php', php);
-lowlight.registerLanguage('swift', swift);
-lowlight.registerLanguage('kotlin', kotlin);
-lowlight.registerLanguage('scala', scala);
-lowlight.registerLanguage('sql', sql);
-lowlight.registerLanguage('yaml', yaml);
-lowlight.registerLanguage('dockerfile', dockerfile);
-lowlight.registerLanguage('html', html);
-lowlight.registerLanguage('xml', html);
-lowlight.registerLanguage('css', css);
+const lowlightAny = lowlight as any;
+if (typeof lowlightAny?.registerLanguage === 'function') {
+  lowlightAny.registerLanguage('typescript', ts);
+  lowlightAny.registerLanguage('javascript', js);
+  lowlightAny.registerLanguage('json', json);
+  lowlightAny.registerLanguage('bash', bash);
+  lowlightAny.registerLanguage('shell', bash);
+  lowlightAny.registerLanguage('python', python);
+  lowlightAny.registerLanguage('md', markdown);
+  lowlightAny.registerLanguage('markdown', markdown);
+  lowlightAny.registerLanguage('c', c);
+  lowlightAny.registerLanguage('cpp', cpp);
+  lowlightAny.registerLanguage('java', java);
+  lowlightAny.registerLanguage('go', go);
+  lowlightAny.registerLanguage('rust', rust);
+  lowlightAny.registerLanguage('ruby', ruby);
+  lowlightAny.registerLanguage('php', php);
+  lowlightAny.registerLanguage('swift', swift);
+  lowlightAny.registerLanguage('kotlin', kotlin);
+  lowlightAny.registerLanguage('scala', scala);
+  lowlightAny.registerLanguage('sql', sql);
+  lowlightAny.registerLanguage('yaml', yaml);
+  lowlightAny.registerLanguage('dockerfile', dockerfile);
+  lowlightAny.registerLanguage('html', html);
+  lowlightAny.registerLanguage('xml', html);
+  lowlightAny.registerLanguage('css', css);
+} else {
+  // In case lowlight implementation changes, avoid crashing the composer.
+  // Code blocks will still render, just without custom language registrations.
+  console.warn('[StrandComposer] lowlight.registerLanguage is not available; skipping language registration');
+}
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
