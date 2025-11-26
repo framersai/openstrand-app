@@ -144,15 +144,20 @@ export function LanguageSwitcher({
             variant="ghost"
             size="icon"
             className={cn(
-              'group relative overflow-hidden rounded-full border border-border/60 bg-background/80 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/60 focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
+              'group relative h-9 w-9 rounded-lg transition-all duration-200',
+              // Light theme: subtle inset shadow
+              'bg-muted/50 hover:bg-muted',
+              // Dark theme: elevated look
+              'dark:bg-white/[0.04] dark:hover:bg-white/[0.08]',
+              // Subtle shadow for depth
+              'shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]',
+              'dark:shadow-[0_1px_2px_0_rgba(0,0,0,0.3),inset_0_1px_0_0_rgba(255,255,255,0.03)]',
+              'focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-0',
               isChanging && 'pointer-events-none opacity-60'
             )}
             aria-label={tLanguage('change')}
           >
-            <span className="relative">
-              <span className="absolute inset-0 bg-gradient-to-br from-primary/15 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-              <LanguageGlyph className={cn(isChanging ? 'animate-spin' : '')} />
-            </span>
+            <LanguageGlyph className={cn(isChanging ? 'animate-spin' : '')} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">

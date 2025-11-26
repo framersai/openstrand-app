@@ -451,7 +451,7 @@ export default function DashboardPage() {
                           <Button
                             variant="outline"
                             onClick={() => setActiveView('create')}
-                            className="border-white/10 text-white hover:bg-white/5"
+                            className="border-white/20 bg-transparent text-white/80 hover:bg-white/5 hover:text-white hover:border-white/30"
                           >
                             <Plus className="mr-2 h-4 w-4" />
                             Create Manually
