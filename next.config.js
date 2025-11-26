@@ -88,11 +88,14 @@ const nextConfig = {
   },
   
   // Rewrites to proxy API requests to backend
+  // Uses INTERNAL_API_URL for server-side rewrites (Docker internal network)
+  // Falls back to NEXT_PUBLIC_API_URL for local dev
   async rewrites() {
+    const internalApiUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/:path*`,
+        destination: `${internalApiUrl}/api/:path*`,
       },
     ];
   },
