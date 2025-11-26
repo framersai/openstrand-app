@@ -3,7 +3,29 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Plus, Settings, BookOpen, Code, GraduationCap, Brain, ClipboardCheck, Star, TrendingUp, Clock } from 'lucide-react';
+import { 
+  Plus, 
+  Settings, 
+  BookOpen, 
+  Code, 
+  GraduationCap, 
+  Brain, 
+  ClipboardCheck, 
+  Star, 
+  TrendingUp, 
+  Clock,
+  ChevronDown,
+  Sparkles,
+  Database,
+  Network,
+  Layers,
+  Upload,
+  BarChart3,
+  Compass,
+  Lightbulb,
+  Rocket,
+  Zap,
+} from 'lucide-react';
 import React from 'react';
 import { useTranslations } from 'next-intl';
 
@@ -34,6 +56,8 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 import { LanguageSwitcher } from '@/components/language-switcher';
@@ -47,6 +71,20 @@ type NavItem = {
   label: string;
   icon?: React.ComponentType<{ className?: string; isActive?: boolean }>;
   description?: string;
+};
+
+type NavDropdownItem = {
+  key: string;
+  label: string;
+  icon: React.ReactNode;
+  items: {
+    key: string;
+    href: string;
+    label: string;
+    description: string;
+    icon: React.ReactNode;
+    badge?: string;
+  }[];
 };
 
 interface UnifiedHeaderProps {
@@ -142,77 +180,100 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
     [tCommon],
   );
 
-  const dashboardNavItems: NavItem[] = useMemo(
+  // Consolidated dashboard navigation with dropdowns
+  const dashboardDropdowns: NavDropdownItem[] = useMemo(
     () => [
       {
-        key: 'feed',
-        href: '/',
-        label: tCommon('navigation.feed'),
-        icon: FeedIcon,
-        description: tCommon('navigationDescriptions.feed'),
+        key: 'explore',
+        label: 'Explore',
+        icon: <Compass className="h-4 w-4" />,
+        items: [
+          {
+            key: 'feed',
+            href: '/',
+            label: 'Feed',
+            description: 'Your personalized activity stream',
+            icon: <FeedIcon className="h-4 w-4" />,
+          },
+          {
+            key: 'gallery',
+            href: '/gallery',
+            label: 'Gallery',
+            description: 'Browse public visualizations',
+            icon: <Star className="h-4 w-4" />,
+          },
+          {
+            key: 'visualizations',
+            href: '/visualizations',
+            label: 'My Visualizations',
+            description: 'Your created visualizations',
+            icon: <VisualizationsIcon className="h-4 w-4" />,
+          },
+        ],
       },
       {
-        key: 'visualizations',
-        href: '/visualizations',
-        label: tCommon('navigation.visualizations'),
-        icon: VisualizationsIcon,
-        description: tCommon('navigationDescriptions.visualizations'),
+        key: 'knowledge',
+        label: 'Knowledge',
+        icon: <Layers className="h-4 w-4" />,
+        items: [
+          {
+            key: 'strands',
+            href: '/pkms',
+            label: 'Strands',
+            description: 'Your knowledge threads',
+            icon: <KnowledgeIcon className="h-4 w-4" />,
+          },
+          {
+            key: 'datasets',
+            href: '/datasets',
+            label: 'Datasets',
+            description: 'Manage your data sources',
+            icon: <Database className="h-4 w-4" />,
+          },
+          {
+            key: 'weave',
+            href: '/weave',
+            label: 'Knowledge Graph',
+            description: 'Visualize connections',
+            icon: <Network className="h-4 w-4" />,
+          },
+        ],
       },
       {
-        key: 'strands',
-        href: '/pkms',
-        label: tCommon('navigation.strands'),
-        icon: KnowledgeIcon,
-        description: tCommon('navigationDescriptions.strands'),
-      },
-      {
-        key: 'datasets',
-        href: '/', // TODO: Create catalogs page
-        label: tCommon('navigation.datasets'),
-        icon: DatasetsIcon,
-        description: tCommon('navigationDescriptions.datasets'),
-      },
-      {
-        key: 'import',
-        href: '/composer',
-        label: tCommon('navigation.import'),
-        icon: DatasetsIcon,
-        description: tCommon('actions.import'),
-      },
-      // v1.3 Learning & Productivity
-      {
-        key: 'flashcards',
-        href: '/flashcards',
-        label: 'Flashcards',
-        icon: () => <Brain className="h-5 w-5" />,
-        description: 'Study with spaced repetition',
-      },
-      {
-        key: 'quizzes',
-        href: '/quizzes',
-        label: 'Quizzes',
-        icon: () => <ClipboardCheck className="h-5 w-5" />,
-        description: 'Test your knowledge',
-      },
-      {
-        key: 'gallery',
-        href: '/gallery',
-        label: 'Gallery',
-        icon: () => <Star className="h-5 w-5" />,
-        description: 'Browse public content',
-      },
-      {
-        key: 'productivity',
-        href: '/productivity',
-        label: 'Productivity',
-        icon: () => <TrendingUp className="h-5 w-5" />,
-        description: 'Track your progress',
+        key: 'learn',
+        label: 'Learn',
+        icon: <Lightbulb className="h-4 w-4" />,
+        items: [
+          {
+            key: 'flashcards',
+            href: '/flashcards',
+            label: 'Flashcards',
+            description: 'Spaced repetition study',
+            icon: <Brain className="h-4 w-4" />,
+            badge: 'AI',
+          },
+          {
+            key: 'quizzes',
+            href: '/quizzes',
+            label: 'Quizzes',
+            description: 'Test your knowledge',
+            icon: <ClipboardCheck className="h-4 w-4" />,
+            badge: 'AI',
+          },
+          {
+            key: 'productivity',
+            href: '/productivity',
+            label: 'Progress',
+            description: 'Track learning stats',
+            icon: <BarChart3 className="h-4 w-4" />,
+          },
+        ],
       },
     ],
-    [tCommon],
+    [],
   );
 
-  const navItems = showDashboardNav ? dashboardNavItems : landingNavItems;
+  const navItems = showDashboardNav ? [] : landingNavItems; // Empty for dashboard, use dropdowns instead
   const isCloudMode = mode === 'cloud';
   const landingLink = localizePath('/landing');
   const signInLink = localizePath('/auth?view=sign-in');
@@ -272,21 +333,6 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
         <>
           <AuthButton suppressLocalBadge className="hidden md:inline-flex" />
           <AuthButton suppressLocalBadge className="md:hidden w-full justify-center" />
-          <Button
-            asChild
-            size="sm"
-            variant="outline"
-            className="w-full justify-center rounded-full border-border/70 bg-background/80 text-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-primary md:w-auto md:px-4"
-          >
-            <Link href={isLandingPage ? openDashboardLink : importLink}>
-              {isLandingPage ? tCommon('actions.openDashboard') : (
-                <span className="inline-flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  {tCommon('actions.import')}
-                </span>
-              )}
-            </Link>
-          </Button>
         </>
       );
     }
@@ -294,16 +340,12 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
     if (authEnabled) {
       return (
         <div className="flex items-center gap-2">
-          <Button asChild variant="ghost" size="sm" className="font-semibold text-foreground/80 hover:text-primary">
+          <Button asChild variant="ghost" size="sm" className="font-medium text-foreground/80 hover:text-primary">
             <Link href={signInLink}>{tCommon('actions.login')}</Link>
           </Button>
-          {isCloudMode ? (
-            <Button asChild size="sm" className="px-5 font-semibold">
+          {isCloudMode && (
+            <Button asChild size="sm" className="rounded-full px-4 font-semibold shadow-md shadow-primary/20">
               <Link href={signUpLink}>{tCommon('actions.startFree')}</Link>
-            </Button>
-          ) : (
-            <Button asChild size="sm" variant="outline" className="rounded-full border-border/70">
-              <Link href={signInLink}>{tCommon('actions.openLogin')}</Link>
             </Button>
           )}
         </div>
@@ -313,7 +355,6 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
     if (onOpenSettings) {
       return (
         <div className="flex items-center gap-2">
-          {/* Pomodoro Timer (v1.3) */}
           {isAuthenticated && !isGuest && (
             <Button
               variant="ghost"
@@ -341,15 +382,13 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
     return null;
   }, [
     authEnabled,
-    importLink,
     isAuthenticated,
     isCloudMode,
-    isLandingPage,
     onOpenSettings,
-    openDashboardLink,
     signInLink,
     signUpLink,
     tCommon,
+    isGuest,
   ]);
 
   // Handle scroll effect
@@ -362,22 +401,29 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Check if any dropdown item is active
+  const isDropdownActive = (dropdown: NavDropdownItem) => {
+    return dropdown.items.some(
+      (item) => pathname === item.href || pathname.startsWith(item.href + '/')
+    );
+  };
+
   return (
     <header 
       className={cn(
         "sticky top-0 z-50 transition-all duration-300",
         "border-b backdrop-blur-xl",
         isScrolled 
-          ? "border-border/60 bg-background/90 shadow-sm" 
-          : "border-border/40 bg-background/95"
+          ? "border-border/50 bg-background/85 shadow-lg shadow-black/5" 
+          : "border-border/30 bg-background/95"
       )}
     >
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex w-full items-center gap-4">
+      <div className="container mx-auto px-4 py-2.5">
+        <div className="flex w-full items-center gap-3">
           {/* Logo */}
           <Link
             href={localizePath('/')}
-            className="group flex items-center gap-3 rounded-full px-2 py-1 transition-transform hover:scale-105 hover:bg-primary/10"
+            className="group flex items-center gap-2.5 rounded-xl px-2 py-1.5 transition-all hover:bg-primary/8"
             onClick={closeMobileMenu}
             aria-label="OpenStrand home"
           >
@@ -386,147 +432,275 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
               variant={isScrolled ? "mono" : "gradient"} 
               className="transition-all duration-300"
             />
-            <div className="flex flex-col">
-              <span className="text-base font-semibold tracking-tight">
+            <div className="flex flex-col leading-none">
+              <span className="text-[15px] font-semibold tracking-tight">
                 OpenStrand{isTeamEdition && showDashboardNav ? ' Teams' : ''}
               </span>
               {showDashboardNav && (
-                <span className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
-                  {isTeamEdition ? 'Teams Edition' : 'Dashboard'}
+                <span className="text-[9px] font-medium uppercase tracking-[0.2em] text-muted-foreground/70">
+                  {isTeamEdition ? 'Enterprise' : 'Workspace'}
                 </span>
               )}
             </div>
           </Link>
 
-          <Separator orientation="vertical" className="hidden h-8 lg:block" />
-
           {/* Desktop Navigation */}
-          <nav className="hidden flex-1 items-center gap-2 md:flex">
-            {navItems.map((item) => {
-              const Icon = item.icon ?? null;
-              const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
-              
-              if (item.key === 'docs') {
-                return (
-                  <DropdownMenu key={item.key}>
-                    <DropdownMenuTrigger asChild>
-                      <button
+          <nav className="hidden flex-1 items-center gap-1 pl-4 md:flex">
+            {showDashboardNav ? (
+              <>
+                {/* Dashboard dropdowns */}
+                {dashboardDropdowns.map((dropdown) => {
+                  const isActive = isDropdownActive(dropdown);
+                  return (
+                    <DropdownMenu key={dropdown.key}>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          className={cn(
+                            'group relative flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all',
+                            isActive
+                              ? 'bg-primary/12 text-primary'
+                              : 'text-foreground/70 hover:bg-muted/80 hover:text-foreground'
+                          )}
+                        >
+                          <span className={cn(
+                            "transition-colors",
+                            isActive ? "text-primary" : "text-foreground/50 group-hover:text-foreground/70"
+                          )}>
+                            {dropdown.icon}
+                          </span>
+                          <span>{dropdown.label}</span>
+                          <ChevronDown className={cn(
+                            "h-3 w-3 transition-transform duration-200",
+                            "text-foreground/40 group-hover:text-foreground/60",
+                            "group-data-[state=open]:rotate-180"
+                          )} />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent 
+                        align="start" 
+                        sideOffset={8}
+                        className="w-64 rounded-xl border-border/50 bg-popover/95 p-1.5 shadow-xl shadow-black/10 backdrop-blur-xl"
+                      >
+                        {dropdown.items.map((item, idx) => (
+                          <DropdownMenuItem
+                            key={item.key}
+                            asChild
+                            className={cn(
+                              "flex cursor-pointer items-start gap-3 rounded-lg px-3 py-2.5 transition-colors",
+                              "focus:bg-primary/10 focus:text-foreground",
+                              pathname === item.href && "bg-primary/8"
+                            )}
+                          >
+                            <Link href={localizePath(item.href)} className="flex w-full items-start gap-3">
+                              <span className={cn(
+                                "mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg",
+                                pathname === item.href 
+                                  ? "bg-primary/15 text-primary" 
+                                  : "bg-muted/60 text-foreground/60"
+                              )}>
+                                {item.icon}
+                              </span>
+                              <div className="flex flex-1 flex-col gap-0.5">
+                                <span className="flex items-center gap-2 text-sm font-medium">
+                                  {item.label}
+                                  {item.badge && (
+                                    <span className="rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white">
+                                      {item.badge}
+                                    </span>
+                                  )}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {item.description}
+                                </span>
+                              </div>
+                            </Link>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  );
+                })}
+
+                {/* Docs dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className={cn(
+                        'group relative flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all',
+                        'text-foreground/70 hover:bg-muted/80 hover:text-foreground'
+                      )}
+                    >
+                      <BookOpen className="h-4 w-4 text-foreground/50 group-hover:text-foreground/70" />
+                      <span>Docs</span>
+                      <ChevronDown className="h-3 w-3 text-foreground/40 transition-transform duration-200 group-hover:text-foreground/60 group-data-[state=open]:rotate-180" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent 
+                    align="start" 
+                    sideOffset={8}
+                    className="w-72 rounded-xl border-border/50 bg-popover/95 p-1.5 shadow-xl shadow-black/10 backdrop-blur-xl"
+                  >
+                    {docsLinks.map((link) => (
+                      <DropdownMenuItem
+                        key={link.label}
+                        asChild={!!link.href && !link.disabled}
+                        disabled={link.disabled}
                         className={cn(
-                          'group relative flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition-all',
-                          'border-transparent text-foreground/75 hover:border-primary/30 hover:bg-primary/10 hover:text-foreground',
+                          "flex cursor-pointer items-start gap-3 rounded-lg px-3 py-2.5",
+                          link.disabled && "opacity-50"
                         )}
                       >
-                        {Icon && (
-                          <Icon
-                            className="h-4 w-4 text-foreground/60 transition-colors group-hover:text-foreground"
-                            isActive={false}
-                          />
-                        )}
-                        <span className="whitespace-nowrap">Docs</span>
-                        <span className="text-xs text-muted-foreground group-hover:text-foreground/80">▾</span>
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-72">
-                      <DropdownMenuItem asChild disabled>
-                        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">
-                          Strands
-                        </span>
-                      </DropdownMenuItem>
-                      {docsLinks.map((link) => (
-                        <DropdownMenuItem
-                          key={link.label}
-                          asChild={!!link.href && !link.disabled}
-                          disabled={link.disabled}
-                          className="flex cursor-pointer items-start gap-3 px-3 py-2.5"
-                        >
-                          {link.disabled ? (
-                            <div className="flex items-start gap-3 opacity-70">
-                              <span className="mt-1">{link.icon}</span>
-                              <div>
-                                <p className="text-sm font-medium">{link.label}</p>
-                                <p className="text-xs text-muted-foreground">{link.description}</p>
-                              </div>
+                        {link.disabled ? (
+                          <div className="flex items-start gap-3">
+                            <span className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg bg-muted/40 text-foreground/40">
+                              {link.icon}
+                            </span>
+                            <div className="flex flex-col gap-0.5">
+                              <span className="text-sm font-medium">{link.label}</span>
+                              <span className="text-xs text-muted-foreground">{link.description}</span>
                             </div>
-                          ) : (
-                            <a
-                              href={link.href}
-                              target={link.external ? '_blank' : undefined}
-                              rel={link.external ? 'noreferrer' : undefined}
-                              className="flex items-start gap-3"
-                            >
-                              <span className="mt-1">{link.icon}</span>
-                              <span className="flex flex-1 flex-col text-left">
-                                <span className="text-sm font-medium text-foreground">{link.label}</span>
-                                <span className="text-xs text-muted-foreground">{link.description}</span>
+                          </div>
+                        ) : (
+                          <a
+                            href={link.href}
+                            target={link.external ? '_blank' : undefined}
+                            rel={link.external ? 'noreferrer' : undefined}
+                            className="flex w-full items-start gap-3"
+                          >
+                            <span className="mt-0.5 flex h-8 w-8 items-center justify-center rounded-lg bg-muted/60 text-foreground/60">
+                              {link.icon}
+                            </span>
+                            <div className="flex flex-1 flex-col gap-0.5">
+                              <span className="flex items-center gap-2 text-sm font-medium">
+                                {link.label}
+                                {link.external && (
+                                  <span className="text-[10px] text-muted-foreground">↗</span>
+                                )}
                               </span>
-                              {link.external ? (
-                                <span className="text-xs text-muted-foreground">↗</span>
-                              ) : null}
-                            </a>
-                          )}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                );
-              }
-
-              return (
-                <Link
-                  key={item.key}
-                  href={item.href.startsWith('#') ? item.href : localizePath(item.href)}
-                  className={cn(
-                    'group relative flex items-center gap-2 rounded-full border px-3 py-2 text-sm font-medium transition-all',
-                    isActive
-                      ? 'border-primary/40 bg-primary/15 text-primary dark:text-primary-foreground shadow-sm'
-                      : 'border-transparent text-foreground/75 hover:border-primary/30 hover:bg-primary/10 hover:text-foreground'
-                  )}
-                  title={item.description ?? item.label}
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  {Icon && (
-                    <Icon
-                      className={cn(
-                        'h-4 w-4 transition-colors',
-                        isActive ? 'text-primary dark:text-primary-foreground' : 'text-foreground/60'
-                      )}
-                      isActive={isActive}
-                    />
-                  )}
-                  <span className="whitespace-nowrap">{item.label}</span>
-                  {isActive && (
-                    <div className="absolute inset-x-2 bottom-1 h-0.5 rounded-full bg-primary/70 dark:bg-primary/80" />
-                  )}
-                </Link>
-              );
-            })}
-
-            {!showDashboardNav && (
+                              <span className="text-xs text-muted-foreground">{link.description}</span>
+                            </div>
+                          </a>
+                        )}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              // Landing page navigation
               <>
-                <Separator orientation="vertical" className="mx-2 h-6" />
+                {navItems.map((item) => {
+                  const Icon = item.icon ?? null;
+                  const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+                  
+                  if (item.key === 'docs') {
+                    return (
+                      <DropdownMenu key={item.key}>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            className={cn(
+                              'group relative flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all',
+                              'text-foreground/70 hover:bg-muted/80 hover:text-foreground'
+                            )}
+                          >
+                            {Icon && <Icon className="h-4 w-4 text-foreground/50" />}
+                            <span>Docs</span>
+                            <ChevronDown className="h-3 w-3 text-foreground/40 group-data-[state=open]:rotate-180" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-72 rounded-xl p-1.5">
+                          {docsLinks.map((link) => (
+                            <DropdownMenuItem
+                              key={link.label}
+                              asChild={!!link.href && !link.disabled}
+                              disabled={link.disabled}
+                              className="flex cursor-pointer items-start gap-3 rounded-lg px-3 py-2.5"
+                            >
+                              {link.disabled ? (
+                                <div className="flex items-start gap-3 opacity-60">
+                                  <span className="mt-0.5">{link.icon}</span>
+                                  <div>
+                                    <p className="text-sm font-medium">{link.label}</p>
+                                    <p className="text-xs text-muted-foreground">{link.description}</p>
+                                  </div>
+                                </div>
+                              ) : (
+                                <a
+                                  href={link.href}
+                                  target={link.external ? '_blank' : undefined}
+                                  rel={link.external ? 'noreferrer' : undefined}
+                                  className="flex items-start gap-3"
+                                >
+                                  <span className="mt-0.5">{link.icon}</span>
+                                  <span className="flex flex-1 flex-col text-left">
+                                    <span className="text-sm font-medium text-foreground">{link.label}</span>
+                                    <span className="text-xs text-muted-foreground">{link.description}</span>
+                                  </span>
+                                  {link.external && <span className="text-xs text-muted-foreground">↗</span>}
+                                </a>
+                              )}
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    );
+                  }
+
+                  return (
+                    <Link
+                      key={item.key}
+                      href={item.href.startsWith('#') ? item.href : localizePath(item.href)}
+                      className={cn(
+                        'group relative flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-all',
+                        isActive
+                          ? 'bg-primary/12 text-primary'
+                          : 'text-foreground/70 hover:bg-muted/80 hover:text-foreground'
+                      )}
+                    >
+                      {Icon && <Icon className="h-4 w-4 text-foreground/50" isActive={isActive} />}
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+                <Separator orientation="vertical" className="mx-2 h-5" />
                 <GitHubStats variant="compact" />
               </>
             )}
           </nav>
 
           {/* Right side */}
-          <div className="flex-1 flex items-center justify-end gap-3">
-            <div className="hidden items-center gap-3 md:flex">
+          <div className="flex flex-1 items-center justify-end gap-2">
+            {/* Create button - prominent for dashboard */}
+            {showDashboardNav && (
+              <Button
+                asChild
+                size="sm"
+                className="hidden items-center gap-2 rounded-lg bg-gradient-to-r from-primary to-primary/80 px-4 font-medium shadow-md shadow-primary/25 transition-all hover:shadow-lg hover:shadow-primary/30 md:inline-flex"
+              >
+                <Link href={importLink}>
+                  <Sparkles className="h-4 w-4" />
+                  <span>Create</span>
+                </Link>
+              </Button>
+            )}
+
+            <div className="hidden items-center gap-2 md:flex">
               {showDashboardNav && (
                 <Button
                   asChild
                   size="sm"
-                  className="group hidden items-center gap-2 rounded-full border border-border/60 bg-background/80 px-3 py-1.5 text-sm font-medium text-foreground shadow-none transition hover:border-foreground/30 hover:bg-foreground/5 hover:text-foreground dark:border-white/12 dark:bg-white/5 dark:text-white dark:hover:border-white/25 dark:hover:bg-white/10 dark:hover:text-white md:inline-flex"
+                  variant="ghost"
+                  className="rounded-lg text-foreground/70 hover:bg-muted/80 hover:text-foreground"
                 >
                   <Link href={landingLink} aria-label={tCommon('tooltips.backToLanding')}>
-                    <LandingIcon className="h-[16px] w-[16px] text-foreground/75 transition-colors group-hover:text-foreground dark:text-white/80 dark:group-hover:text-white" />
-                    <span>{tCommon('navigation.landing')}</span>
+                    <LandingIcon className="h-4 w-4" />
+                    <span className="ml-1.5">{tCommon('navigation.landing')}</span>
                   </Link>
                 </Button>
               )}
 
               {mounted && (
-                <div className="flex items-center gap-2 rounded-full border border-border/60 bg-card/80 px-2 py-1 shadow-sm">
+                <div className="flex items-center gap-1 rounded-lg border border-border/40 bg-muted/30 p-1">
                   <ThemeToggle />
                   <ThemeSwitcher buttonVariant="ghost" buttonSize="icon" tooltip="Select theme palette" />
                   <LanguageSwitcher variant="compact" showName={false} />
@@ -538,8 +712,6 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
               )}
               {mounted && authControls}
             </div>
-            {/* Hide in-flow hamburger on mobile; we render fixed buttons instead */}
-            <div className="hidden md:block" />
           </div>
         </div>
 
@@ -548,178 +720,198 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
           <div className="fixed inset-0 z-50 lg:hidden">
             {/* Backdrop */}
             <div
-              className="absolute inset-0 bg-background/60 backdrop-blur-sm"
+              className="absolute inset-0 bg-background/70 backdrop-blur-md"
               onClick={closeMobileMenu}
               aria-hidden="true"
             />
             {/* Panel */}
-            <div className="absolute left-3 right-3 top-16 space-y-4 rounded-2xl border border-border/60 bg-background/95 p-4 shadow-xl">
-              <nav className="flex flex-col gap-2">
-              {navItems.map((item) => {
-                const Icon = item.icon ?? null;
-                const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
-
-                if (item.key === 'docs') {
-                  return (
-                    <div key={item.key} className="flex flex-col gap-2 rounded-xl border border-border/60 bg-background/90 p-3">
-                      <button
-                        type="button"
-                        onClick={() => setDocsExpanded((prev) => !prev)}
-                        className={cn(
-                          'flex items-center justify-between gap-3 rounded-lg px-2 py-2 text-sm font-semibold transition',
-                          'text-foreground',
-                        )}
-                        aria-expanded={docsExpanded}
-                      >
-                        <span className="flex items-center gap-2">
-                          {Icon && <Icon className="h-4 w-4 text-primary" />}
-                          <span>{tCommon('navigation.docs')}</span>
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {docsExpanded ? tCommon('actions.hide') : tCommon('actions.show')}
-                        </span>
-                      </button>
-                      {docsExpanded && (
-                        <div className="space-y-2 pl-2">
-                          {docsLinks.map((link) => (
+            <div className="absolute left-3 right-3 top-16 max-h-[calc(100vh-5rem)] overflow-y-auto rounded-2xl border border-border/50 bg-background/98 p-4 shadow-2xl">
+              {showDashboardNav ? (
+                <nav className="flex flex-col gap-3">
+                  {/* Mobile dashboard navigation */}
+                  {dashboardDropdowns.map((dropdown) => (
+                    <div key={dropdown.key} className="rounded-xl border border-border/40 bg-muted/20 p-3">
+                      <div className="mb-2 flex items-center gap-2 px-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        {dropdown.icon}
+                        <span>{dropdown.label}</span>
+                      </div>
+                      <div className="space-y-1">
+                        {dropdown.items.map((item) => {
+                          const isActive = pathname === item.href;
+                          return (
                             <Link
-                              key={link.label}
-                              href={link.disabled ? '#' : link.href}
-                              onClick={() => {
-                                if (!link.disabled) {
-                                  closeMobileMenu();
-                                }
-                              }}
-                              target={link.external ? '_blank' : undefined}
-                              rel={link.external ? 'noreferrer' : undefined}
+                              key={item.key}
+                              href={localizePath(item.href)}
+                              onClick={closeMobileMenu}
                               className={cn(
-                                'flex items-start gap-3 rounded-lg border border-transparent px-2 py-2 text-sm transition',
-                                link.disabled
-                                  ? 'cursor-not-allowed opacity-60'
-                                  : 'hover:border-primary/40 hover:bg-primary/10',
+                                "flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors",
+                                isActive
+                                  ? "bg-primary/15 text-primary"
+                                  : "text-foreground/80 hover:bg-muted/60"
                               )}
                             >
-                              <span className="mt-1">{link.icon}</span>
-                              <span className="flex flex-1 flex-col text-left">
-                                <span className="font-medium text-foreground">{link.label}</span>
-                                <span className="text-xs text-muted-foreground">{link.description}</span>
+                              <span className={cn(
+                                "flex h-8 w-8 items-center justify-center rounded-lg",
+                                isActive ? "bg-primary/20" : "bg-muted/50"
+                              )}>
+                                {item.icon}
                               </span>
-                              {link.external ? (
-                                <span className="text-xs text-muted-foreground">↗</span>
-                              ) : null}
+                              <div className="flex flex-col">
+                                <span className="flex items-center gap-2 text-sm font-medium">
+                                  {item.label}
+                                  {item.badge && (
+                                    <span className="rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                                      {item.badge}
+                                    </span>
+                                  )}
+                                </span>
+                                <span className="text-xs text-muted-foreground">{item.description}</span>
+                              </div>
                             </Link>
-                          ))}
-                        </div>
-                      )}
+                          );
+                        })}
+                      </div>
                     </div>
-                  );
-                }
+                  ))}
 
-                return (
-                  <Link
-                    key={item.key}
-                    href={item.href.startsWith('#') ? item.href : localizePath(item.href)}
-                    className={cn(
-                      'group flex items-center gap-3 rounded-xl border px-3 py-3 text-sm font-medium transition',
-                      isActive
-                        ? 'border-primary/40 bg-primary/15 text-primary dark:text-primary-foreground'
-                        : 'border-transparent text-foreground/75 hover:border-primary/30 hover:bg-primary/10 hover:text-foreground'
-                    )}
-                    onClick={closeMobileMenu}
-                    aria-current={isActive ? 'page' : undefined}
-                    title={item.description ?? item.label}
+                  {/* Create button mobile */}
+                  <Button
+                    asChild
+                    className="w-full rounded-xl bg-gradient-to-r from-primary to-primary/80 py-3 font-semibold shadow-lg shadow-primary/25"
                   >
-                    {Icon && (
-                      <Icon
+                    <Link href={importLink} onClick={closeMobileMenu}>
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      Create New
+                    </Link>
+                  </Button>
+                </nav>
+              ) : (
+                <nav className="flex flex-col gap-2">
+                  {navItems.map((item) => {
+                    const Icon = item.icon ?? null;
+                    const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+
+                    if (item.key === 'docs') {
+                      return (
+                        <div key={item.key} className="flex flex-col gap-2 rounded-xl border border-border/60 bg-background/90 p-3">
+                          <button
+                            type="button"
+                            onClick={() => setDocsExpanded((prev) => !prev)}
+                            className="flex items-center justify-between gap-3 rounded-lg px-2 py-2 text-sm font-semibold"
+                            aria-expanded={docsExpanded}
+                          >
+                            <span className="flex items-center gap-2">
+                              {Icon && <Icon className="h-4 w-4 text-primary" />}
+                              <span>{tCommon('navigation.docs')}</span>
+                            </span>
+                            <ChevronDown className={cn(
+                              "h-4 w-4 transition-transform",
+                              docsExpanded && "rotate-180"
+                            )} />
+                          </button>
+                          {docsExpanded && (
+                            <div className="space-y-2 pl-2">
+                              {docsLinks.map((link) => (
+                                <Link
+                                  key={link.label}
+                                  href={link.disabled ? '#' : link.href}
+                                  onClick={() => {
+                                    if (!link.disabled) closeMobileMenu();
+                                  }}
+                                  target={link.external ? '_blank' : undefined}
+                                  rel={link.external ? 'noreferrer' : undefined}
+                                  className={cn(
+                                    'flex items-start gap-3 rounded-lg px-2 py-2 text-sm transition',
+                                    link.disabled ? 'cursor-not-allowed opacity-60' : 'hover:bg-primary/10'
+                                  )}
+                                >
+                                  <span className="mt-1">{link.icon}</span>
+                                  <span className="flex flex-1 flex-col text-left">
+                                    <span className="font-medium text-foreground">{link.label}</span>
+                                    <span className="text-xs text-muted-foreground">{link.description}</span>
+                                  </span>
+                                  {link.external && <span className="text-xs text-muted-foreground">↗</span>}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <Link
+                        key={item.key}
+                        href={item.href.startsWith('#') ? item.href : localizePath(item.href)}
                         className={cn(
-                          'h-4 w-4 transition-colors',
-                          isActive ? 'text-primary dark:text-primary-foreground' : 'text-foreground/60'
+                          'flex items-center gap-3 rounded-xl border px-3 py-3 text-sm font-medium transition',
+                          isActive
+                            ? 'border-primary/40 bg-primary/15 text-primary'
+                            : 'border-transparent text-foreground/75 hover:border-primary/30 hover:bg-primary/10'
                         )}
-                        isActive={isActive}
-                      />
-                    )}
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              })}
-              </nav>
-
-            {showDashboardNav && (
-              <Button
-                asChild
-                size="sm"
-                className="group flex items-center justify-center gap-2 rounded-full border border-border/60 bg-background/80 py-2 text-sm font-medium text-foreground shadow-none transition hover:border-foreground/30 hover:bg-foreground/5 hover:text-foreground dark:border-white/12 dark:bg-white/5 dark:text-white dark:hover:border-white/25 dark:hover:bg-white/12 dark:hover:text-white"
-              >
-                <Link href={landingLink} onClick={closeMobileMenu} aria-label={tCommon('tooltips.backToLanding')}>
-                  <LandingIcon className="h-[16px] w-[16px] text-foreground/75 transition-colors group-hover:text-foreground dark:text-white/80 dark:group-hover:text-white" />
-                  <span>{tCommon('navigation.landing')}</span>
-                </Link>
-              </Button>
-            )}
-
-            <Separator />
-
-            {!showDashboardNav && <GitHubStats className="justify-center" />}
-
-            <div className="flex flex-col gap-3">
-              {mounted && (
-                <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border/70 bg-background/60 px-3 py-2">
-                  <ThemeToggle />
-                  <ThemeSwitcher buttonVariant="ghost" buttonSize="icon" tooltip="Select theme palette" />
-                  <LanguageSwitcher variant="compact" showName={false} />
-                </div>
+                        onClick={closeMobileMenu}
+                      >
+                        {Icon && <Icon className="h-4 w-4" isActive={isActive} />}
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </nav>
               )}
 
-              {isGuest && !isAuthenticated && <GuestCreditIndicator variant="minimal" />}
+              <Separator className="my-4" />
 
-              {mounted && (
-                <div className="flex flex-col gap-2 pt-1">
-                  {isAuthenticated ? (
-                    <>
-                      <AuthButton suppressLocalBadge className="w-full justify-center" />
-                      {isLandingPage ? (
-                        <Button asChild size="sm" className="px-5 font-semibold" onClick={closeMobileMenu}>
-                          <Link href={openDashboardLink}>Open Dashboard</Link>
+              {!showDashboardNav && <GitHubStats className="mb-4 justify-center" />}
+
+              <div className="flex flex-col gap-3">
+                {mounted && (
+                  <div className="flex flex-wrap items-center justify-center gap-2 rounded-xl border border-border/50 bg-muted/30 px-3 py-2">
+                    <ThemeToggle />
+                    <ThemeSwitcher buttonVariant="ghost" buttonSize="icon" tooltip="Select theme palette" />
+                    <LanguageSwitcher variant="compact" showName={false} />
+                  </div>
+                )}
+
+                {isGuest && !isAuthenticated && <GuestCreditIndicator variant="minimal" />}
+
+                {mounted && (
+                  <div className="flex flex-col gap-2">
+                    {isAuthenticated ? (
+                      <>
+                        <AuthButton suppressLocalBadge className="w-full justify-center" />
+                        {isLandingPage && (
+                          <Button asChild size="sm" className="w-full" onClick={closeMobileMenu}>
+                            <Link href={openDashboardLink}>Open Dashboard</Link>
+                          </Button>
+                        )}
+                      </>
+                    ) : authEnabled ? (
+                      <>
+                        <Button asChild variant="secondary" size="sm" className="w-full">
+                          <Link href={signInLink} onClick={closeMobileMenu}>Log in</Link>
                         </Button>
-                      ) : (
-                        <Button asChild size="sm" variant="outline" onClick={closeMobileMenu}>
-                          <Link href={importLink}>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Import
-                          </Link>
-                        </Button>
-                      )}
-                    </>
-                  ) : authEnabled ? (
-                    <>
-                      <Button asChild variant="secondary" size="sm">
-                        <Link href={signInLink} onClick={closeMobileMenu}>
-                          Log in
-                        </Link>
+                        {isCloudMode && (
+                          <Button asChild size="sm" className="w-full">
+                            <Link href={signUpLink} onClick={closeMobileMenu}>Sign up</Link>
+                          </Button>
+                        )}
+                      </>
+                    ) : onOpenSettings ? (
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="w-full"
+                        onClick={() => {
+                          closeMobileMenu();
+                          onOpenSettings();
+                        }}
+                      >
+                        Open setup
                       </Button>
-                      {isCloudMode ? (
-                        <Button asChild size="sm" className="btn-gradient-border">
-                          <Link href={signUpLink} onClick={closeMobileMenu}>
-                            Sign up
-                          </Link>
-                        </Button>
-                      ) : null}
-                    </>
-                  ) : onOpenSettings ? (
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => {
-                        closeMobileMenu();
-                        onOpenSettings();
-                      }}
-                    >
-                      Open setup
-                    </Button>
-                  ) : null}
-                </div>
-              )}
-            </div>
+                    ) : null}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -733,17 +925,17 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
             onClick={() => setMobileMenuOpen((prev) => !prev)}
             aria-label={mobileMenuOpen ? tCommon('tooltips.closeNavigation') : tCommon('tooltips.toggleNavigation')}
             aria-expanded={mobileMenuOpen}
-            className="rounded-full border border-border/70 bg-card/90 p-2 text-foreground/85 shadow-sm transition hover:border-primary/40 hover:bg-primary/10 hover:text-primary dark:border-white/10 dark:bg-background/70 dark:text-white/85"
+            className="rounded-xl border border-border/50 bg-card/95 p-2.5 text-foreground/85 shadow-lg backdrop-blur-sm transition hover:bg-muted"
           >
             {mobileMenuOpen ? <MobileCloseIcon className="h-5 w-5" /> : <MobileMenuIcon className="h-5 w-5" />}
           </button>
-          <div className="rounded-full border border-border/70 bg-card/90 p-1 shadow-sm">
+          <div className="rounded-xl border border-border/50 bg-card/95 p-1.5 shadow-lg backdrop-blur-sm">
             <ThemeToggle />
           </div>
           <Button
             asChild
             size="icon"
-            className="rounded-full border border-border/70 bg-primary/90 text-primary-foreground hover:bg-primary"
+            className="rounded-xl bg-gradient-to-r from-primary to-primary/80 shadow-lg shadow-primary/30"
             aria-label={tCommon('actions.new') ?? 'New'}
           >
             <Link href={importLink}>
@@ -777,4 +969,3 @@ function MobileCloseIcon(props: React.SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
-
