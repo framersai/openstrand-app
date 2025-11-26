@@ -1,19 +1,23 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Upload,
+  LineChart,
   Sparkles,
   Command,
+  ChevronLeft,
+  ChevronRight,
   Database,
-  Play,
-  Plus,
-  ArrowRight,
   BarChart3,
-  Table2,
-  Wand2,
-  FileUp,
   Layers,
+  Plus,
+  Trash2,
+  Settings,
+  Info,
+  Zap,
+  Activity,
+  TrendingUp,
 } from 'lucide-react';
 
 import { CommandPalette, type CommandAction } from '@/components/command-palette';
@@ -25,6 +29,7 @@ import { TeamOnboarding } from '@/components/onboarding/TeamOnboarding';
 import {
   UploadTabContent,
   VisualizeTabContent,
+  DatasetInspectorPanel,
 } from '@/features/dashboard';
 
 import { VisualizationWorkspace } from './VisualizationWorkspace';
@@ -32,7 +37,9 @@ import { useDashboardShortcuts } from './useDashboardShortcuts';
 import { useDashboardController } from './useDashboardController';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { PromptInput } from '@/components/prompt-input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { useFeatureFlags } from '@/lib/feature-flags';
 import { useAppMode } from '@/hooks/useAppMode';
@@ -104,7 +111,8 @@ export default function DashboardPage() {
   const environmentMode = capabilities?.environment?.mode ?? mode;
   const t = useTranslations('dashboard');
 
-  const [activeView, setActiveView] = useState<'data' | 'create'>('data');
+  const [activeTab, setActiveTab] = useState<'upload' | 'visualize'>('upload');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const shouldShowLocalOnboarding = environmentMode === 'offline';
   const shouldShowTeamOnboarding =
@@ -114,227 +122,116 @@ export default function DashboardPage() {
     () => [
       {
         id: 'upload',
-        label: 'Upload Dataset',
-        hint: 'Import CSV, JSON, or Excel files',
+        label: t('actions.uploadDataset'),
+        hint: 'Switch to the Data tab',
         shortcut: 'Shift+U',
-        onSelect: () => setActiveView('data'),
+        onSelect: () => setActiveTab('upload'),
       },
       {
         id: 'auto-insights',
-        label: 'Run Auto Insights',
-        hint: 'AI-powered data analysis',
+        label: t('actions.runAutoInsights'),
+        hint: 'Analyze the active dataset',
         shortcut: 'Shift+A',
         onSelect: runAutoInsights,
       },
       {
         id: 'new-visualization',
-        label: 'Create Visualization',
-        hint: 'Generate charts from prompts',
+        label: t('actions.newVisualization'),
+        hint: 'Jump to the Visualize tab',
         shortcut: 'Shift+V',
-        onSelect: () => setActiveView('create'),
+        onSelect: () => setActiveTab('visualize'),
       },
       {
         id: 'clear-visualizations',
-        label: 'Clear All',
+        label: t('actions.clearVisualizations'),
         shortcut: 'Shift+C',
         onSelect: handleClearAllVisualizations,
       },
       {
         id: 'open-settings',
-        label: 'Settings',
+        label: t('actions.openSettings'),
         shortcut: 'Shift+S',
         onSelect: openSettings,
       },
     ],
-    [runAutoInsights, handleClearAllVisualizations, openSettings]
+    [t, runAutoInsights, handleClearAllVisualizations, openSettings]
   );
 
   useDashboardShortcuts({
     onToggleCommandPalette: () => setIsPaletteOpen((prev) => !prev),
-    onOpenUpload: () => setActiveView('data'),
+    onOpenUpload: () => setActiveTab('upload'),
     onRunAutoInsights: runAutoInsights,
-    onOpenVisualize: () => setActiveView('create'),
+    onOpenVisualize: () => setActiveTab('visualize'),
     onClearVisualizations: handleClearAllVisualizations,
     onOpenSettings: openSettings,
   });
 
-  // Format bytes to human readable
-  const formatBytes = (bytes: number) => {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
-  };
-
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
-      <GuidedTour />
-      {shouldShowLocalOnboarding && <LocalOnboarding onOpenSettings={openSettings} />}
-      {shouldShowTeamOnboarding && <TeamOnboarding onOpenSettings={openSettings} />}
-      <UnifiedHeader onOpenSettings={openSettings} />
+    <TooltipProvider>
+      <div className="min-h-screen flex flex-col bg-background">
+        <GuidedTour />
+        {shouldShowLocalOnboarding && <LocalOnboarding onOpenSettings={openSettings} />}
+        {shouldShowTeamOnboarding && <TeamOnboarding onOpenSettings={openSettings} />}
+        <UnifiedHeader onOpenSettings={openSettings} />
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-hidden">
-        <div className="h-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          
-          {/* Hero Section - Only show when no dataset */}
-          {!dataset && (
-            <div className="mb-8">
-              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600/20 via-fuchsia-600/10 to-transparent border border-white/5 p-8 md:p-12">
-                {/* Background pattern */}
-                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMiI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
-                
-                <div className="relative z-10 max-w-2xl">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 mb-4">
-                    <Sparkles className="h-3 w-3 text-violet-400" />
-                    AI-Powered Data Intelligence
-                  </div>
-                  <h1 className="text-3xl md:text-4xl font-semibold text-white mb-3 tracking-tight">
-                    Transform data into insights
-                  </h1>
-                  <p className="text-white/50 text-lg mb-8 leading-relaxed">
-                    Upload your dataset and let AI generate visualizations, uncover patterns, and answer questions in natural language.
-                  </p>
-                  
-                  {/* Quick Actions */}
-                  <div className="flex flex-wrap gap-3">
-                    <Button 
-                      size="lg"
-                      className="bg-white text-black hover:bg-white/90 font-medium"
-                      onClick={() => setActiveView('data')}
-                    >
-                      <Upload className="mr-2 h-4 w-4" />
-                      Upload Dataset
-                    </Button>
-                    <Button 
-                      size="lg"
-                      variant="outline"
-                      className="border-white/20 text-white hover:bg-white/5"
-                      onClick={() => setIsPaletteOpen(true)}
-                    >
-                      <Command className="mr-2 h-4 w-4" />
-                      Quick Actions
-                      <kbd className="ml-2 text-xs bg-white/10 px-1.5 py-0.5 rounded">⌘K</kbd>
-                    </Button>
-                  </div>
-                </div>
-                
-                {/* Decorative element */}
-                <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 rounded-full blur-3xl" />
-              </div>
-            </div>
-          )}
-
-          {/* Dataset Loaded State */}
-          {dataset && (
-            <div className="mb-6">
-              {/* Dataset Info Bar */}
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/20 flex items-center justify-center">
-                    <Database className="h-5 w-5 text-emerald-400" />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-medium text-white">
-                      {metadata?.filename || 'Dataset'}
-                    </h2>
-                    <div className="flex items-center gap-3 text-sm text-white/40">
-                      <span>{metadata?.rowCount?.toLocaleString() || 0} rows</span>
-                      <span className="w-1 h-1 rounded-full bg-white/20" />
-                      <span>{metadata?.columns?.length || 0} columns</span>
-                      {metadata?.fileSize && (
-                        <>
-                          <span className="w-1 h-1 rounded-full bg-white/20" />
-                          <span>{formatBytes(metadata.fileSize)}</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-2">
+        {/* Main Layout */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Left Sidebar */}
+          <aside
+            className={cn(
+              "flex flex-col border-r border-border/50 bg-card/50 transition-all duration-300",
+              sidebarCollapsed ? "w-16" : "w-80 lg:w-96"
+            )}
+          >
+            {/* Sidebar Header */}
+            <div className="flex items-center justify-between p-3 border-b border-border/50">
+              {!sidebarCollapsed && (
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Workspace
+                </span>
+              )}
+              <Tooltip>
+                <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="sm"
-                    className="text-white/60 hover:text-white hover:bg-white/5"
-                    onClick={() => setActiveView('data')}
+                    size="icon"
+                    onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                    className="h-8 w-8 rounded-lg"
                   >
-                    <FileUp className="mr-2 h-4 w-4" />
-                    Change Dataset
+                    {sidebarCollapsed ? (
+                      <ChevronRight className="h-4 w-4" />
+                    ) : (
+                      <ChevronLeft className="h-4 w-4" />
+                    )}
                   </Button>
-                  <Button
-                    size="sm"
-                    className="bg-violet-600 hover:bg-violet-700 text-white"
-                    onClick={runAutoInsights}
-                    disabled={isProcessing}
-                  >
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Auto Insights
-                  </Button>
-                </div>
-              </div>
-
-              {/* Prompt Input - Always visible when dataset loaded */}
-              <Card className="bg-white/[0.02] border-white/5 p-4 mb-6">
-                <div className="flex items-start gap-4">
-                  <div className="h-8 w-8 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center flex-shrink-0">
-                    <Wand2 className="h-4 w-4 text-violet-400" />
-                  </div>
-                  <div className="flex-1">
-                    <PromptInput
-                      onSubmit={handlePromptSubmit}
-                      isProcessing={isProcessing}
-                      placeholder="Describe the visualization you want to create..."
-                      suggestions={[
-                        'Show top 10 by revenue',
-                        'Create a pie chart of categories',
-                        'Compare trends over time',
-                        'Find correlations in the data',
-                      ]}
-                    />
-                  </div>
-                </div>
-              </Card>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  {sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                </TooltipContent>
+              </Tooltip>
             </div>
-          )}
 
-          {/* Two Column Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Left Panel - Data/Upload */}
-            <div className="lg:col-span-4 xl:col-span-3">
-              <Card className="bg-white/[0.02] border-white/5 overflow-hidden">
-                {/* Panel Tabs */}
-                <div className="flex border-b border-white/5">
-                  <button
-                    onClick={() => setActiveView('data')}
-                    className={cn(
-                      "flex-1 px-4 py-3 text-sm font-medium transition-colors",
-                      activeView === 'data'
-                        ? "text-white bg-white/5 border-b-2 border-violet-500"
-                        : "text-white/40 hover:text-white/60"
-                    )}
-                  >
-                    <Database className="inline-block mr-2 h-4 w-4" />
-                    Data
-                  </button>
-                  <button
-                    onClick={() => setActiveView('create')}
-                    className={cn(
-                      "flex-1 px-4 py-3 text-sm font-medium transition-colors",
-                      activeView === 'create'
-                        ? "text-white bg-white/5 border-b-2 border-violet-500"
-                        : "text-white/40 hover:text-white/60"
-                    )}
-                  >
-                    <BarChart3 className="inline-block mr-2 h-4 w-4" />
-                    Create
-                  </button>
-                </div>
+            {/* Sidebar Content */}
+            {!sidebarCollapsed ? (
+              <div className="flex-1 flex flex-col overflow-hidden">
+                {/* Tabs */}
+                <Tabs
+                  value={activeTab}
+                  onValueChange={(v) => setActiveTab(v as 'upload' | 'visualize')}
+                  className="flex-1 flex flex-col"
+                >
+                  <TabsList className="mx-3 mt-3 grid grid-cols-2">
+                    <TabsTrigger value="upload" className="text-xs">
+                      <Upload className="mr-1.5 h-3.5 w-3.5" />
+                      Data
+                    </TabsTrigger>
+                    <TabsTrigger value="visualize" className="text-xs">
+                      <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+                      Create
+                    </TabsTrigger>
+                  </TabsList>
 
-                {/* Panel Content */}
-                <div className="p-4 max-h-[calc(100vh-300px)] overflow-y-auto">
-                  {activeView === 'data' ? (
+                  <TabsContent value="upload" className="flex-1 overflow-y-auto p-3 mt-0">
                     <UploadTabContent
                       metadata={metadata ?? null}
                       isProcessing={isProcessing}
@@ -350,7 +247,9 @@ export default function DashboardPage() {
                       isSummaryLoading={isSummaryLoading}
                       onRefreshSummary={handleRefreshSummary}
                     />
-                  ) : (
+                  </TabsContent>
+
+                  <TabsContent value="visualize" className="flex-1 overflow-y-auto p-3 mt-0">
                     <VisualizeTabContent
                       datasetId={dataset?.id ?? null}
                       isProcessing={isProcessing}
@@ -376,13 +275,176 @@ export default function DashboardPage() {
                         recommendationRunnerRef.current = runner ?? null;
                       }}
                     />
+                  </TabsContent>
+                </Tabs>
+
+                {/* Sidebar Footer - Stats */}
+                <div className="border-t border-border/50 p-3 space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground flex items-center gap-1.5">
+                      <Activity className="h-3 w-3" />
+                      AI Calls
+                    </span>
+                    <span className="font-medium">{providerUsage?.totalRequests || 0}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground flex items-center gap-1.5">
+                      <Zap className="h-3 w-3" />
+                      Tokens
+                    </span>
+                    <span className="font-medium">{(providerUsage?.totalTokens || 0).toLocaleString()}</span>
+                  </div>
+                  {dataset && (
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground flex items-center gap-1.5">
+                        <Database className="h-3 w-3" />
+                        Dataset
+                      </span>
+                      <span className="font-medium">{(metadata?.rowCount || 0).toLocaleString()} rows</span>
+                    </div>
                   )}
                 </div>
-              </Card>
-            </div>
+              </div>
+            ) : (
+              /* Collapsed Sidebar Icons */
+              <div className="flex-1 flex flex-col items-center py-3 gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={activeTab === 'upload' ? 'secondary' : 'ghost'}
+                      size="icon"
+                      onClick={() => {
+                        setSidebarCollapsed(false);
+                        setActiveTab('upload');
+                      }}
+                      className="h-10 w-10"
+                    >
+                      <Upload className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">Data & Upload</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={activeTab === 'visualize' ? 'secondary' : 'ghost'}
+                      size="icon"
+                      onClick={() => {
+                        setSidebarCollapsed(false);
+                        setActiveTab('visualize');
+                      }}
+                      className="h-10 w-10"
+                    >
+                      <Sparkles className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">Create Visualizations</TooltipContent>
+                </Tooltip>
+                <div className="flex-1" />
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={openSettings}
+                      className="h-10 w-10"
+                    >
+                      <Settings className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">Settings</TooltipContent>
+                </Tooltip>
+              </div>
+            )}
+          </aside>
 
-            {/* Right Panel - Visualizations */}
-            <div className="lg:col-span-8 xl:col-span-9">
+          {/* Main Content */}
+          <main className="flex-1 overflow-y-auto">
+            <div className="container max-w-7xl mx-auto p-6">
+              {/* Quick Actions Bar */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  {dataset ? (
+                    <>
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                          <Database className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <h1 className="text-lg font-semibold">{metadata?.filename || 'Dataset'}</h1>
+                          <p className="text-sm text-muted-foreground">
+                            {(metadata?.rowCount || 0).toLocaleString()} rows · {metadata?.columns?.length || 0} columns
+                          </p>
+                        </div>
+                      </div>
+                      <Badge variant="secondary" className="ml-2">
+                        {planTier}
+                      </Badge>
+                    </>
+                  ) : (
+                    <h1 className="text-lg font-semibold">Dashboard</h1>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setIsPaletteOpen(true)}
+                      >
+                        <Command className="mr-2 h-4 w-4" />
+                        <span className="hidden sm:inline">Commands</span>
+                        <kbd className="ml-2 hidden sm:inline text-xs bg-muted px-1.5 py-0.5 rounded">⌘K</kbd>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Open command palette (⌘K)</TooltipContent>
+                  </Tooltip>
+
+                  {dataset && (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={runAutoInsights}
+                        disabled={isProcessing}
+                      >
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        <span className="hidden sm:inline">Auto Insights</span>
+                      </Button>
+                      {visualizations.length > 0 && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleClearAllVisualizations}
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          <span className="hidden sm:inline">Clear</span>
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Dataset Inspector (when dataset loaded) */}
+              {dataset && (
+                <DatasetInspectorPanel
+                  datasetName={metadata?.filename ?? null}
+                  datasetId={dataset.id}
+                  metadata={metadata ?? null}
+                  summary={datasetSummary}
+                  isSummaryLoading={isSummaryLoading}
+                  autoInsights={autoInsightsSnapshot}
+                  onRefreshSummary={handleRefreshSummary}
+                  onRunAutoInsights={runAutoInsights}
+                  onViewRecommendations={focusVisualizations}
+                  hasDataset={true}
+                />
+              )}
+
+              {/* Visualizations Area */}
               {visualizations.length > 0 ? (
                 <VisualizationWorkspace
                   ref={visualizationPanelRef as any}
@@ -407,73 +469,62 @@ export default function DashboardPage() {
                 />
               ) : (
                 /* Empty State */
-                <Card className="bg-white/[0.02] border-white/5 h-full min-h-[500px] flex items-center justify-center">
-                  <div className="text-center max-w-md px-8">
-                    {!dataset ? (
-                      <>
-                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20 mb-6">
-                          <Layers className="h-8 w-8 text-violet-400" />
-                        </div>
-                        <h3 className="text-xl font-medium text-white mb-2">
-                          No dataset loaded
-                        </h3>
-                        <p className="text-white/40 mb-6 leading-relaxed">
-                          Upload a CSV, JSON, or Excel file to start creating visualizations with AI assistance.
-                        </p>
-                        <Button
-                          onClick={() => setActiveView('data')}
-                          className="bg-violet-600 hover:bg-violet-700 text-white"
-                        >
+                <Card className="mt-6 p-12 text-center">
+                  {!dataset ? (
+                    <div className="max-w-md mx-auto">
+                      <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-6">
+                        <Layers className="h-8 w-8 text-primary" />
+                      </div>
+                      <h2 className="text-xl font-semibold mb-2">No Dataset Loaded</h2>
+                      <p className="text-muted-foreground mb-6">
+                        Upload a CSV, JSON, or Excel file to start creating visualizations with AI assistance.
+                      </p>
+                      <div className="flex items-center justify-center gap-3">
+                        <Button onClick={() => setActiveTab('upload')}>
                           <Upload className="mr-2 h-4 w-4" />
                           Upload Dataset
                         </Button>
-                      </>
-                    ) : (
-                      <>
-                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 mb-6">
-                          <BarChart3 className="h-8 w-8 text-emerald-400" />
-                        </div>
-                        <h3 className="text-xl font-medium text-white mb-2">
-                          Ready to visualize
-                        </h3>
-                        <p className="text-white/40 mb-6 leading-relaxed">
-                          Your dataset is loaded. Describe what you want to see or run Auto Insights to get AI-recommended visualizations.
-                        </p>
-                        <div className="flex items-center justify-center gap-3">
-                          <Button
-                            onClick={runAutoInsights}
-                            disabled={isProcessing}
-                            className="bg-violet-600 hover:bg-violet-700 text-white"
-                          >
-                            <Sparkles className="mr-2 h-4 w-4" />
-                            Auto Insights
-                          </Button>
-                          <Button
-                            variant="outline"
-                            onClick={() => setActiveView('create')}
-                            className="border-white/20 bg-transparent text-white/80 hover:bg-white/5 hover:text-white hover:border-white/30"
-                          >
-                            <Plus className="mr-2 h-4 w-4" />
-                            Create Manually
-                          </Button>
-                        </div>
-                      </>
-                    )}
-                  </div>
+                        <Button variant="outline" onClick={() => setIsPaletteOpen(true)}>
+                          <Command className="mr-2 h-4 w-4" />
+                          Quick Actions
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="max-w-md mx-auto">
+                      <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/10 mb-6">
+                        <BarChart3 className="h-8 w-8 text-emerald-500" />
+                      </div>
+                      <h2 className="text-xl font-semibold mb-2">Ready to Visualize</h2>
+                      <p className="text-muted-foreground mb-6">
+                        Your dataset is loaded. Create visualizations using natural language or run Auto Insights for AI-recommended charts.
+                      </p>
+                      <div className="flex items-center justify-center gap-3">
+                        <Button onClick={runAutoInsights} disabled={isProcessing}>
+                          <Sparkles className="mr-2 h-4 w-4" />
+                          Auto Insights
+                        </Button>
+                        <Button variant="outline" onClick={() => setActiveTab('visualize')}>
+                          <Plus className="mr-2 h-4 w-4" />
+                          Create Manually
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </Card>
               )}
             </div>
-          </div>
+          </main>
         </div>
-      </main>
 
-      {showSettings && <SettingsDialog isOpen={showSettings} onClose={closeSettings} />}
+        {showSettings && <SettingsDialog isOpen={showSettings} onClose={closeSettings} />}
 
-      <CommandPalette
-        open={isPaletteOpen}
-        onClose={() => setIsPaletteOpen(false)}
-        actions={commandActions}
-      />
-    </div>
+        <CommandPalette
+          open={isPaletteOpen}
+          onClose={() => setIsPaletteOpen(false)}
+          actions={commandActions}
+        />
+      </div>
+    </TooltipProvider>
   );
 }
