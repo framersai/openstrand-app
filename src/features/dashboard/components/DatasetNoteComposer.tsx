@@ -10,14 +10,11 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import { createLowlight } from 'lowlight';
-import ts from 'highlight.js/lib/languages/typescript';
-import js from 'highlight.js/lib/languages/javascript';
-import json from 'highlight.js/lib/languages/json';
-import bash from 'highlight.js/lib/languages/bash';
-import python from 'highlight.js/lib/languages/python';
-import markdown from 'highlight.js/lib/languages/markdown';
+import { common, createLowlight } from 'lowlight';
 import { Save, RotateCcw, Type } from 'lucide-react';
+
+// Create lowlight instance with common languages pre-registered (lowlight v3 API)
+const lowlight = createLowlight(common);
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -69,17 +66,6 @@ export function DatasetNoteComposer({
   const { run: runAutoMetadata } = require('../../composer/hooks/useAutoMetadata') as {
     run: (params: { strandId: string; plainText?: string; existingTags?: string[]; options: { autoTag: boolean; autoBacklinks: boolean; maxBacklinks?: number } }) => Promise<any>;
   };
-  // Register popular languages once (safe to call multiple times)
-const lowlight = createLowlight();
-
-lowlight.registerLanguage('typescript', ts);
-  lowlight.registerLanguage('javascript', js);
-  lowlight.registerLanguage('json', json);
-  lowlight.registerLanguage('bash', bash);
-  lowlight.registerLanguage('shell', bash);
-  lowlight.registerLanguage('python', python);
-  lowlight.registerLanguage('md', markdown);
-  lowlight.registerLanguage('markdown', markdown);
 
   const editor = useEditor({
     extensions: [
