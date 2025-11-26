@@ -1,61 +1,43 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Upload,
-  LineChart,
   Sparkles,
   Command,
-  Layout,
-  Trash2,
-  Users,
-  MessageSquare,
-  ChevronLeft,
-  ChevronRight,
-  ChevronUp,
+  Database,
+  Play,
+  Plus,
+  ArrowRight,
+  BarChart3,
+  Table2,
+  Wand2,
+  FileUp,
+  Layers,
 } from 'lucide-react';
 
 import { CommandPalette, type CommandAction } from '@/components/command-palette';
-import { GuidedTour, TourControlPanel } from '@/components/guided-tour';
+import { GuidedTour } from '@/components/guided-tour';
 import { SettingsDialog } from '@/components/settings-dialog';
 import { UnifiedHeader } from '@/components/navigation/UnifiedHeader';
 import { LocalOnboarding } from '@/components/onboarding/LocalOnboarding';
 import { TeamOnboarding } from '@/components/onboarding/TeamOnboarding';
-import { CollapsiblePanel } from '@/components/dashboard/CollapsiblePanel';
-import { FloatingActionToolbar } from '@/components/dashboard/FloatingActionToolbar';
-import { MasonryGrid } from '@/components/dashboard/MasonryGrid';
-import { StatusBar } from '@/components/dashboard/StatusBar';
-import {
-  EmptyDatasetIllustration,
-  NoVisualizationsIllustration,
-  KnowledgeGraphIllustration
-} from '@/components/illustrations/DashboardIllustrations';
 import {
   UploadTabContent,
   VisualizeTabContent,
-  SystemStatusPanel,
-  DashboardOverviewMinimal,
-  AIUsagePanel,
-  FeedbackPulsePanel,
-  DatasetInspectorPanel,
 } from '@/features/dashboard';
 
-import { DashboardHeaderActions } from './DashboardHeaderActions';
 import { VisualizationWorkspace } from './VisualizationWorkspace';
 import { useDashboardShortcuts } from './useDashboardShortcuts';
 import { useDashboardController } from './useDashboardController';
-import { useLayoutPresets } from '@/hooks/useLayoutPresets';
-import { useResponsiveLayout } from '@/hooks/useResponsiveLayout';
-import { useKeyboardNavigation, defaultKeyboardBindings } from '@/hooks/useKeyboardNavigation';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card } from '@/components/ui/card';
+import { PromptInput } from '@/components/prompt-input';
 import { cn } from '@/lib/utils';
 import { useFeatureFlags } from '@/lib/feature-flags';
 import { useAppMode } from '@/hooks/useAppMode';
 import { useOpenStrandStore } from '@/store/openstrand.store';
 import { useTranslations } from 'next-intl';
-import { SiteFooter } from '@/components/site-footer';
-import { usePluginRuntime } from '@/components/plugins';
 
 export default function DashboardPage() {
   const {
@@ -66,9 +48,6 @@ export default function DashboardPage() {
     visualizations,
     autoInsightsSnapshot,
     isGuest,
-    isAuthenticated,
-    activeTab,
-    setActiveTab,
     isProcessing,
     setIsProcessing,
     isLoadingSamples,
@@ -123,726 +102,370 @@ export default function DashboardPage() {
   const capabilities = useOpenStrandStore((state) => state.capabilities);
   const teamOnboardingComplete = useOpenStrandStore((state) => state.teamOnboardingComplete);
   const environmentMode = capabilities?.environment?.mode ?? mode;
-
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [footerCollapsed, setFooterCollapsed] = useState(true); // Start collapsed in dashboard
   const t = useTranslations('dashboard');
+
+  const [activeView, setActiveView] = useState<'data' | 'create'>('data');
 
   const shouldShowLocalOnboarding = environmentMode === 'offline';
   const shouldShowTeamOnboarding =
     isTeamEdition && environmentMode === 'cloud' && !teamOnboardingComplete;
 
-  const {
-    currentLayout,
-    applyPreset,
-    togglePanel,
-    toggleSidebar,
-    toggleStatusBar,
-    cycleGridColumns
-  } = useLayoutPresets();
-  
-  const { 
-    config: deviceConfig, 
-    device, 
-    orientation,
-    getResponsiveLayout,
-    utils 
-  } = useResponsiveLayout();
-  
-  const responsiveLayout = getResponsiveLayout(currentLayout.gridColumns);
-
-  // Prepare visualization items for masonry grid
-  const masonryItems = useMemo(() => {
-    return visualizations.map(viz => ({
-      id: viz.id,
-      content: (
-        <div className="h-full">
-          <h4 className="text-sm font-semibold mb-2">{viz.type}</h4>
-          <div className="h-32 bg-muted/20 rounded flex items-center justify-center">
-            {viz.title || viz.type}
-          </div>
-        </div>
-      ),
-      height: (viz.size === 'large' ? 'large' : viz.size === 'small' ? 'small' : 'medium') as 'small' | 'medium' | 'large',
-      width: (viz.featured ? 2 : 1) as 1 | 2
-    }));
-  }, [visualizations]);
-
-  // Floating action toolbar actions
-  const fabActions = useMemo(() => {
-    const actions = [
-      {
-        id: 'upload',
-        icon: Upload,
-        label: 'Upload Dataset',
-        onClick: openUpload,
-        shortcut: 'u',
-        disabled: isProcessing,
-      },
-      {
-        id: 'visualize',
-        icon: LineChart,
-        label: 'New Visualization',
-        onClick: openVisualize,
-        shortcut: 'v',
-        disabled: !dataset,
-      },
-      {
-        id: 'insights',
-        icon: Sparkles,
-        label: 'Auto Insights',
-        onClick: () => autoInsightsRunnerRef.current?.(),
-        shortcut: 'i',
-        disabled: !dataset || isProcessing,
-      },
-      {
-        id: 'command',
-        icon: Command,
-        label: 'Command Palette',
-        onClick: () => setIsPaletteOpen(true),
-        shortcut: 'k',
-      },
-      {
-        id: 'layout',
-        icon: Layout,
-        label: 'Change Layout',
-        onClick: () => cycleGridColumns(),
-        shortcut: 'l',
-      },
-    ];
-
-    if (visualizations.length > 0) {
-      actions.push({
-        id: 'clear',
-        icon: Trash2,
-        label: 'Clear All',
-        onClick: handleClearAllVisualizations,
-        shortcut: 'c',
-        disabled: false,
-      });
-    }
-
-    return actions;
-  }, [
-    dataset,
-    isProcessing,
-    visualizations.length,
-    cycleGridColumns,
-    handleClearAllVisualizations,
-    autoInsightsRunnerRef,
-    setIsPaletteOpen,
-    openUpload,
-    openVisualize,
-  ]);
-
   const commandActions = useMemo<CommandAction[]>(
     () => [
       {
         id: 'upload',
-        label: t('actions.uploadDataset'),
-        hint: 'Switch to the Data tab',
+        label: 'Upload Dataset',
+        hint: 'Import CSV, JSON, or Excel files',
         shortcut: 'Shift+U',
-        onSelect: openUpload,
+        onSelect: () => setActiveView('data'),
       },
       {
         id: 'auto-insights',
-        label: t('actions.runAutoInsights'),
-        hint: 'Analyse the active dataset',
+        label: 'Run Auto Insights',
+        hint: 'AI-powered data analysis',
         shortcut: 'Shift+A',
         onSelect: runAutoInsights,
       },
       {
         id: 'new-visualization',
-        label: t('actions.newVisualization'),
-        hint: 'Jump to the Visualize tab',
+        label: 'Create Visualization',
+        hint: 'Generate charts from prompts',
         shortcut: 'Shift+V',
-        onSelect: openVisualize,
+        onSelect: () => setActiveView('create'),
       },
       {
         id: 'clear-visualizations',
-        label: t('actions.clearVisualizations'),
+        label: 'Clear All',
         shortcut: 'Shift+C',
         onSelect: handleClearAllVisualizations,
       },
       {
         id: 'open-settings',
-        label: t('actions.openSettings'),
+        label: 'Settings',
         shortcut: 'Shift+S',
         onSelect: openSettings,
       },
     ],
-    [openUpload, runAutoInsights, openVisualize, handleClearAllVisualizations, openSettings, t]
+    [runAutoInsights, handleClearAllVisualizations, openSettings]
   );
-
-  // Keyboard navigation
-  const keyBindings = useMemo(() => [
-    ...defaultKeyboardBindings,
-    {
-      key: 'b',
-      ctrl: true,
-      description: 'Toggle Sidebar',
-      category: 'View',
-      action: toggleSidebar
-    },
-    {
-      key: 's',
-      ctrl: true,
-      description: 'Toggle Status Bar',
-      category: 'View',
-      action: toggleStatusBar
-    },
-    {
-      key: '1',
-      alt: true,
-      description: 'Focused Layout',
-      category: 'Layout',
-      action: () => applyPreset('focused')
-    },
-    {
-      key: '2',
-      alt: true,
-      description: 'Balanced Layout',
-      category: 'Layout',
-      action: () => applyPreset('balanced')
-    },
-    {
-      key: '3',
-      alt: true,
-      description: 'Overview Layout',
-      category: 'Layout',
-      action: () => applyPreset('overview')
-    },
-    {
-      key: '0',
-      alt: true,
-      description: 'Zen Mode',
-      category: 'Layout',
-      action: () => applyPreset('zen')
-    }
-  ], [toggleSidebar, toggleStatusBar, applyPreset]);
-
-  useKeyboardNavigation({ bindings: keyBindings });
 
   useDashboardShortcuts({
     onToggleCommandPalette: () => setIsPaletteOpen((prev) => !prev),
-    onOpenUpload: openUpload,
+    onOpenUpload: () => setActiveView('data'),
     onRunAutoInsights: runAutoInsights,
-    onOpenVisualize: openVisualize,
+    onOpenVisualize: () => setActiveView('create'),
     onClearVisualizations: handleClearAllVisualizations,
     onOpenSettings: openSettings,
   });
 
-  // Close mobile sidebar on Escape
-  useEffect(() => {
-    if (!isMobileSidebarOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsMobileSidebarOpen(false);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [isMobileSidebarOpen]);
-
-  // Note: visualize panel availability derived directly from dataset where needed
-
-  const { getExtensions } = usePluginRuntime();
-  const sidebarExtensions = getExtensions('dashboard.sidebar.after');
+  // Format bytes to human readable
+  const formatBytes = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+  };
 
   return (
-    <div className="dashboard-page min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-[#0a0a0f]">
       <GuidedTour />
       {shouldShowLocalOnboarding && <LocalOnboarding onOpenSettings={openSettings} />}
       {shouldShowTeamOnboarding && <TeamOnboarding onOpenSettings={openSettings} />}
       <UnifiedHeader onOpenSettings={openSettings} />
 
-      {/* Mobile sidebar open button */}
-      {(device.isPhone || (device.isTablet && orientation.isPortrait)) && (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setIsMobileSidebarOpen(true)}
-          className="fixed bottom-5 left-4 z-30 lg:hidden"
-          aria-label="Open sidebar"
-        >
-          <Layout className="mr-2 h-4 w-4" />
-          Sidebar
-        </Button>
-      )}
-
-      {/* Backdrop for mobile sidebar */}
-      {(device.isPhone || (device.isTablet && orientation.isPortrait)) && isMobileSidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px]"
-          onClick={() => setIsMobileSidebarOpen(false)}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Main content area */}
-      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        {/* Sidebar - Fully responsive with device-aware behavior */}
-        {currentLayout.showSidebar && (
-          <aside 
-            className={cn(
-              "dashboard-sidebar border-border/50 bg-background/95 backdrop-blur overflow-hidden flex flex-col transition-all duration-300",
-              // Responsive behavior
-              // Mobile/portrait tablets: off-canvas overlay
-              (device.isPhone || (device.isTablet && orientation.isPortrait)) &&
-                cn(
-                  "fixed inset-y-0 left-0 z-50 h-full w-[85%] max-w-xs border-r shadow-xl bg-background/80 backdrop-blur-md transform",
-                  isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
-                ),
-              // Landscape tablet and up: docked
-              device.isTablet && orientation.isLandscape && "w-80 h-full border-r",
-              device.isTablet && orientation.isLandscape && "w-80 h-full border-r",
-              device.isLaptop && "w-80 h-full border-r",
-              device.isDesktop && "w-96 h-full border-r",
-              device.isUltrawide && "w-[28rem] h-full border-r",
-              // Collapsed state
-              isSidebarCollapsed && !device.isPhone && !(device.isTablet && orientation.isPortrait) && "!w-20",
-              // Position
-              currentLayout.sidebarPosition === 'right' && !device.isPhone && !(device.isTablet && orientation.isPortrait) && 'order-2 border-l border-r-0',
-              // Overlay behavior on smaller screens
-              responsiveLayout.sidebarBehavior === 'overlay' && device.isTablet && orientation.isLandscape && "fixed z-40",
-              responsiveLayout.sidebarBehavior === 'overlay' && currentLayout.sidebarPosition === 'right' && "right-0",
-              responsiveLayout.sidebarBehavior === 'overlay' && currentLayout.sidebarPosition === 'left' && "left-0"
-            )}
-            style={{
-              width: responsiveLayout.sidebarBehavior === 'overlay' && !device.isPhone ? responsiveLayout.sidebarWidth : undefined
-            }}>
-            <div className="flex items-center justify-between border-b border-border/40 px-3 py-2">
-              <span
-                className={cn(
-                  "text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground",
-                  isSidebarCollapsed && "sr-only"
-                )}
-              >
-                {t('sidebar.workspace')}
-              </span>
-              {(device.isPhone || (device.isTablet && orientation.isPortrait)) ? (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsMobileSidebarOpen(false)}
-                  className="h-7 w-7 rounded-full border border-border/50 bg-background/70 text-muted-foreground hover:border-primary/40 hover:text-primary lg:hidden"
-                  aria-label="Close sidebar"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-              ) : (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsSidebarCollapsed((prev) => !prev)}
-                className={cn(
-                  "h-7 w-7 rounded-full border border-border/50 bg-background/70 text-muted-foreground hover:border-primary/40 hover:text-primary",
-                  "hidden lg:flex" // Only show on desktop
-                )}
-                aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              >
-                {isSidebarCollapsed ? (
-                  <ChevronRight className="h-4 w-4" />
-                ) : (
-                  <ChevronLeft className="h-4 w-4" />
-                )}
-              </Button>
-              )}
-            </div>
-            {/* Sidebar tabs for better organization */}
-            <div className="flex-1 overflow-hidden">
-              <Tabs
-                value={activeTab === 'upload' ? 'data' : 'generate'}
-                onValueChange={(val) => setActiveTab(val === 'data' ? 'upload' : 'visualize')}
-                className="h-full flex flex-col"
-              >
-                <TabsList
-                  className={cn(
-                    "m-2 grid grid-cols-2 gap-2 transition-all",
-                    isSidebarCollapsed && "grid-cols-1 justify-items-center"
-                  )}
-                >
-                  <TabsTrigger
-                    value="data"
-                    className={cn(
-                      "text-xs w-full",
-                      isSidebarCollapsed && "justify-center px-2 py-2"
-                    )}
-                  >
-                    <Upload
-                      className={cn(
-                        "h-3 w-3",
-                        !isSidebarCollapsed && "mr-1",
-                        isSidebarCollapsed && "h-4 w-4"
-                      )}
-                    />
-                    <span className={cn(isSidebarCollapsed && "sr-only")}>{t('tabs.upload')}</span>
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="generate"
-                    className={cn(
-                      "text-xs w-full",
-                      isSidebarCollapsed && "justify-center px-2 py-2"
-                    )}
-                  >
-                    <Sparkles
-                      className={cn(
-                        "h-3 w-3",
-                        !isSidebarCollapsed && "mr-1",
-                        isSidebarCollapsed && "h-4 w-4"
-                      )}
-                    />
-                    <span className={cn(isSidebarCollapsed && "sr-only")}>{t('tabs.visualize')}</span>
-                  </TabsTrigger>
-                </TabsList>
-
-                {!isSidebarCollapsed && (
-                  <>
-                    <TabsContent value="data" className="flex-1 overflow-y-auto p-3">
-                      <UploadTabContent
-                        metadata={metadata ?? null}
-                        isProcessing={isProcessing}
-                        isLoadingSamples={isLoadingSamples}
-                        samples={sampleDatasets}
-                        activeDatasetId={dataset?.id}
-                        onFileUpload={handleFileUpload}
-                        onClearDataset={handleClearDataset}
-                        onLoadSample={handleLoadSampleDataset}
-                        planTier={planTier}
-                        planLimitMb={planLimitMb}
-                        summary={datasetSummary}
-                        isSummaryLoading={isSummaryLoading}
-                        onRefreshSummary={handleRefreshSummary}
-                      />
-                    </TabsContent>
-
-                    <TabsContent value="generate" className="flex-1 overflow-y-auto p-3">
-                      <VisualizeTabContent
-                        datasetId={dataset?.id ?? null}
-                        isProcessing={isProcessing}
-                        useHeuristics={useHeuristics}
-                        hasDataset={Boolean(dataset)}
-                        onSubmitPrompt={handlePromptSubmit}
-                        onQuickAction={handleGenerateVisualization}
-                        onProcessingChange={setIsProcessing}
-                        datasetFeedback={datasetFeedback}
-                        canSubmitFeedback={canSubmitFeedback}
-                        onDatasetVote={handleDatasetVote}
-                        onDatasetFavorite={handleDatasetFavorite}
-                        leaderboardDatasets={datasetLeaderboard}
-                        leaderboardVisualizations={visualizationLeaderboard}
-                        leaderboardLoading={leaderboardLoading}
-                        onRefreshLeaderboards={refreshLeaderboards}
-                        onNavigateToVisualizations={focusVisualizations}
-                        onAutoInsightsUpdate={handleAutoInsightsUpdate}
-                        onRegisterAutoInsightsRunner={(runner) => {
-                          autoInsightsRunnerRef.current = runner ?? null;
-                        }}
-                        onRegisterRecommendationRunner={(runner) => {
-                          recommendationRunnerRef.current = runner ?? null;
-                        }}
-                      />
-                    </TabsContent>
-                  </>
-                )}
-              </Tabs>
-            </div>
-
-            {/* Plugin Widgets */}
-            {!isSidebarCollapsed && sidebarExtensions.length > 0 && (
-              <div className="flex-none border-t border-border/50 p-3 space-y-3 overflow-y-auto max-h-[300px]">
-                {sidebarExtensions.map(({ component: Component, plugin }, i) => (
-                  <div key={`${plugin.name}-${i}`}>
-                    <Component context={{ 
-                      ui: { 
-                        showNotification: (msg: string, type: any) => {
-                          // Simple toast wrapper
-                          const { toast } = require('react-hot-toast');
-                          if (type === 'error') toast.error(msg);
-                          else if (type === 'success') toast.success(msg);
-                          else toast(msg);
-                        } 
-                      },
-                      settings: plugin.settings 
-                    }} />
+      {/* Main Content */}
+      <main className="flex-1 overflow-hidden">
+        <div className="h-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          
+          {/* Hero Section - Only show when no dataset */}
+          {!dataset && (
+            <div className="mb-8">
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600/20 via-fuchsia-600/10 to-transparent border border-white/5 p-8 md:p-12">
+                {/* Background pattern */}
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMiI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50" />
+                
+                <div className="relative z-10 max-w-2xl">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 mb-4">
+                    <Sparkles className="h-3 w-3 text-violet-400" />
+                    AI-Powered Data Intelligence
                   </div>
-                ))}
-              </div>
-            )}
-
-            {/* Compact metrics panel at bottom */}
-            {!isSidebarCollapsed && (
-              <div className="p-3 border-t border-border/50 space-y-2">
-                <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground">AI Calls</span>
-                  <span>{providerUsage?.totalRequests || 0}</span>
-                </div>
-                <div className="flex justify-between text-xs">
-                  <span className="text-muted-foreground">Tokens</span>
-                  <span>{providerUsage?.totalTokens || 0}</span>
-                </div>
-                {dataset && (
-                  <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">Dataset</span>
-                    <span>{dataset.metadata?.rowCount || 0} rows</span>
-                  </div>
-                )}
-              </div>
-            )}
-          </aside>
-        )}
-
-        {/* Main content - Responsive padding and spacing */}
-        <main className={cn(
-          "flex-1 overflow-y-auto",
-          currentLayout.showStatusBar && "pb-8",
-          // Add padding for overlay sidebar
-          responsiveLayout.sidebarBehavior === 'overlay' && currentLayout.showSidebar && !isSidebarCollapsed && 
-            currentLayout.sidebarPosition === 'left' && device.isTablet && "ml-80"
-        )}>
-          <div 
-            className="container mx-auto"
-            style={{ 
-              padding: utils.containerPadding(),
-              maxWidth: device.isUltrawide ? '2400px' : undefined
-            }}>
-            {/* Quick Actions and Overview */}
-            <DashboardHeaderActions
-              onOpenUpload={openUpload}
-              onRunAutoInsights={runAutoInsights}
-              onOpenVisualize={openVisualize}
-              onOpenCommandPalette={() => setIsPaletteOpen(true)}
-              onClearVisualizations={handleClearAllVisualizations}
-              disableAutoInsights={!dataset || isProcessing}
-              disableClear={visualizations.length === 0}
-              showGuestIndicator={isGuest}
-            />
-            <DashboardOverviewMinimal data={dashboardOverview} className="rounded-xl mb-6" />
-
-            {/* Layout preset selector - responsive */}
-            <div className="mb-6 flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
-              <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  size="sm"
-                  variant={currentLayout.preset === 'focused' ? 'default' : 'outline'}
-                  onClick={() => applyPreset('focused')}
-                  className="text-xs sm:text-sm"
-                >
-                  Focused
-                </Button>
-                <Button
-                  size="sm"
-                  variant={currentLayout.preset === 'balanced' ? 'default' : 'outline'}
-                  onClick={() => applyPreset('balanced')}
-                  className="text-xs sm:text-sm"
-                >
-                  Balanced
-                </Button>
-                <Button
-                  size="sm"
-                  variant={currentLayout.preset === 'overview' ? 'default' : 'outline'}
-                  onClick={() => applyPreset('overview')}
-                  className="text-xs sm:text-sm"
-                >
-                  {t('sidebar.overview')}
-                </Button>
-                <Button
-                  size="sm"
-                  variant={currentLayout.preset === 'zen' ? 'default' : 'outline'}
-                  onClick={() => applyPreset('zen')}
-                  className="text-xs sm:text-sm"
-                >
-                  Zen
-                </Button>
-              </div>
-
-              <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                <TourControlPanel />
-                <div className="hidden sm:block h-4 w-px bg-border" />
-                <span className="hidden sm:inline">Columns: {currentLayout.gridColumns}</span>
-                <Button size="sm" variant="ghost" onClick={cycleGridColumns} className="text-xs sm:text-sm">
-                  <span className="sm:hidden">Cols</span>
-                  <span className="hidden sm:inline">Change</span>
-                </Button>
-              </div>
-            </div>
-
-            {(dataset || datasetSummary || autoInsightsSnapshot.insights) && (
-              <DatasetInspectorPanel
-                datasetName={
-                  metadata?.filename ??
-                  metadata?.datasetId ??
-                  datasetSummary?.datasetId ??
-                  null
-                }
-                datasetId={dataset?.id ?? metadata?.datasetId ?? datasetSummary?.datasetId ?? null}
-                metadata={metadata ?? null}
-                summary={datasetSummary}
-                isSummaryLoading={isSummaryLoading}
-                autoInsights={autoInsightsSnapshot}
-                onRefreshSummary={handleRefreshSummary}
-                onRunAutoInsights={runAutoInsights}
-                onViewRecommendations={focusVisualizations}
-                hasDataset={Boolean(dataset)}
-              />
-            )}
-
-            {/* Usage and Feedback panels */}
-            <div className="mt-6 grid gap-4 lg:grid-cols-3">
-              <AIUsagePanel usage={providerUsage} />
-              <FeedbackPulsePanel feedback={feedbackOverview} />
-              {isTeamEdition ? <SystemStatusPanel /> : (
-                <div className="rounded-2xl border border-dashed border-border/60 bg-muted/10 p-4 text-sm text-muted-foreground">
-                  Team infrastructure status is available on Team edition.
-                </div>
-              )}
-            </div>
-
-            {/* Visualizations Grid or Empty State */}
-            {visualizations.length > 0 ? (
-              <MasonryGrid
-                items={masonryItems}
-                columns={responsiveLayout.gridColumns}
-                onReorder={(items) => console.log('Reordered', items)}
-                onRemove={handleRemoveVisualization}
-                onEdit={(id) => console.log('Edit', id)}
-                onMaximize={(id) => console.log('Maximize', id)}
-              />
-            ) : (
-              <div className="flex flex-col items-center justify-center py-20">
-                {!dataset ? (
-                  <>
-                    <EmptyDatasetIllustration className="mb-8" />
-                    <h3 className="text-xl font-semibold mb-2">No Dataset Loaded</h3>
-                    <p className="text-muted-foreground mb-6 max-w-md text-center">
-                      Upload a dataset to start creating visualizations and exploring your data
-                    </p>
-                    <Button onClick={openUpload}>
+                  <h1 className="text-3xl md:text-4xl font-semibold text-white mb-3 tracking-tight">
+                    Transform data into insights
+                  </h1>
+                  <p className="text-white/50 text-lg mb-8 leading-relaxed">
+                    Upload your dataset and let AI generate visualizations, uncover patterns, and answer questions in natural language.
+                  </p>
+                  
+                  {/* Quick Actions */}
+                  <div className="flex flex-wrap gap-3">
+                    <Button 
+                      size="lg"
+                      className="bg-white text-black hover:bg-white/90 font-medium"
+                      onClick={() => setActiveView('data')}
+                    >
                       <Upload className="mr-2 h-4 w-4" />
                       Upload Dataset
                     </Button>
-                  </>
-                ) : (
-                  <>
-                    <NoVisualizationsIllustration className="mb-8" />
-                    <h3 className="text-xl font-semibold mb-2">Ready to Visualize</h3>
-                    <p className="text-muted-foreground mb-6 max-w-md text-center">
-                      Your dataset is loaded. Create your first visualization to explore the data
-                    </p>
-                    <Button onClick={openVisualize}>
-                      <LineChart className="mr-2 h-4 w-4" />
-                      Create Visualization
+                    <Button 
+                      size="lg"
+                      variant="outline"
+                      className="border-white/20 text-white hover:bg-white/5"
+                      onClick={() => setIsPaletteOpen(true)}
+                    >
+                      <Command className="mr-2 h-4 w-4" />
+                      Quick Actions
+                      <kbd className="ml-2 text-xs bg-white/10 px-1.5 py-0.5 rounded">⌘K</kbd>
                     </Button>
-                  </>
-                )}
+                  </div>
+                </div>
+                
+                {/* Decorative element */}
+                <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 rounded-full blur-3xl" />
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Visualization workspace with feedback and recommendations */}
-            <VisualizationWorkspace
-              ref={visualizationPanelRef as any}
-              visualizations={visualizations}
-              onClearAll={handleClearAllVisualizations}
-              onExport={handleExportVisualization}
-              onRemove={handleRemoveVisualization}
-              onModify={(_id, prompt) => handleGenerateVisualization(prompt)}
-              isProcessing={isProcessing}
-              feedbackMap={visualizationFeedback}
-              canSubmitFeedback={canSubmitFeedback}
-              onVote={handleVisualizationVote}
-              onFavoriteToggle={(id, fav) => handleVisualizationFavorite(id, fav)}
-              highlightNew={highlightVisualizations}
-              autoInsights={autoInsightsSnapshot.recommendations}
-              autoInsightsLoading={autoInsightsSnapshot.isLoading}
-              autoInsightsError={autoInsightsSnapshot.error}
-              autoInsightsStatus={autoInsightsSnapshot.status}
-              onRunRecommendation={handleRunRecommendation}
-              savedVisualizationIds={savedVisualizationIds}
-              usedRecommendationKeys={usedRecommendationKeys}
-            />
-
-            {/* Collapsible insight panels (if in overview mode) */}
-            {currentLayout.preset === 'overview' && (
-              <div className="mt-8 grid gap-4 lg:grid-cols-3">
-                <CollapsiblePanel
-                  title="AI Usage"
-                  defaultCollapsed={currentLayout.panelsCollapsed.insights}
-                  preview={`${providerUsage?.totalRequests || 0} API calls`}
-                >
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span>Total Calls:</span>
-                      <span>{providerUsage?.totalRequests || 0}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Tokens Used:</span>
-                      <span>{providerUsage?.totalTokens || 0}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Cost:</span>
-                      <span>${providerUsage?.totalCost || 0}</span>
+          {/* Dataset Loaded State */}
+          {dataset && (
+            <div className="mb-6">
+              {/* Dataset Info Bar */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-500/20 flex items-center justify-center">
+                    <Database className="h-5 w-5 text-emerald-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-medium text-white">
+                      {metadata?.filename || 'Dataset'}
+                    </h2>
+                    <div className="flex items-center gap-3 text-sm text-white/40">
+                      <span>{metadata?.rowCount?.toLocaleString() || 0} rows</span>
+                      <span className="w-1 h-1 rounded-full bg-white/20" />
+                      <span>{metadata?.columns?.length || 0} columns</span>
+                      {metadata?.fileSize && (
+                        <>
+                          <span className="w-1 h-1 rounded-full bg-white/20" />
+                          <span>{formatBytes(metadata.fileSize)}</span>
+                        </>
+                      )}
                     </div>
                   </div>
-                </CollapsiblePanel>
-
-                <CollapsiblePanel
-                  title={t('sidebar.feedback')}
-                  icon={<MessageSquare className="h-4 w-4" />}
-                  defaultCollapsed={currentLayout.panelsCollapsed.feedback}
-                  preview={`${(feedbackOverview?.dataset?.likes ?? 0) + (feedbackOverview?.dataset?.dislikes ?? 0)} responses`}
-                >
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span>Positive:</span>
-                      <span>{feedbackOverview?.dataset?.likes || 0}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Negative:</span>
-                      <span>{feedbackOverview?.dataset?.dislikes || 0}</span>
-                    </div>
-                  </div>
-                </CollapsiblePanel>
-
-                <CollapsiblePanel
-                  title="Community"
-                  icon={<Users className="h-4 w-4" />}
-                  defaultCollapsed={currentLayout.panelsCollapsed.community}
-                  preview="Connect with others"
-                >
-                  <KnowledgeGraphIllustration className="mx-auto" />
-                </CollapsiblePanel>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-white/60 hover:text-white hover:bg-white/5"
+                    onClick={() => setActiveView('data')}
+                  >
+                    <FileUp className="mr-2 h-4 w-4" />
+                    Change Dataset
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="bg-violet-600 hover:bg-violet-700 text-white"
+                    onClick={runAutoInsights}
+                    disabled={isProcessing}
+                  >
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Auto Insights
+                  </Button>
+                </div>
               </div>
-            )}
+
+              {/* Prompt Input - Always visible when dataset loaded */}
+              <Card className="bg-white/[0.02] border-white/5 p-4 mb-6">
+                <div className="flex items-start gap-4">
+                  <div className="h-8 w-8 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center flex-shrink-0">
+                    <Wand2 className="h-4 w-4 text-violet-400" />
+                  </div>
+                  <div className="flex-1">
+                    <PromptInput
+                      onSubmit={handlePromptSubmit}
+                      isProcessing={isProcessing}
+                      placeholder="Describe the visualization you want to create..."
+                      suggestions={[
+                        'Show top 10 by revenue',
+                        'Create a pie chart of categories',
+                        'Compare trends over time',
+                        'Find correlations in the data',
+                      ]}
+                    />
+                  </div>
+                </div>
+              </Card>
+            </div>
+          )}
+
+          {/* Two Column Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Left Panel - Data/Upload */}
+            <div className="lg:col-span-4 xl:col-span-3">
+              <Card className="bg-white/[0.02] border-white/5 overflow-hidden">
+                {/* Panel Tabs */}
+                <div className="flex border-b border-white/5">
+                  <button
+                    onClick={() => setActiveView('data')}
+                    className={cn(
+                      "flex-1 px-4 py-3 text-sm font-medium transition-colors",
+                      activeView === 'data'
+                        ? "text-white bg-white/5 border-b-2 border-violet-500"
+                        : "text-white/40 hover:text-white/60"
+                    )}
+                  >
+                    <Database className="inline-block mr-2 h-4 w-4" />
+                    Data
+                  </button>
+                  <button
+                    onClick={() => setActiveView('create')}
+                    className={cn(
+                      "flex-1 px-4 py-3 text-sm font-medium transition-colors",
+                      activeView === 'create'
+                        ? "text-white bg-white/5 border-b-2 border-violet-500"
+                        : "text-white/40 hover:text-white/60"
+                    )}
+                  >
+                    <BarChart3 className="inline-block mr-2 h-4 w-4" />
+                    Create
+                  </button>
+                </div>
+
+                {/* Panel Content */}
+                <div className="p-4 max-h-[calc(100vh-300px)] overflow-y-auto">
+                  {activeView === 'data' ? (
+                    <UploadTabContent
+                      metadata={metadata ?? null}
+                      isProcessing={isProcessing}
+                      isLoadingSamples={isLoadingSamples}
+                      samples={sampleDatasets}
+                      activeDatasetId={dataset?.id}
+                      onFileUpload={handleFileUpload}
+                      onClearDataset={handleClearDataset}
+                      onLoadSample={handleLoadSampleDataset}
+                      planTier={planTier}
+                      planLimitMb={planLimitMb}
+                      summary={datasetSummary}
+                      isSummaryLoading={isSummaryLoading}
+                      onRefreshSummary={handleRefreshSummary}
+                    />
+                  ) : (
+                    <VisualizeTabContent
+                      datasetId={dataset?.id ?? null}
+                      isProcessing={isProcessing}
+                      useHeuristics={useHeuristics}
+                      hasDataset={Boolean(dataset)}
+                      onSubmitPrompt={handlePromptSubmit}
+                      onQuickAction={handleGenerateVisualization}
+                      onProcessingChange={setIsProcessing}
+                      datasetFeedback={datasetFeedback}
+                      canSubmitFeedback={canSubmitFeedback}
+                      onDatasetVote={handleDatasetVote}
+                      onDatasetFavorite={handleDatasetFavorite}
+                      leaderboardDatasets={datasetLeaderboard}
+                      leaderboardVisualizations={visualizationLeaderboard}
+                      leaderboardLoading={leaderboardLoading}
+                      onRefreshLeaderboards={refreshLeaderboards}
+                      onNavigateToVisualizations={focusVisualizations}
+                      onAutoInsightsUpdate={handleAutoInsightsUpdate}
+                      onRegisterAutoInsightsRunner={(runner) => {
+                        autoInsightsRunnerRef.current = runner ?? null;
+                      }}
+                      onRegisterRecommendationRunner={(runner) => {
+                        recommendationRunnerRef.current = runner ?? null;
+                      }}
+                    />
+                  )}
+                </div>
+              </Card>
+            </div>
+
+            {/* Right Panel - Visualizations */}
+            <div className="lg:col-span-8 xl:col-span-9">
+              {visualizations.length > 0 ? (
+                <VisualizationWorkspace
+                  ref={visualizationPanelRef as any}
+                  visualizations={visualizations}
+                  onClearAll={handleClearAllVisualizations}
+                  onExport={handleExportVisualization}
+                  onRemove={handleRemoveVisualization}
+                  onModify={(_id, prompt) => handleGenerateVisualization(prompt)}
+                  isProcessing={isProcessing}
+                  feedbackMap={visualizationFeedback}
+                  canSubmitFeedback={canSubmitFeedback}
+                  onVote={handleVisualizationVote}
+                  onFavoriteToggle={(id, fav) => handleVisualizationFavorite(id, fav)}
+                  highlightNew={highlightVisualizations}
+                  autoInsights={autoInsightsSnapshot.recommendations}
+                  autoInsightsLoading={autoInsightsSnapshot.isLoading}
+                  autoInsightsError={autoInsightsSnapshot.error}
+                  autoInsightsStatus={autoInsightsSnapshot.status}
+                  onRunRecommendation={handleRunRecommendation}
+                  savedVisualizationIds={savedVisualizationIds}
+                  usedRecommendationKeys={usedRecommendationKeys}
+                />
+              ) : (
+                /* Empty State */
+                <Card className="bg-white/[0.02] border-white/5 h-full min-h-[500px] flex items-center justify-center">
+                  <div className="text-center max-w-md px-8">
+                    {!dataset ? (
+                      <>
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20 mb-6">
+                          <Layers className="h-8 w-8 text-violet-400" />
+                        </div>
+                        <h3 className="text-xl font-medium text-white mb-2">
+                          No dataset loaded
+                        </h3>
+                        <p className="text-white/40 mb-6 leading-relaxed">
+                          Upload a CSV, JSON, or Excel file to start creating visualizations with AI assistance.
+                        </p>
+                        <Button
+                          onClick={() => setActiveView('data')}
+                          className="bg-violet-600 hover:bg-violet-700 text-white"
+                        >
+                          <Upload className="mr-2 h-4 w-4" />
+                          Upload Dataset
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 mb-6">
+                          <BarChart3 className="h-8 w-8 text-emerald-400" />
+                        </div>
+                        <h3 className="text-xl font-medium text-white mb-2">
+                          Ready to visualize
+                        </h3>
+                        <p className="text-white/40 mb-6 leading-relaxed">
+                          Your dataset is loaded. Describe what you want to see or run Auto Insights to get AI-recommended visualizations.
+                        </p>
+                        <div className="flex items-center justify-center gap-3">
+                          <Button
+                            onClick={runAutoInsights}
+                            disabled={isProcessing}
+                            className="bg-violet-600 hover:bg-violet-700 text-white"
+                          >
+                            <Sparkles className="mr-2 h-4 w-4" />
+                            Auto Insights
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setActiveView('create')}
+                            className="border-white/10 text-white hover:bg-white/5"
+                          >
+                            <Plus className="mr-2 h-4 w-4" />
+                            Create Manually
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </Card>
+              )}
+            </div>
           </div>
-        </main>
-      </div>
-
-      {/* Floating Action Toolbar (if enabled) */}
-      {currentLayout.showActionBar && (
-        <FloatingActionToolbar
-          actions={fabActions}
-          position="top-right"
-          style="radial"
-        />
-      )}
-
-      {/* Status Bar (if enabled) */}
-      {currentLayout.showStatusBar && (
-        <StatusBar
-          dataset={dataset ? {
-            name: dataset.metadata?.filename || 'Dataset',
-            rows: dataset.metadata?.rowCount || 0,
-            columns: dataset.metadata?.columns.length || 0,
-            size: '-'
-          } : undefined}
-          visualizations={visualizations.length}
-          user={{
-            name: isGuest ? 'Guest' : 'User',
-            plan: planTier
-          }}
-          connection="online"
-          lastSync={new Date()}
-        />
-      )}
+        </div>
+      </main>
 
       {showSettings && <SettingsDialog isOpen={showSettings} onClose={closeSettings} />}
 
@@ -851,50 +474,6 @@ export default function DashboardPage() {
         onClose={() => setIsPaletteOpen(false)}
         actions={commandActions}
       />
-      
-      {/* Collapsible Footer */}
-      <div className={cn(
-        "relative transition-all duration-300 ease-out border-t border-border/50",
-        footerCollapsed ? "h-12" : "h-auto"
-      )}>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setFooterCollapsed(!footerCollapsed)}
-          className={cn(
-            "absolute -top-10 left-1/2 -translate-x-1/2 z-10",
-            "flex items-center gap-2 rounded-full px-3 py-1",
-            "bg-background/80 backdrop-blur-sm border border-border/50",
-            "hover:bg-background/90 hover:border-border",
-            "transition-all duration-300"
-          )}
-        >
-          <span className="text-xs text-muted-foreground">
-            {footerCollapsed ? 'Show' : 'Hide'} Footer
-          </span>
-          <ChevronUp 
-            className={cn(
-              "h-3 w-3 transition-transform duration-300",
-              footerCollapsed ? "rotate-180" : ""
-            )}
-          />
-        </Button>
-        
-        <div className={cn(
-          "overflow-hidden transition-all duration-300 ease-out",
-          footerCollapsed ? "opacity-0 invisible h-0" : "opacity-100 visible"
-        )}>
-          <SiteFooter />
-        </div>
-        
-        {footerCollapsed && (
-          <div className="h-12 bg-background/50 backdrop-blur-sm flex items-center justify-center">
-            <p className="text-xs text-muted-foreground">
-              © 2024 OpenStrand. All rights reserved.
-            </p>
-          </div>
-        )}
-      </div>
     </div>
   );
 }
