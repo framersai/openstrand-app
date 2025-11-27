@@ -249,7 +249,7 @@ export default function DashboardPage() {
                     />
                   </TabsContent>
 
-                  <TabsContent value="visualize" className="flex-1 overflow-y-auto p-3 mt-0">
+                  <TabsContent value="visualize" className="flex-1 overflow-y-auto p-3 mt-0 data-[state=inactive]:hidden" forceMount>
                     <VisualizeTabContent
                       datasetId={dataset?.id ?? null}
                       isProcessing={isProcessing}
