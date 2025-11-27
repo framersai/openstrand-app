@@ -30,15 +30,15 @@ export function ProductCards() {
       iconColor: 'text-indigo-600 dark:text-indigo-400',
       bgColor: 'bg-indigo-50 dark:bg-indigo-900/20',
       title: 'Looms & Weaves',
-      subtitle: 'Trees + Graphs Simultaneously',
-      description: 'Looms organize Strands in hierarchical trees. Weaves connect them as knowledge graphs. Navigate by structure OR by concept—both views work on the same data.',
+      subtitle: 'Trees + Graphs + YAML Schema',
+      description: 'Looms organize Strands in hierarchical trees. Weaves connect them as knowledge graphs. Define them with YAML frontmatter, customize with icons and styles, save locally then publish.',
       features: [
-        'Multi-hierarchy organization',
-        'Same Strand, different parents',
-        'Conceptual link types (prerequisite, cites, derived)',
+        'YAML/Markdown schema definitions',
+        'Custom icons & visual styling',
+        'Local-first save → publish workflow',
         'Force-directed graph visualization'
       ],
-      badge: 'Dual Navigation'
+      badge: 'Local-First'
     },
     {
       icon: Layers,
@@ -75,12 +75,12 @@ export function ProductCards() {
       iconColor: 'text-green-600 dark:text-green-400',
       bgColor: 'bg-green-50 dark:bg-green-900/20',
       title: 'Import Anything',
-      subtitle: 'Folders → Looms Automatically',
-      description: 'Drag & drop folders, Git repositories, or Obsidian vaults. We preserve your structure and convert everything into Strands with full metadata.',
+      subtitle: 'Folders → Looms with Schema Parsing',
+      description: 'Drag & drop folders with YAML frontmatter. OpenStrand parses your schema files, renders icons and styling, and preserves your structure as Looms and Weaves.',
       features: [
-        'Folder structure preserved',
-        'File types auto-detected',
-        'Git repo sync support',
+        'Auto-parse YAML frontmatter',
+        'Custom icon support (180+ presets)',
+        'Style properties (colors, gradients, thumbnails)',
         'Obsidian vault import'
       ],
       badge: 'Zero Migration Friction'
