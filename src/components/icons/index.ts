@@ -24,6 +24,12 @@ export {
   PKMSIcon
 } from './NavigationIcons';
 
+// Dynamic icon system for Looms and Weaves
+export { DynamicIcon, LoomIcon, WeaveIcon } from './DynamicIcon';
+export type { DynamicIconProps } from './DynamicIcon';
+export { IconPicker, InlineIconPicker } from './IconPicker';
+export type { IconPickerProps, InlineIconPickerProps } from './IconPicker';
+
 // Re-export commonly used Lucide icons for convenience
 export {
   // Navigation

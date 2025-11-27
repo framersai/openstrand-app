@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useFeatureFlags } from '@/lib/feature-flags';
-import { openstrandAPI } from '@/services/openstrand.api';
+import { LoomIcon } from '@/components/icons';
 
 interface Loom {
   id: string;
@@ -129,17 +129,26 @@ export function LoomSwitcher({ value, onChange, className }: LoomSwitcherProps) 
         <Select value={value} onValueChange={onChange} disabled={loading}>
           <SelectTrigger className="w-[220px]">
             <div className="flex items-center gap-2">
-              <Layers3 className="h-4 w-4" />
+              <LoomIcon 
+                iconId={looms.find(l => l.id === value)?.icon} 
+                className="h-4 w-4" 
+                decorative 
+              />
               <SelectValue placeholder="Select Loom..." />
             </div>
           </SelectTrigger>
           <SelectContent>
             {looms.map((loom) => (
               <SelectItem key={loom.id} value={loom.id}>
-                <div className="flex items-center justify-between gap-2">
-                  <span>{loom.name}</span>
+                <div className="flex items-center gap-2">
+                  <LoomIcon 
+                    iconId={loom.icon} 
+                    className="h-4 w-4 shrink-0" 
+                    decorative 
+                  />
+                  <span className="truncate">{loom.name}</span>
                   {loom.useCase && (
-                    <Badge variant="outline" className="text-[9px]">
+                    <Badge variant="outline" className="text-[9px] ml-auto shrink-0">
                       {loom.useCase}
                     </Badge>
                   )}
