@@ -13,8 +13,22 @@ interface Loom {
   id: string;
   name: string;
   description?: string;
-  useCase?: 'storytelling' | 'worldbuilding' | 'research' | 'notebook' | 'custom';
+  icon?: string;
+  useCase?: 'storytelling' | 'worldbuilding' | 'research' | 'notebook' | 'documentation' | 'education' | 'custom';
   strandCount?: number;
+  // Visual style properties (all optional)
+  thumbnail?: string;
+  coverImage?: string;
+  backgroundImage?: string;
+  backgroundColor?: string;
+  accentColor?: string;
+  textColor?: string;
+  borderColor?: string;
+  borderRadius?: string;
+  opacity?: number;
+  blur?: number;
+  gradient?: string;
+  customStyles?: Record<string, unknown>;
 }
 
 interface LoomSwitcherProps {

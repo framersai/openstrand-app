@@ -520,10 +520,29 @@ export interface WeaveEdge {
   metadata?: Record<string, unknown>;
 }
 
-export interface Weave {
+/**
+ * Style properties for visual customization of Weaves and Looms
+ */
+export interface EntityStyleProperties {
+  thumbnail?: string; // URL or data URI for thumbnail preview
+  coverImage?: string; // URL for cover/hero image
+  backgroundImage?: string; // URL for background image
+  backgroundColor?: string; // CSS color value
+  accentColor?: string; // Primary accent color
+  textColor?: string; // Text color override
+  borderColor?: string; // Border color
+  borderRadius?: string; // CSS border-radius value
+  opacity?: number; // Background opacity (0-1)
+  blur?: number; // Background blur amount in px
+  gradient?: string; // CSS gradient string
+  customStyles?: Record<string, unknown>; // Additional custom CSS properties
+}
+
+export interface Weave extends Partial<EntityStyleProperties> {
   id: string;
   name: string;
   domain: string;
+  icon?: string;
   nodes: WeaveNode[];
   edges: WeaveEdge[];
   metadata?: Record<string, unknown>;
@@ -539,7 +558,10 @@ export interface Weave {
 }
 
 // UI-specific types
-export interface WeaveViewerData {
+export interface WeaveViewerData extends Partial<EntityStyleProperties> {
+  name?: string;
+  description?: string;
+  icon?: string;
   nodes: Array<{
     id: string;
     type: string;
