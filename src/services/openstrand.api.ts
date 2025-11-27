@@ -1258,7 +1258,7 @@ export const weaveAPI = {
     }
 
     const query = params.toString();
-    const response = await apiFetch(query ? `/weave?${query}` : '/weave');
+    const response = await apiFetch(query ? `/weaves?${query}` : '/weaves');
     return deserializeWeave(await parseData(response));
   },
 
@@ -1266,7 +1266,7 @@ export const weaveAPI = {
    * Get subgraph around specific nodes
    */
   async getSubgraph(nodeIds: string[], depth: number = 1): Promise<Weave> {
-    const response = await apiFetch('/weave/subgraph', {
+    const response = await apiFetch('/weaves/subgraph', {
       method: 'POST',
       body: JSON.stringify({ nodeIds, node_ids: nodeIds, depth }),
     });
@@ -1280,7 +1280,7 @@ export const weaveAPI = {
     source: string,
     target: string,
   ): Promise<{ path: string[]; edges: WeaveEdge[] }> {
-    const response = await apiFetch(`/weave/path?source=${source}&target=${target}`);
+    const response = await apiFetch(`/weaves/path?source=${source}&target=${target}`);
     const payload = await parseData<{ path?: string[]; edges?: any[] }>(response);
     return {
       path: Array.isArray(payload?.path) ? payload!.path! : [],
@@ -1312,7 +1312,7 @@ export const weaveAPI = {
    * Find learning path to target
    */
   async findLearningPath(target: string): Promise<string[]> {
-    const response = await apiFetch(`/weave/learning-path/${target}`);
+    const response = await apiFetch(`/weaves/learning-path/${target}`);
     const payload = await parseData<{ path?: string[] }>(response);
     if (Array.isArray(payload)) {
       return payload as unknown as string[];
@@ -1330,7 +1330,7 @@ export const weaveAPI = {
     communities: number;
     diameter: number;
   }> {
-    const response = await apiFetch('/weave/metrics');
+    const response = await apiFetch('/weaves/metrics');
     return await parseData(response);
   },
 
@@ -1348,7 +1348,7 @@ export const weaveAPI = {
       }
     >
   > {
-    const response = await apiFetch('/weave/centrality');
+    const response = await apiFetch('/weaves/centrality');
     return await parseData(response);
   },
 
@@ -1359,7 +1359,7 @@ export const weaveAPI = {
     completedIds: string[],
     interests?: string[],
   ): Promise<Array<{ strandId: string; score: number; reason: string }>> {
-    const response = await apiFetch('/weave/recommendations', {
+    const response = await apiFetch('/weaves/recommendations', {
       method: 'POST',
       body: JSON.stringify({
         completed: completedIds,
