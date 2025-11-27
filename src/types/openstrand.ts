@@ -860,26 +860,3 @@ export interface OpenStrandStore {
   setError: (error: string | null) => void;
   clearError: () => void;
 }
-
-
-  loadQuality: (strandId: string) => Promise<QualityMatrix>;
-  submitQualityVote: (
-    strandId: string,
-    payload: QualityVotePayload
-  ) => Promise<QualityMatrix>;
-  refreshQuality: (strandId: string) => Promise<void>;
-  loadCapabilities: () => Promise<CapabilityMatrix | null>;
-  loadArtisanQuota: () => Promise<AIArtisanQuota | null>;
-  loadTopVisualizations: (limit?: number) => Promise<Strand[]>;
-  loadTopDatasets: (limit?: number) => Promise<Strand[]>;
-  completeLocalOnboarding: (completed?: boolean) => Promise<void>;
-  completeTeamOnboarding: (completed?: boolean) => Promise<void>;
-  loadPlaceholderPreferences: () => Promise<PlaceholderPreferences | null>;
-  updatePlaceholderPreferences: (
-    preferences: PlaceholderPreferences,
-  ) => Promise<PlaceholderPreferences | null>;
-
-  setError: (error: string | null) => void;
-  clearError: () => void;
-}
-
