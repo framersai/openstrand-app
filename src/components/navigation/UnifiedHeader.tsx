@@ -717,15 +717,18 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
 
         {/* Mobile menu (overlay) */}
         {mobileMenuOpen && (
-          <div className="fixed inset-0 z-50 lg:hidden">
+          <div className="fixed inset-0 z-[55] lg:hidden" onClick={(e) => e.target === e.currentTarget && closeMobileMenu()}>
             {/* Backdrop */}
             <div
               className="absolute inset-0 bg-background/70 backdrop-blur-md"
               onClick={closeMobileMenu}
               aria-hidden="true"
             />
-            {/* Panel */}
-            <div className="absolute left-3 right-3 top-16 max-h-[calc(100vh-5rem)] overflow-y-auto rounded-2xl border border-border/50 bg-background/98 p-4 shadow-2xl">
+            {/* Panel - higher z-index to be above backdrop */}
+            <div 
+              className="absolute left-3 right-3 top-16 z-[56] max-h-[calc(100vh-5rem)] overflow-y-auto rounded-2xl border border-border/50 bg-background p-4 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
               {showDashboardNav ? (
                 <nav className="flex flex-col gap-3">
                   {/* Mobile dashboard navigation */}
@@ -742,12 +745,15 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
                             <Link
                               key={item.key}
                               href={localizePath(item.href)}
-                              onClick={closeMobileMenu}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                closeMobileMenu();
+                              }}
                               className={cn(
                                 "flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors",
                                 isActive
                                   ? "bg-primary/15 text-primary"
-                                  : "text-foreground/80 hover:bg-muted/60"
+                                  : "text-foreground/80 hover:bg-muted/60 active:bg-muted"
                               )}
                             >
                               <span className={cn(
@@ -779,7 +785,13 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
                     asChild
                     className="w-full rounded-xl bg-gradient-to-r from-primary to-primary/80 py-3 font-semibold shadow-lg shadow-primary/25"
                   >
-                    <Link href={importLink} onClick={closeMobileMenu}>
+                    <Link 
+                      href={importLink} 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        closeMobileMenu();
+                      }}
+                    >
                       <Sparkles className="mr-2 h-4 w-4" />
                       Create New
                     </Link>
@@ -815,14 +827,15 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
                                 <Link
                                   key={link.label}
                                   href={link.disabled ? '#' : link.href}
-                                  onClick={() => {
+                                  onClick={(e) => {
+                                    e.stopPropagation();
                                     if (!link.disabled) closeMobileMenu();
                                   }}
                                   target={link.external ? '_blank' : undefined}
                                   rel={link.external ? 'noreferrer' : undefined}
                                   className={cn(
                                     'flex items-start gap-3 rounded-lg px-2 py-2 text-sm transition',
-                                    link.disabled ? 'cursor-not-allowed opacity-60' : 'hover:bg-primary/10'
+                                    link.disabled ? 'cursor-not-allowed opacity-60' : 'hover:bg-primary/10 active:bg-primary/15'
                                   )}
                                 >
                                   <span className="mt-1">{link.icon}</span>
@@ -847,9 +860,12 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
                           'flex items-center gap-3 rounded-xl border px-3 py-3 text-sm font-medium transition',
                           isActive
                             ? 'border-primary/40 bg-primary/15 text-primary'
-                            : 'border-transparent text-foreground/75 hover:border-primary/30 hover:bg-primary/10'
+                            : 'border-transparent text-foreground/75 hover:border-primary/30 hover:bg-primary/10 active:bg-primary/15'
                         )}
-                        onClick={closeMobileMenu}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          closeMobileMenu();
+                        }}
                       >
                         {Icon && <Icon className="h-4 w-4" isActive={isActive} />}
                         <span>{item.label}</span>
@@ -880,19 +896,43 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
                       <>
                         <AuthButton suppressLocalBadge className="w-full justify-center" />
                         {isLandingPage && (
-                          <Button asChild size="sm" className="w-full" onClick={closeMobileMenu}>
-                            <Link href={openDashboardLink}>Open Dashboard</Link>
+                          <Button asChild size="sm" className="w-full">
+                            <Link 
+                              href={openDashboardLink}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                closeMobileMenu();
+                              }}
+                            >
+                              Open Dashboard
+                            </Link>
                           </Button>
                         )}
                       </>
                     ) : authEnabled ? (
                       <>
                         <Button asChild variant="secondary" size="sm" className="w-full">
-                          <Link href={signInLink} onClick={closeMobileMenu}>Log in</Link>
+                          <Link 
+                            href={signInLink} 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              closeMobileMenu();
+                            }}
+                          >
+                            Log in
+                          </Link>
                         </Button>
                         {isCloudMode && (
                           <Button asChild size="sm" className="w-full">
-                            <Link href={signUpLink} onClick={closeMobileMenu}>Sign up</Link>
+                            <Link 
+                              href={signUpLink} 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                closeMobileMenu();
+                              }}
+                            >
+                              Sign up
+                            </Link>
                           </Button>
                         )}
                       </>
@@ -901,7 +941,8 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
                         size="sm"
                         variant="secondary"
                         className="w-full"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.stopPropagation();
                           closeMobileMenu();
                           onOpenSettings();
                         }}
