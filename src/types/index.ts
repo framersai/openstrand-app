@@ -185,7 +185,8 @@ export type VisualizationType =
   | 'force-graph'
   | 'd3-force'
   | '3d-scatter'
-  | 'three-scatter';
+  | 'three-scatter'
+  | 'chart'; // Generic chart type from backend
 
 /**
  * Base interface for all visualizations

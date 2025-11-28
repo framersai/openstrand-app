@@ -216,15 +216,39 @@ function normalizeLeaderboardEntry(raw: any): LeaderboardEntry {
 }
 
 function normalizeVisualization(raw: any): Visualization {
+  // Handle wrapped response format { success: true, data: {...} }
+  const vizData = raw?.data || raw;
+  
   const datasetId =
-    raw.datasetId ??
-    raw.dataset_id ??
-    raw.dataset?.datasetId ??
-    raw.dataset?.dataset_id ??
+    vizData.datasetId ??
+    vizData.dataset_id ??
+    vizData.dataset?.datasetId ??
+    vizData.dataset?.dataset_id ??
     undefined;
+
+  // Extract chart type from various locations
+  const chartType = 
+    vizData.chartType ||
+    vizData.config?.chartType ||
+    (vizData.data?.chartType) ||
+    vizData.type;
+
+  // Normalize the type field - if it's 'chart', use the chartType
+  const normalizedType = vizData.type === 'chart' && chartType ? chartType : vizData.type;
+
+  // Extract the actual chart data if nested
+  const chartData = vizData.data?.data || vizData.data;
+
   return {
-    ...raw,
+    ...vizData,
     datasetId,
+    type: normalizedType,
+    data: chartData,
+    // Preserve the original config with chartType
+    config: {
+      ...vizData.config,
+      chartType: chartType,
+    },
   };
 }
 

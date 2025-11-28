@@ -129,15 +129,34 @@ const ChartDisplay = forwardRef<ChartDisplayRef, ChartDisplayProps>(
 
     /**
      * Get chart component based on visualization type
+     * Handles multiple data formats from the backend:
+     * - visualization.type directly (e.g., 'bar', 'line')
+     * - visualization.config?.chartType (e.g., 'bar', 'line')
+     * - visualization.data?.type === 'chart' with data.chartType
      */
     const getChartComponent = () => {
+      // Determine the actual chart type from various possible locations
+      const vizData = visualization.data as any;
+      const chartType = 
+        // Direct type on visualization
+        (visualization.type !== 'chart' && visualization.type) ||
+        // From config
+        (visualization.config as any)?.chartType ||
+        // From data object (backend format)
+        vizData?.chartType ||
+        // Fallback to visualization.type even if it's 'chart'
+        visualization.type;
+
+      // Get the actual chart data - it might be nested
+      const chartData = vizData?.data || vizData;
+
       const chartProps = {
         ref: chartRef,
-        data: visualization.data as any,
+        data: chartData as any,
         options: getChartOptions() as ChartOptions<any>,
       };
 
-      switch (visualization.type) {
+      switch (chartType) {
         case 'bar':
           return <Bar {...chartProps} />;
         case 'line':
@@ -150,10 +169,17 @@ const ChartDisplay = forwardRef<ChartDisplayRef, ChartDisplayProps>(
           return <Scatter {...chartProps} />;
         case 'radar':
           return <Radar {...chartProps} />;
+        case 'chart':
+          // If type is still 'chart', try to infer from data structure
+          if (chartData?.datasets?.[0]?.data?.[0]?.x !== undefined) {
+            return <Scatter {...chartProps} />;
+          }
+          // Default to bar chart
+          return <Bar {...chartProps} />;
         default:
           return (
             <div className="flex items-center justify-center h-full text-muted-foreground">
-              <p>Unsupported chart type: {visualization.type}</p>
+              <p>Unsupported chart type: {chartType}</p>
             </div>
           );
       }
