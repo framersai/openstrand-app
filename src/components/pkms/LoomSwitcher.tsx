@@ -169,3 +169,25 @@ export function LoomSwitcher({ value, onChange, className }: LoomSwitcherProps) 
     </div>
   );
 }
+
+                    <Badge variant="outline" className="text-[9px] ml-auto shrink-0">
+                      {loom.useCase}
+                    </Badge>
+                  )}
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button variant="outline" size="sm" className="gap-1">
+          <Plus className="h-3 w-3" />
+          New Loom
+        </Button>
+      </div>
+
+      <p className="mt-2 text-xs text-muted-foreground">
+        Each Loom is an independent project with its own strands, vocabulary, and knowledge graph
+      </p>
+    </div>
+  );
+}

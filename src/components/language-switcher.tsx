@@ -157,7 +157,7 @@ export function LanguageSwitcher({
             )}
             aria-label={tLanguage('change')}
           >
-            <LanguageGlyph className={cn(isChanging ? 'animate-spin' : '')} />
+              <LanguageGlyph className={cn(isChanging ? 'animate-spin' : '')} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
