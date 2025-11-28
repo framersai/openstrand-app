@@ -602,3 +602,5 @@ export function getRecommendedIconsForUseCase(
   return PRESET_ICONS.filter((icon) => categories.includes(icon.category));
 }
 
+
+

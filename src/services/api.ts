@@ -801,7 +801,7 @@ class ApiService {
     };
 
     const response = await fetchWithTimeout(
-      `${this.baseUrl}/visualize`,
+      `${this.baseUrl}/visualizations`,
       this.withAuth({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1100,7 +1100,7 @@ class ApiService {
     dataSummary?: any
   ): Promise<TierClassification> {
     const response = await fetchWithTimeout(
-      `${this.baseUrl}/visualize/classify`,
+      `${this.baseUrl}/visualizations/classify`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

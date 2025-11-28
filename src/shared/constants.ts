@@ -156,7 +156,7 @@ export const API_ENDPOINTS = {
   config: '/config',
   upload: '/upload',
   loadDefault: '/load-default',
-  visualize: '/visualize',
+  visualize: '/visualizations',
   costs: '/costs',
   datasets: '/datasets',
   visualizations: '/visualizations',
