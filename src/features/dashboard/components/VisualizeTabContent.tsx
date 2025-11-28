@@ -5,25 +5,17 @@ import { toast } from 'react-hot-toast';
 import {
   Sparkles,
   TrendingUp,
-  PieChart,
-  Table,
-  BarChart3,
-  LineChart,
   Loader2,
   AlertCircle,
   CheckCircle2,
-  ChevronDown,
-  ChevronRight,
   Wand2,
   Zap,
-  Info,
+  ArrowRight,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PromptInput } from '@/components/prompt-input';
 import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { api, ApiError } from '@/services/api';
 import type { DatasetInsights, FeedbackSummary, LeaderboardEntry } from '@/types';
 import { useAutoInsightsStore } from '@/store/auto-insights-store';
@@ -58,13 +50,13 @@ interface VisualizeTabContentProps {
   onSubmitPrompt: (prompt: string) => Promise<void> | void;
   onQuickAction: (prompt: string) => Promise<void> | void;
   onProcessingChange?: (processing: boolean) => void;
-  datasetFeedback: FeedbackSummary | null;
-  canSubmitFeedback: boolean;
-  onDatasetVote: (vote: 'up' | 'down' | null) => void;
-  onDatasetFavorite: (favorite: boolean) => void;
-  leaderboardDatasets: LeaderboardEntry[];
-  leaderboardVisualizations: LeaderboardEntry[];
-  leaderboardLoading: boolean;
+  datasetFeedback?: FeedbackSummary | null;
+  canSubmitFeedback?: boolean;
+  onDatasetVote?: (vote: 'up' | 'down' | null) => void;
+  onDatasetFavorite?: (favorite: boolean) => void;
+  leaderboardDatasets?: LeaderboardEntry[];
+  leaderboardVisualizations?: LeaderboardEntry[];
+  leaderboardLoading?: boolean;
   onRefreshLeaderboards?: () => void;
   onNavigateToVisualizations?: () => void;
   onAutoInsightsUpdate?: (snapshot: AutoInsightsSnapshot) => void;
@@ -74,71 +66,11 @@ interface VisualizeTabContentProps {
   ) => void;
 }
 
-type QuickAction = {
-  id: string;
-  type: 'auto' | 'prompt';
-  label: string;
-  description?: string;
-  prompt?: string;
-  icon: React.ComponentType<{ className?: string }>;
-};
-
-const QUICK_ACTIONS: QuickAction[] = [
-  {
-    id: 'auto-insights',
-    type: 'auto',
-    label: 'Auto Insights',
-    description: 'AI-powered analysis',
-    icon: Sparkles,
-  },
-  {
-    id: 'bar-chart',
-    type: 'prompt',
-    label: 'Bar Chart',
-    description: 'Compare values',
-    prompt: 'Create a bar chart showing the top values by the most relevant metric',
-    icon: BarChart3,
-  },
-  {
-    id: 'line-chart',
-    type: 'prompt',
-    label: 'Trend Line',
-    description: 'Show trends',
-    prompt: 'Create a line chart showing trends over time',
-    icon: LineChart,
-  },
-  {
-    id: 'pie-chart',
-    type: 'prompt',
-    label: 'Pie Chart',
-    description: 'Show distribution',
-    prompt: 'Create a pie chart showing the distribution of categories',
-    icon: PieChart,
-  },
-  {
-    id: 'table',
-    type: 'prompt',
-    label: 'Data Table',
-    description: 'View raw data',
-    prompt: 'Show the top 10 rows sorted by the most important metric',
-    icon: Table,
-  },
-  {
-    id: 'top-performers',
-    type: 'prompt',
-    label: 'Top Performers',
-    description: 'Ranking view',
-    prompt: 'Rank the top 10 items by the primary metric and show growth percentage',
-    icon: TrendingUp,
-  },
-];
-
 const PROMPT_SUGGESTIONS = [
-  'Create a pie chart of industry breakdown',
-  'Show correlation between key metrics',
-  'Compare values across categories',
-  'Top 10 by primary metric',
-  'Show trends over time',
+  'Show a bar chart of top values',
+  'Create a pie chart breakdown',
+  'Display trends over time',
+  'Compare categories side by side',
 ];
 
 const buildPromptFromRecommendation = (recommendation: InsightRecommendation): string => {
@@ -186,22 +118,13 @@ export function VisualizeTabContent({
   const [autoInsightsError, setAutoInsightsError] = useState<string | null>(null);
   const [autoInsightsStatus, setAutoInsightsStatus] = useState<string | null>(null);
   const [autoInsightsLogs, setAutoInsightsLogs] = useState<string[]>([]);
+  const [clickedRecommendationKey, setClickedRecommendationKey] = useState<string | null>(null);
   const autoInsightsToastRef = useRef<string | null>(null);
-
-  const [expandedSections, setExpandedSections] = useState({
-    prompt: true,
-    quickActions: true,
-    insights: true,
-  });
 
   const cachedInsightsEntry = useAutoInsightsStore((state) =>
     datasetId ? state.entries[datasetId] : undefined
   );
   const setCachedInsights = useAutoInsightsStore((state) => state.setInsights);
-
-  const toggleSection = (section: keyof typeof expandedSections) => {
-    setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
-  };
 
   const appendLog = useCallback((message: string) => {
     const timestamp = new Date().toLocaleTimeString();
@@ -231,7 +154,6 @@ export function VisualizeTabContent({
     if (cachedInsightsEntry && cachedInsightsEntry.recommendations.length > 0) {
       setAutoInsights(cachedInsightsEntry.insights);
       setAutoInsightsStatus('Using cached insights');
-      setExpandedSections((prev) => ({ ...prev, insights: true }));
       toast.success('Insights ready');
       return;
     }
@@ -254,7 +176,6 @@ export function VisualizeTabContent({
       if (autoInsightsToastRef.current) {
         toast.success('Insights ready', { id: autoInsightsToastRef.current });
       }
-      setExpandedSections((prev) => ({ ...prev, insights: true }));
       onNavigateToVisualizations?.();
     } catch (error) {
       const message = error instanceof ApiError
@@ -273,43 +194,28 @@ export function VisualizeTabContent({
   }, [appendLog, cachedInsightsEntry, datasetId, onProcessingChange, onNavigateToVisualizations, setCachedInsights]);
 
   const handleRecommendationRun = useCallback(
-    (recommendation: InsightRecommendation) => {
+    async (recommendation: InsightRecommendation) => {
+      const key = recommendation.key || recommendation.title || 'rec';
+      setClickedRecommendationKey(key);
+      
       const prompt = buildPromptFromRecommendation(recommendation);
       appendLog(`Running recommendation: ${recommendation.title || 'Chart'}`);
       const toastId = toast.loading('Creating visualization...');
       onNavigateToVisualizations?.();
 
-      return Promise.resolve(onQuickAction(prompt))
-        .then(() => {
-          toast.success('Visualization created', { id: toastId });
-          appendLog('Visualization created');
-        })
-        .catch((err) => {
-          console.error('Failed:', err);
-          toast.error('Failed to create visualization', { id: toastId });
-          throw err;
-        });
+      try {
+        await Promise.resolve(onQuickAction(prompt));
+        toast.success('Visualization created', { id: toastId });
+        appendLog('Visualization created');
+      } catch (err) {
+        console.error('Failed:', err);
+        toast.error('Failed to create visualization', { id: toastId });
+        throw err;
+      } finally {
+        setClickedRecommendationKey(null);
+      }
     },
     [appendLog, onNavigateToVisualizations, onQuickAction]
-  );
-
-  const handleQuickActionRun = useCallback(
-    (action: QuickAction) => {
-      if (action.type === 'auto') {
-        handleAutoInsights();
-        return;
-      }
-      if (!action.prompt) return;
-
-      appendLog(`Quick action: ${action.label}`);
-      const toastId = toast.loading(`Running "${action.label}"...`);
-      onNavigateToVisualizations?.();
-
-      Promise.resolve(onQuickAction(action.prompt))
-        .then(() => toast.success(`"${action.label}" ready`, { id: toastId }))
-        .catch(() => toast.error(`Failed to run "${action.label}"`, { id: toastId }));
-    },
-    [appendLog, handleAutoInsights, onNavigateToVisualizations, onQuickAction]
   );
 
   const recommendations = useMemo<InsightRecommendation[]>(() => {
@@ -340,178 +246,199 @@ export function VisualizeTabContent({
   }, [handleRecommendationRun, onRegisterRecommendationRunner]);
 
   return (
-    <div className="space-y-3">
-      {/* Prompt Input Section */}
-      <Card>
-        <CardHeader
-          className="cursor-pointer hover:bg-muted/50 transition-colors py-3 px-4"
-          onClick={() => toggleSection('prompt')}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Wand2 className="h-4 w-4 text-primary" />
-              <CardTitle className="text-sm font-medium">Create Visualization</CardTitle>
-              {useHeuristics && (
-                <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                  <Zap className="mr-0.5 h-2.5 w-2.5" />
-                  Fast
-                </Badge>
-              )}
-            </div>
-            {expandedSections.prompt ? (
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-            ) : (
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            )}
-          </div>
-        </CardHeader>
-        {expandedSections.prompt && (
-          <CardContent className="pt-0 pb-3 px-4">
-            <PromptInput
-              onSubmit={onSubmitPrompt}
-              isProcessing={isProcessing}
-              suggestions={PROMPT_SUGGESTIONS}
-              placeholder="Describe the visualization you want..."
-            />
-          </CardContent>
+    <div className="flex flex-col gap-6" role="region" aria-label="Visualization creation panel">
+      {/* Header */}
+      <header className="space-y-1">
+        <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
+          <Wand2 className="h-4 w-4 text-primary" aria-hidden="true" />
+          Create Visualization
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Describe what you want to see or use AI to analyze your data
+        </p>
+      </header>
+
+      {/* Prompt Input */}
+      <section aria-label="Visualization prompt input">
+        <PromptInput
+          onSubmit={onSubmitPrompt}
+          isProcessing={isProcessing}
+          suggestions={PROMPT_SUGGESTIONS}
+          placeholder="Describe the visualization you want..."
+        />
+        {useHeuristics && (
+          <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1">
+            <Zap className="h-3 w-3 text-amber-500" aria-hidden="true" />
+            <span>Fast mode enabled - using heuristics for quick results</span>
+          </p>
         )}
-      </Card>
+      </section>
 
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader
-          className="cursor-pointer hover:bg-muted/50 transition-colors py-3 px-4"
-          onClick={() => toggleSection('quickActions')}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <CardTitle className="text-sm font-medium">Quick Actions</CardTitle>
-            </div>
-            {expandedSections.quickActions ? (
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-            ) : (
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            )}
-          </div>
-        </CardHeader>
-        {expandedSections.quickActions && (
-          <CardContent className="pt-0 pb-3 px-4 grid grid-cols-2 gap-2">
-            {QUICK_ACTIONS.map((action) => {
-              const Icon = action.icon;
-              const disabled = !hasDataset || isProcessing || (action.type === 'auto' && autoInsightsLoading);
-              return (
-                <Tooltip key={action.id}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={disabled}
-                      onClick={() => handleQuickActionRun(action)}
-                      className={cn(
-                        "h-auto py-2 px-3 justify-start flex-col items-start gap-0.5",
-                        action.type === 'auto' && "col-span-2 flex-row items-center gap-2 bg-primary/5 border-primary/20 hover:bg-primary/10"
-                      )}
-                    >
-                      <Icon className={cn("h-4 w-4", action.type === 'auto' && "text-primary")} />
-                      <span className="text-xs font-medium">{action.label}</span>
-                      {action.description && action.type !== 'auto' && (
-                        <span className="text-[10px] text-muted-foreground">{action.description}</span>
-                      )}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>{action.description}</TooltipContent>
-                </Tooltip>
-              );
-            })}
-          </CardContent>
-        )}
-      </Card>
-
-      {/* AI Insights Status & Recommendations */}
-      {(autoInsightsLoading || autoInsightsError || recommendations.length > 0) && (
-        <Card>
-          <CardHeader
-            className="cursor-pointer hover:bg-muted/50 transition-colors py-3 px-4"
-            onClick={() => toggleSection('insights')}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                {autoInsightsLoading ? (
-                  <Loader2 className="h-4 w-4 text-primary animate-spin" />
-                ) : autoInsightsError ? (
-                  <AlertCircle className="h-4 w-4 text-destructive" />
-                ) : (
-                  <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                )}
-                <CardTitle className="text-sm font-medium">AI Suggestions</CardTitle>
-                {recommendations.length > 0 && (
-                  <Badge variant="secondary" className="text-[10px]">
-                    {recommendations.length}
-                  </Badge>
-                )}
-              </div>
-              {expandedSections.insights ? (
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
-              ) : (
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              )}
-            </div>
-          </CardHeader>
-          {expandedSections.insights && (
-            <CardContent className="pt-0 pb-3 px-4 space-y-2">
-              {/* Status */}
-              {(autoInsightsLoading || autoInsightsError || autoInsightsStatus) && (
-                <p className={cn(
-                  "text-xs",
-                  autoInsightsLoading && "text-muted-foreground",
-                  autoInsightsError && "text-destructive",
-                  !autoInsightsLoading && !autoInsightsError && "text-emerald-600 dark:text-emerald-400"
-                )}>
-                  {autoInsightsLoading ? 'Analyzing...' : autoInsightsError || autoInsightsStatus}
-                </p>
-              )}
-
-              {/* Recommendations */}
-              {recommendations.length > 0 && (
-                <div className="space-y-1.5">
-                  {recommendations.slice(0, 5).map((rec, i) => (
-                    <button
-                      key={rec.key || i}
-                      onClick={() => handleRecommendationRun(rec)}
-                      disabled={isProcessing}
-                      className={cn(
-                        "w-full text-left p-2.5 rounded-lg transition-all text-xs",
-                        "bg-muted/50 hover:bg-muted border border-transparent hover:border-border",
-                        "disabled:opacity-50 disabled:cursor-not-allowed"
-                      )}
-                    >
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <Sparkles className="h-3 w-3 text-primary" />
-                        <span className="font-medium">
-                          {rec.title || `${rec.type || 'Chart'}: ${rec.y || 'metric'}`}
-                        </span>
-                      </div>
-                      {rec.description && (
-                        <p className="text-muted-foreground line-clamp-2 pl-5">{rec.description}</p>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </CardContent>
+      {/* Auto Insights Button */}
+      <section aria-label="AI analysis actions">
+        <Button
+          onClick={handleAutoInsights}
+          disabled={!hasDataset || isProcessing || autoInsightsLoading}
+          className={cn(
+            "w-full h-12 text-sm font-medium transition-all duration-300",
+            "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70",
+            "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+            autoInsightsLoading && "animate-pulse"
           )}
-        </Card>
+          aria-busy={autoInsightsLoading}
+          aria-describedby="auto-insights-status"
+        >
+          {autoInsightsLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+              <span>Analyzing your data...</span>
+            </>
+          ) : (
+            <>
+              <Sparkles className="mr-2 h-4 w-4" aria-hidden="true" />
+              <span>Run Auto Insights</span>
+            </>
+          )}
+        </Button>
+        
+        {!hasDataset && (
+          <p className="mt-2 text-xs text-muted-foreground text-center" role="status">
+            Upload a dataset first to enable AI analysis
+          </p>
+        )}
+      </section>
+
+      {/* Status & Recommendations */}
+      {(autoInsightsLoading || autoInsightsError || autoInsightsStatus || recommendations.length > 0) && (
+        <section 
+          aria-label="AI analysis results"
+          className="space-y-4"
+        >
+          {/* Status indicator */}
+          <div 
+            id="auto-insights-status"
+            className={cn(
+              "flex items-center gap-2 p-3 rounded-lg text-sm",
+              autoInsightsLoading && "bg-primary/5 text-primary border border-primary/20",
+              autoInsightsError && "bg-destructive/10 text-destructive border border-destructive/20",
+              !autoInsightsLoading && !autoInsightsError && autoInsightsStatus && "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20"
+            )}
+            role="status"
+            aria-live="polite"
+          >
+            {autoInsightsLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin flex-shrink-0" aria-hidden="true" />
+            ) : autoInsightsError ? (
+              <AlertCircle className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
+            ) : (
+              <CheckCircle2 className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
+            )}
+            <span className="font-medium">
+              {autoInsightsLoading ? 'Analyzing...' : autoInsightsError || autoInsightsStatus}
+            </span>
+            {recommendations.length > 0 && !autoInsightsLoading && (
+              <Badge 
+                variant="secondary" 
+                className="ml-auto text-xs font-medium"
+                aria-label={`${recommendations.length} recommendations available`}
+              >
+                {recommendations.length} suggestions
+              </Badge>
+            )}
+          </div>
+
+          {/* Recommendations List */}
+          {recommendations.length > 0 && (
+            <div className="space-y-2" role="list" aria-label="AI-generated visualization suggestions">
+              <h3 className="text-sm font-medium text-foreground sr-only">
+                Suggested Visualizations
+              </h3>
+              {recommendations.slice(0, 5).map((rec, i) => {
+                const key = rec.key || rec.title || `rec-${i}`;
+                const isClicked = clickedRecommendationKey === key;
+                const title = rec.title || `${rec.type || 'Chart'}: ${rec.y || 'metric'}`;
+                
+                return (
+                  <button
+                    key={key}
+                    onClick={() => handleRecommendationRun(rec)}
+                    disabled={isProcessing || isClicked}
+                    className={cn(
+                      "w-full text-left p-4 rounded-xl transition-all duration-200",
+                      "bg-card hover:bg-accent/50 border border-border/50 hover:border-primary/30",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+                      "disabled:opacity-60 disabled:cursor-not-allowed",
+                      "group relative overflow-hidden",
+                      isClicked && "border-primary/50 bg-primary/5"
+                    )}
+                    role="listitem"
+                    aria-busy={isClicked}
+                    aria-label={`Create ${title}${rec.description ? `: ${rec.description}` : ''}`}
+                  >
+                    {/* Loading overlay */}
+                    {isClicked && (
+                      <div 
+                        className="absolute inset-0 bg-primary/10 flex items-center justify-center backdrop-blur-[1px]"
+                        aria-hidden="true"
+                      >
+                        <div className="flex items-center gap-2 text-primary font-medium text-sm">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Generating...</span>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="flex items-start gap-3">
+                      <div 
+                        className={cn(
+                          "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center",
+                          "bg-primary/10 text-primary transition-colors",
+                          "group-hover:bg-primary group-hover:text-primary-foreground"
+                        )}
+                        aria-hidden="true"
+                      >
+                        <TrendingUp className="h-4 w-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-sm text-foreground truncate">
+                            {title}
+                          </span>
+                          <ArrowRight 
+                            className="h-3 w-3 text-muted-foreground opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0" 
+                            aria-hidden="true"
+                          />
+                        </div>
+                        {rec.description && (
+                          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                            {rec.description}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </section>
       )}
 
-      {/* No Dataset State */}
-      {!hasDataset && (
-        <div className="text-center py-6">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-muted mb-3">
-            <TrendingUp className="h-6 w-6 text-muted-foreground" />
+      {/* Empty State */}
+      {!hasDataset && !autoInsightsLoading && recommendations.length === 0 && (
+        <div 
+          className="text-center py-8 px-4"
+          role="status"
+          aria-label="No dataset loaded"
+        >
+          <div 
+            className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-muted/50 mb-4"
+            aria-hidden="true"
+          >
+            <TrendingUp className="h-7 w-7 text-muted-foreground" />
           </div>
-          <p className="text-sm text-muted-foreground">
-            Upload a dataset to create visualizations
+          <p className="text-sm text-muted-foreground max-w-[200px] mx-auto">
+            Upload a dataset to start creating AI-powered visualizations
           </p>
         </div>
       )}
