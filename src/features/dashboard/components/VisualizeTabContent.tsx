@@ -11,6 +11,8 @@ import {
   Wand2,
   Zap,
   ArrowRight,
+  RefreshCw,
+  Clock,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -119,12 +121,14 @@ export function VisualizeTabContent({
   const [autoInsightsStatus, setAutoInsightsStatus] = useState<string | null>(null);
   const [autoInsightsLogs, setAutoInsightsLogs] = useState<string[]>([]);
   const [clickedRecommendationKey, setClickedRecommendationKey] = useState<string | null>(null);
+  const [lastFetchTime, setLastFetchTime] = useState<Date | null>(null);
   const autoInsightsToastRef = useRef<string | null>(null);
 
   const cachedInsightsEntry = useAutoInsightsStore((state) =>
     datasetId ? state.entries[datasetId] : undefined
   );
   const setCachedInsights = useAutoInsightsStore((state) => state.setInsights);
+  const clearCachedInsights = useAutoInsightsStore((state) => state.clearInsights);
 
   const appendLog = useCallback((message: string) => {
     const timestamp = new Date().toLocaleTimeString();
@@ -136,6 +140,7 @@ export function VisualizeTabContent({
     setAutoInsightsError(null);
     setAutoInsightsStatus(null);
     setAutoInsightsLogs([]);
+    setLastFetchTime(null);
     autoInsightsToastRef.current = null;
   }, [datasetId]);
 
@@ -146,35 +151,44 @@ export function VisualizeTabContent({
     setAutoInsightsStatus((prev) => prev ?? 'Insights ready (cached)');
   }, [datasetId, cachedInsightsEntry]);
 
-  const handleAutoInsights = useCallback(async () => {
+  const fetchInsights = useCallback(async (forceRefresh: boolean = false) => {
     if (!datasetId) {
       toast.error('Upload a dataset first');
       return;
     }
-    if (cachedInsightsEntry && cachedInsightsEntry.recommendations.length > 0) {
+
+    // Use cache only if not forcing refresh
+    if (!forceRefresh && cachedInsightsEntry && cachedInsightsEntry.recommendations.length > 0) {
       setAutoInsights(cachedInsightsEntry.insights);
       setAutoInsightsStatus('Using cached insights');
-      toast.success('Insights ready');
+      toast.success('Insights ready (cached)');
       return;
+    }
+
+    // Clear cache if forcing refresh
+    if (forceRefresh && datasetId) {
+      clearCachedInsights(datasetId);
     }
 
     setAutoInsightsError(null);
     setAutoInsightsLoading(true);
     onProcessingChange?.(true);
-    setAutoInsightsStatus('Analyzing dataset...');
-    appendLog('Auto Insights started');
+    setAutoInsightsStatus(forceRefresh ? 'Fetching fresh insights...' : 'Analyzing dataset...');
+    appendLog(forceRefresh ? 'Forcing fresh insights...' : 'Auto Insights started');
     autoInsightsToastRef.current = toast.loading('Generating insights... this may take up to 2 minutes');
 
     try {
+      // Always pass force=true to the API to get fresh results
       const result = await api.getDatasetInsights(datasetId, true);
       setAutoInsights(result);
       const derivedRecommendations = getRecommendationsFromInsights(result);
       setCachedInsights(datasetId, result, derivedRecommendations);
       setAutoInsightsStatus('Analysis complete');
+      setLastFetchTime(new Date());
       appendLog('Analysis complete');
 
       if (autoInsightsToastRef.current) {
-        toast.success('Insights ready', { id: autoInsightsToastRef.current });
+        toast.success(`${derivedRecommendations.length} insights ready`, { id: autoInsightsToastRef.current });
       }
       onNavigateToVisualizations?.();
     } catch (error) {
@@ -191,7 +205,10 @@ export function VisualizeTabContent({
       setAutoInsightsLoading(false);
       onProcessingChange?.(false);
     }
-  }, [appendLog, cachedInsightsEntry, datasetId, onProcessingChange, onNavigateToVisualizations, setCachedInsights]);
+  }, [appendLog, cachedInsightsEntry, clearCachedInsights, datasetId, onProcessingChange, onNavigateToVisualizations, setCachedInsights]);
+
+  const handleAutoInsights = useCallback(() => fetchInsights(false), [fetchInsights]);
+  const handleRefreshInsights = useCallback(() => fetchInsights(true), [fetchInsights]);
 
   const handleRecommendationRun = useCallback(
     async (recommendation: InsightRecommendation) => {
@@ -245,180 +262,204 @@ export function VisualizeTabContent({
     return () => onRegisterRecommendationRunner(undefined);
   }, [handleRecommendationRun, onRegisterRecommendationRunner]);
 
-  return (
-    <div className="flex flex-col gap-6" role="region" aria-label="Visualization creation panel">
-      {/* Header */}
-      <header className="space-y-1">
-        <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
-          <Wand2 className="h-4 w-4 text-primary" aria-hidden="true" />
-          Create Visualization
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Describe what you want to see or use AI to analyze your data
-        </p>
-      </header>
+  const hasCachedInsights = cachedInsightsEntry && cachedInsightsEntry.recommendations.length > 0;
 
-      {/* Prompt Input */}
-      <section aria-label="Visualization prompt input">
+  return (
+    <div className="flex flex-col gap-4" role="region" aria-label="Visualization creation panel">
+      {/* Prompt Input Section */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium text-foreground">Custom Prompt</h3>
+          {useHeuristics && (
+            <Badge variant="outline" className="text-xs gap-1">
+              <Zap className="h-3 w-3 text-amber-500" aria-hidden="true" />
+              Fast Mode
+            </Badge>
+          )}
+        </div>
         <PromptInput
           onSubmit={onSubmitPrompt}
           isProcessing={isProcessing}
           suggestions={PROMPT_SUGGESTIONS}
           placeholder="Describe the visualization you want..."
         />
-        {useHeuristics && (
-          <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1">
-            <Zap className="h-3 w-3 text-amber-500" aria-hidden="true" />
-            <span>Fast mode enabled - using heuristics for quick results</span>
-          </p>
-        )}
       </section>
 
-      {/* Auto Insights Button */}
-      <section aria-label="AI analysis actions">
-        <Button
-          onClick={handleAutoInsights}
-          disabled={!hasDataset || isProcessing || autoInsightsLoading}
-          className={cn(
-            "w-full h-12 text-sm font-medium transition-all duration-300",
-            "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70",
-            "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-            autoInsightsLoading && "animate-pulse"
+      {/* Divider */}
+      <div className="relative py-2">
+        <div className="absolute inset-0 flex items-center" aria-hidden="true">
+          <div className="w-full border-t border-border/50" />
+        </div>
+        <div className="relative flex justify-center">
+          <span className="bg-card px-3 text-xs text-muted-foreground uppercase tracking-wider">
+            or use AI
+          </span>
+        </div>
+      </div>
+
+      {/* Auto Insights Section */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
+            Auto Insights
+          </h3>
+          {lastFetchTime && (
+            <span className="text-xs text-muted-foreground flex items-center gap-1">
+              <Clock className="h-3 w-3" aria-hidden="true" />
+              {lastFetchTime.toLocaleTimeString()}
+            </span>
           )}
-          aria-busy={autoInsightsLoading}
-          aria-describedby="auto-insights-status"
-        >
-          {autoInsightsLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-              <span>Analyzing your data...</span>
-            </>
-          ) : (
-            <>
-              <Sparkles className="mr-2 h-4 w-4" aria-hidden="true" />
-              <span>Run Auto Insights</span>
-            </>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-2">
+          <Button
+            onClick={handleAutoInsights}
+            disabled={!hasDataset || isProcessing || autoInsightsLoading}
+            className={cn(
+              "flex-1 h-10 text-sm font-medium",
+              hasCachedInsights ? "bg-secondary text-secondary-foreground hover:bg-secondary/80" : ""
+            )}
+            variant={hasCachedInsights ? "secondary" : "default"}
+            aria-busy={autoInsightsLoading}
+          >
+            {autoInsightsLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                Analyzing...
+              </>
+            ) : hasCachedInsights ? (
+              <>
+                <CheckCircle2 className="mr-2 h-4 w-4" aria-hidden="true" />
+                View Insights
+              </>
+            ) : (
+              <>
+                <Sparkles className="mr-2 h-4 w-4" aria-hidden="true" />
+                Analyze Data
+              </>
+            )}
+          </Button>
+          
+          {hasCachedInsights && (
+            <Button
+              onClick={handleRefreshInsights}
+              disabled={!hasDataset || isProcessing || autoInsightsLoading}
+              variant="outline"
+              size="icon"
+              className="h-10 w-10 flex-shrink-0"
+              aria-label="Refresh insights"
+              title="Get fresh insights"
+            >
+              <RefreshCw className={cn("h-4 w-4", autoInsightsLoading && "animate-spin")} aria-hidden="true" />
+            </Button>
           )}
-        </Button>
+        </div>
         
         {!hasDataset && (
-          <p className="mt-2 text-xs text-muted-foreground text-center" role="status">
-            Upload a dataset first to enable AI analysis
+          <p className="text-xs text-muted-foreground">
+            Upload a dataset to enable AI analysis
           </p>
         )}
       </section>
 
       {/* Status & Recommendations */}
-      {(autoInsightsLoading || autoInsightsError || autoInsightsStatus || recommendations.length > 0) && (
-        <section 
-          aria-label="AI analysis results"
-          className="space-y-4"
-        >
-          {/* Status indicator */}
-          <div 
-            id="auto-insights-status"
-            className={cn(
-              "flex items-center gap-2 p-3 rounded-lg text-sm",
-              autoInsightsLoading && "bg-primary/5 text-primary border border-primary/20",
-              autoInsightsError && "bg-destructive/10 text-destructive border border-destructive/20",
-              !autoInsightsLoading && !autoInsightsError && autoInsightsStatus && "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20"
-            )}
-            role="status"
-            aria-live="polite"
-          >
-            {autoInsightsLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin flex-shrink-0" aria-hidden="true" />
-            ) : autoInsightsError ? (
-              <AlertCircle className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
-            ) : (
-              <CheckCircle2 className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
-            )}
-            <span className="font-medium">
-              {autoInsightsLoading ? 'Analyzing...' : autoInsightsError || autoInsightsStatus}
-            </span>
-            {recommendations.length > 0 && !autoInsightsLoading && (
-              <Badge 
-                variant="secondary" 
-                className="ml-auto text-xs font-medium"
-                aria-label={`${recommendations.length} recommendations available`}
-              >
-                {recommendations.length} suggestions
-              </Badge>
-            )}
-          </div>
+      {(autoInsightsLoading || autoInsightsError || recommendations.length > 0) && (
+        <section className="space-y-3 pt-2">
+          {/* Status Bar */}
+          {(autoInsightsLoading || autoInsightsError) && (
+            <div 
+              className={cn(
+                "flex items-center gap-2 p-2.5 rounded-lg text-xs font-medium",
+                autoInsightsLoading && "bg-primary/5 text-primary",
+                autoInsightsError && "bg-destructive/10 text-destructive"
+              )}
+              role="status"
+              aria-live="polite"
+            >
+              {autoInsightsLoading ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+              ) : (
+                <AlertCircle className="h-3.5 w-3.5" aria-hidden="true" />
+              )}
+              <span>{autoInsightsLoading ? 'Analyzing your data...' : autoInsightsError}</span>
+            </div>
+          )}
 
-          {/* Recommendations List */}
-          {recommendations.length > 0 && (
-            <div className="space-y-2" role="list" aria-label="AI-generated visualization suggestions">
-              <h3 className="text-sm font-medium text-foreground sr-only">
-                Suggested Visualizations
-              </h3>
-              {recommendations.slice(0, 5).map((rec, i) => {
-                const key = rec.key || rec.title || `rec-${i}`;
-                const isClicked = clickedRecommendationKey === key;
-                const title = rec.title || `${rec.type || 'Chart'}: ${rec.y || 'metric'}`;
-                
-                return (
-                  <button
-                    key={key}
-                    onClick={() => handleRecommendationRun(rec)}
-                    disabled={isProcessing || isClicked}
-                    className={cn(
-                      "w-full text-left p-4 rounded-xl transition-all duration-200",
-                      "bg-card hover:bg-accent/50 border border-border/50 hover:border-primary/30",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-                      "disabled:opacity-60 disabled:cursor-not-allowed",
-                      "group relative overflow-hidden",
-                      isClicked && "border-primary/50 bg-primary/5"
-                    )}
-                    role="listitem"
-                    aria-busy={isClicked}
-                    aria-label={`Create ${title}${rec.description ? `: ${rec.description}` : ''}`}
-                  >
-                    {/* Loading overlay */}
-                    {isClicked && (
-                      <div 
-                        className="absolute inset-0 bg-primary/10 flex items-center justify-center backdrop-blur-[1px]"
-                        aria-hidden="true"
-                      >
-                        <div className="flex items-center gap-2 text-primary font-medium text-sm">
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>Generating...</span>
+          {/* Recommendations Table */}
+          {recommendations.length > 0 && !autoInsightsLoading && (
+            <div className="border border-border/50 rounded-lg overflow-hidden">
+              <div className="bg-muted/30 px-3 py-2 border-b border-border/50">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-foreground">
+                    AI Suggestions
+                  </span>
+                  <Badge variant="secondary" className="text-xs h-5">
+                    {recommendations.length}
+                  </Badge>
+                </div>
+              </div>
+              <div className="divide-y divide-border/30" role="list">
+                {recommendations.slice(0, 6).map((rec, i) => {
+                  const key = rec.key || rec.title || `rec-${i}`;
+                  const isClicked = clickedRecommendationKey === key;
+                  const chartType = rec.type || 'chart';
+                  const title = rec.title || `${chartType}: ${rec.y || 'metric'}`;
+                  
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => handleRecommendationRun(rec)}
+                      disabled={isProcessing || isClicked}
+                      className={cn(
+                        "w-full text-left px-3 py-2.5 transition-colors",
+                        "hover:bg-accent/50 focus-visible:bg-accent/50",
+                        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-primary",
+                        "disabled:opacity-50 disabled:cursor-not-allowed",
+                        isClicked && "bg-primary/5"
+                      )}
+                      role="listitem"
+                      aria-busy={isClicked}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className={cn(
+                            "flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center text-xs font-medium",
+                            "bg-primary/10 text-primary"
+                          )}
+                          aria-hidden="true"
+                        >
+                          {isClicked ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <TrendingUp className="h-3.5 w-3.5" />
+                          )}
                         </div>
-                      </div>
-                    )}
-                    
-                    <div className="flex items-start gap-3">
-                      <div 
-                        className={cn(
-                          "flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center",
-                          "bg-primary/10 text-primary transition-colors",
-                          "group-hover:bg-primary group-hover:text-primary-foreground"
-                        )}
-                        aria-hidden="true"
-                      >
-                        <TrendingUp className="h-4 w-4" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-sm text-foreground truncate">
-                            {title}
-                          </span>
-                          <ArrowRight 
-                            className="h-3 w-3 text-muted-foreground opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0" 
-                            aria-hidden="true"
-                          />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-foreground truncate">
+                              {title}
+                            </span>
+                            <Badge variant="outline" className="text-[10px] h-4 px-1.5 flex-shrink-0">
+                              {chartType}
+                            </Badge>
+                          </div>
+                          {rec.description && (
+                            <p className="text-xs text-muted-foreground truncate mt-0.5">
+                              {rec.description}
+                            </p>
+                          )}
                         </div>
-                        {rec.description && (
-                          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
-                            {rec.description}
-                          </p>
-                        )}
+                        <ArrowRight 
+                          className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" 
+                          aria-hidden="true"
+                        />
                       </div>
-                    </div>
-                  </button>
-                );
-              })}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
         </section>
@@ -426,19 +467,10 @@ export function VisualizeTabContent({
 
       {/* Empty State */}
       {!hasDataset && !autoInsightsLoading && recommendations.length === 0 && (
-        <div 
-          className="text-center py-8 px-4"
-          role="status"
-          aria-label="No dataset loaded"
-        >
-          <div 
-            className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-muted/50 mb-4"
-            aria-hidden="true"
-          >
-            <TrendingUp className="h-7 w-7 text-muted-foreground" />
-          </div>
-          <p className="text-sm text-muted-foreground max-w-[200px] mx-auto">
-            Upload a dataset to start creating AI-powered visualizations
+        <div className="text-center py-6" role="status">
+          <Wand2 className="h-8 w-8 text-muted-foreground/50 mx-auto mb-3" aria-hidden="true" />
+          <p className="text-sm text-muted-foreground">
+            Upload data to unlock AI-powered insights
           </p>
         </div>
       )}
