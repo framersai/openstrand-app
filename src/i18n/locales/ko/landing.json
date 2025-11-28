@@ -1,4 +1,152 @@
 {
+  "showcase": {
+    "eyebrow": "멋진 비주얼 디자인",
+    "title": "모든 워크플로우를 위한 아름다운 테마",
+    "subtitle": "라이트 및 다크 모드가 있는 9가지 전문적으로 디자인된 테마 중에서 선택하세요. 각 테마는 가독성, 접근성 및 시각적 매력을 위해 제작되었습니다.",
+    "advantages": {
+      "design": {
+        "title": "세심한 디자인",
+        "description": "최적의 가독성을 위해 신중하게 제작된 색상 팔레트와 타이포그래피."
+      },
+      "accessibility": {
+        "title": "WCAG 준수",
+        "description": "모든 테마가 대비 및 가독성에 대한 AA 접근성 표준을 충족합니다."
+      },
+      "ai": {
+        "title": "AI 강화",
+        "description": "콘텐츠와 선호도에 기반한 스마트 테마 제안."
+      }
+    },
+    "themeSelector": {
+      "label": "테마 선택"
+    },
+    "themePreview": {
+      "title": "테마 미리보기",
+      "alt": "샘플 카드 미리보기"
+    },
+    "themes": {
+      "modern": {
+        "title": "모던",
+        "description": "현대적인 느낌을 위한 깔끔한 그라데이션과 부드러운 그림자."
+      },
+      "classic": {
+        "title": "클래식",
+        "description": "전통적인 우아함을 갖춘 전문적인 네이비와 골드 악센트."
+      },
+      "paper": {
+        "title": "페이퍼",
+        "description": "인쇄 디자인에서 영감을 받은 문서 같은 미학."
+      },
+      "aurora": {
+        "title": "오로라",
+        "description": "몽환적인 색상의 오로라에서 영감을 받은 그라데이션."
+      },
+      "ocean": {
+        "title": "오션",
+        "description": "깊은 바다를 연상시키는 차분한 블루와 틸."
+      },
+      "forest": {
+        "title": "포레스트",
+        "description": "안정된 느낌을 위한 자연스러운 그린과 어스 톤."
+      },
+      "space": {
+        "title": "스페이스",
+        "description": "별 관찰자를 위한 딥 퍼플과 코스믹 악센트."
+      },
+      "cyberpunk": {
+        "title": "사이버펑크",
+        "description": "미래적인 분위기를 위한 네온 악센트와 글로우 효과."
+      },
+      "minimal": {
+        "title": "미니멀",
+        "description": "명확성을 위한 여백 중심의 울트라 클린 디자인."
+      }
+    }
+  },
+  "pricing": {
+    "badge": "커뮤니티 에디션 • 영원히 무료",
+    "title": "영원히 무료. 체험판 없음. 속임수 없음.",
+    "subtitle": "커뮤니티 에디션은 비용 없이 영원히 오프라인으로 작동합니다. 팀 협업을 위해 클라우드로 업그레이드하거나 엔터프라이즈 라이선스로 셀프 호스팅하세요.",
+    "tiers": {
+      "community": {
+        "name": "커뮤니티 에디션",
+        "description": "커뮤니티 에디션 - 오프라인 작동, 항상 무료.",
+        "badge": "항상 무료",
+        "cta": "영원히 무료 다운로드",
+        "highlights": {
+          "free": "영원히 무료 - 신용카드 불필요",
+          "offline": "영원히 오프라인 작동",
+          "openSource": "100% 오픈 소스"
+        }
+      },
+      "team": {
+        "name": "팀 라이선스",
+        "badge": "팀 라이선스",
+        "cta": "온보딩 예약",
+        "offlineBadge": "오프라인에서도 작동"
+      },
+      "enterprise": {
+        "name": "엔터프라이즈 셀프 호스트",
+        "badge": "셀프 호스트",
+        "cta": "라이선스 구매"
+      }
+    },
+    "stats": {
+      "lowLatency": {
+        "title": "저지연",
+        "description": "모든 API 엔드포인트에 대해 50ms 미만의 응답 시간."
+      },
+      "scalable": {
+        "title": "무한 확장 가능",
+        "description": "단일 사용자부터 엔터프라이즈 팀까지 아키텍처 변경 없이.",
+        "descriptionOffline": "데이터와 함께 확장되는 로컬 우선 아키텍처."
+      },
+      "ai": {
+        "title": "AI 기반",
+        "description": "워크플로우 전반에 걸친 지능형 제안 및 자동화.",
+        "descriptionOffline": "오프라인 인텔리전스를 위한 BYOK AI 통합."
+      }
+    }
+  },
+  "cta": {
+    "tagline": "시작할 준비가 되셨나요?",
+    "title": "오늘 지식을 혁신하세요",
+    "subtitle": "OpenStrand를 사용하여 지식을 실행 가능한 인사이트로 엮는 수천 개의 팀에 합류하세요.",
+    "primaryCta": {
+      "href": "/",
+      "label": "영원히 무료로 시작"
+    },
+    "secondaryCta": {
+      "href": "/docs",
+      "label": "문서 읽기"
+    },
+    "offlineBadge": "오프라인 작동 - 인터넷 불필요"
+  },
+  "testimonials": {
+    "eyebrow": "전 세계 팀들이 신뢰합니다",
+    "title": "실제 이야기, 실제 영향",
+    "subtitle": "팀들이 어떻게 데이터를 살아있는 지식으로 변환하는지 확인하세요.",
+    "items": [
+      {
+        "quote": "OpenStrand는 10년간의 연구 논문을 상호 연결된 지식 그래프로 엮습니다. 간격 반복 기능은 학생들이 복잡한 개념을 85% 더 잘 유지할 수 있도록 도와줍니다.",
+        "name": "제임스 박 박사",
+        "role": "연구 디렉터",
+        "company": "학술 기관"
+      },
+      {
+        "quote": "재귀적 스트랜드 시스템 덕분에 타협 없이 복잡한 제품 분류를 모델링할 수 있게 되었습니다. 승인 워크플로우가 모든 것을 감사 가능하게 유지합니다.",
+        "name": "사라 첸",
+        "role": "제품 책임자",
+        "company": "테크코프"
+      },
+      {
+        "quote": "3가지 다른 도구에서 OpenStrand만 사용하는 것으로 전환했습니다. 오프라인 우선 접근 방식 덕분에 현장 팀이 작업을 잃지 않습니다.",
+        "name": "마커스 존슨",
+        "role": "운영 리드",
+        "company": "필드옵스"
+      }
+    ]
+  },
   "hero": {
     "badge": {
       "community": "Free Forever • Community Edition"

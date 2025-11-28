@@ -32,10 +32,158 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { useFeatureFlags } from '@/lib/feature-flags';
 import { useSupabase } from '@/features/auth';
+import { useDashboardAutoSaveStore } from '@/store/dashboard-autosave-store';
+import { Clock, History, Trash2 } from 'lucide-react';
 
 interface SettingsDialogProps {
   isOpen: boolean;
   onClose: () => void;
+}
+
+const AUTO_SAVE_INTERVALS = [
+  { value: 15000, label: '15 seconds' },
+  { value: 30000, label: '30 seconds' },
+  { value: 60000, label: '1 minute' },
+  { value: 120000, label: '2 minutes' },
+  { value: 300000, label: '5 minutes' },
+];
+
+function AutoSaveSettingsSection() {
+  const settings = useDashboardAutoSaveStore((state) => state.settings);
+  const sessionHistory = useDashboardAutoSaveStore((state) => state.sessionHistory);
+  const updateSettings = useDashboardAutoSaveStore((state) => state.updateSettings);
+  const clearHistory = useDashboardAutoSaveStore((state) => state.clearHistory);
+
+  return (
+    <section className="space-y-3">
+      <div>
+        <h3 className="text-sm font-semibold flex items-center gap-2">
+          <Clock className="h-4 w-4" />
+          Auto-save & Session Recovery
+        </h3>
+        <p className="text-xs text-muted-foreground">
+          Automatically save your dashboard state and restore previous sessions.
+        </p>
+      </div>
+
+      <div className="space-y-3 rounded-2xl border border-border/60 bg-muted/20 p-4">
+        {/* Enable Auto-save */}
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <p className="text-sm font-medium">Enable auto-save</p>
+            <p className="text-xs text-muted-foreground">
+              Periodically save your dataset and visualizations
+            </p>
+          </div>
+          <Switch
+            checked={settings.enabled}
+            onCheckedChange={(checked) => updateSettings({ enabled: checked })}
+          />
+        </div>
+
+        <Separator className="my-2" />
+
+        {/* Auto-save Interval */}
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <p className="text-sm font-medium">Save interval</p>
+            <p className="text-xs text-muted-foreground">
+              How often to auto-save
+            </p>
+          </div>
+          <select
+            value={settings.intervalMs}
+            onChange={(e) => updateSettings({ intervalMs: Number(e.target.value) })}
+            disabled={!settings.enabled}
+            className="rounded-md border border-border/60 bg-background px-3 py-1.5 text-sm disabled:opacity-50"
+          >
+            {AUTO_SAVE_INTERVALS.map((interval) => (
+              <option key={interval.value} value={interval.value}>
+                {interval.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <Separator className="my-2" />
+
+        {/* Show Notifications */}
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <p className="text-sm font-medium">Show notifications</p>
+            <p className="text-xs text-muted-foreground">
+              Toast alerts when saving or restoring
+            </p>
+          </div>
+          <Switch
+            checked={settings.showNotifications}
+            onCheckedChange={(checked) => updateSettings({ showNotifications: checked })}
+          />
+        </div>
+
+        <Separator className="my-2" />
+
+        {/* Auto-restore */}
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <p className="text-sm font-medium">Auto-restore on load</p>
+            <p className="text-xs text-muted-foreground">
+              Prompt to restore your last session when you return
+            </p>
+          </div>
+          <Switch
+            checked={settings.autoRestore}
+            onCheckedChange={(checked) => updateSettings({ autoRestore: checked })}
+          />
+        </div>
+
+        {/* Session History */}
+        {sessionHistory.length > 0 && (
+          <>
+            <Separator className="my-2" />
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium flex items-center gap-2">
+                  <History className="h-4 w-4" />
+                  Saved sessions ({sessionHistory.length})
+                </p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    clearHistory();
+                    toast.success('Session history cleared');
+                  }}
+                  className="h-7 text-xs text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 className="h-3 w-3 mr-1" />
+                  Clear all
+                </Button>
+              </div>
+              <div className="max-h-32 overflow-y-auto space-y-1">
+                {sessionHistory.slice(0, 5).map((session) => (
+                  <div
+                    key={session.id}
+                    className="flex items-center justify-between text-xs p-2 rounded-lg bg-background/50"
+                  >
+                    <div className="truncate flex-1">
+                      <span className="font-medium">{session.name}</span>
+                      <span className="text-muted-foreground ml-2">
+                        {session.visualizationCount} viz
+                      </span>
+                    </div>
+                    <span className="text-muted-foreground text-[10px]">
+                      {new Date(session.savedAt).toLocaleTimeString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </section>
+  );
 }
 
 const PROVIDER_KEYS = LLM_PROVIDER_KEYS;
@@ -678,6 +826,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({ isOpen, onClose 
                 })}
               </div>
             </section>
+
+            <AutoSaveSettingsSection />
 
             <section className="space-y-3">
               <div>

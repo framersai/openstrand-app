@@ -1,4 +1,152 @@
 {
+  "showcase": {
+    "eyebrow": "令人惊叹的视觉设计",
+    "title": "适合每个工作流程的精美主题",
+    "subtitle": "从9种专业设计的主题中选择，支持浅色和深色模式。每个主题都为可读性、可访问性和视觉吸引力而精心打造。",
+    "advantages": {
+      "design": {
+        "title": "精心设计",
+        "description": "精心制作的调色板和排版，实现最佳可读性。"
+      },
+      "accessibility": {
+        "title": "符合 WCAG",
+        "description": "所有主题都符合 AA 级无障碍标准的对比度和可读性要求。"
+      },
+      "ai": {
+        "title": "AI 增强",
+        "description": "基于您的内容和偏好的智能主题建议。"
+      }
+    },
+    "themeSelector": {
+      "label": "选择主题"
+    },
+    "themePreview": {
+      "title": "主题预览",
+      "alt": "示例卡片预览"
+    },
+    "themes": {
+      "modern": {
+        "title": "现代",
+        "description": "干净的渐变和平滑的阴影，营造现代感。"
+      },
+      "classic": {
+        "title": "经典",
+        "description": "专业的海军蓝和金色点缀，具有传统优雅。"
+      },
+      "paper": {
+        "title": "纸质",
+        "description": "受印刷设计启发的文档式美学。"
+      },
+      "aurora": {
+        "title": "极光",
+        "description": "受北极光启发的渐变，色彩飘渺。"
+      },
+      "ocean": {
+        "title": "海洋",
+        "description": "令人联想到深海的宁静蓝色和青色。"
+      },
+      "forest": {
+        "title": "森林",
+        "description": "自然的绿色和大地色调，给人扎根的感觉。"
+      },
+      "space": {
+        "title": "太空",
+        "description": "深紫色和宇宙元素，适合观星者。"
+      },
+      "cyberpunk": {
+        "title": "赛博朋克",
+        "description": "霓虹灯效果和发光效果，营造未来感。"
+      },
+      "minimal": {
+        "title": "极简",
+        "description": "以留白为中心的超干净设计，追求清晰。"
+      }
+    }
+  },
+  "pricing": {
+    "badge": "社区版 • 永久免费",
+    "title": "永久免费。无试用。无套路。",
+    "subtitle": "社区版永久免费离线运行。升级到云端实现团队协作，或使用我们的企业许可证自托管。",
+    "tiers": {
+      "community": {
+        "name": "社区版",
+        "description": "社区版 - 离线工作，永远免费。",
+        "badge": "永久免费",
+        "cta": "永久免费下载",
+        "highlights": {
+          "free": "永久免费 - 无需信用卡",
+          "offline": "永久离线工作",
+          "openSource": "100% 开源"
+        }
+      },
+      "team": {
+        "name": "团队许可证",
+        "badge": "团队许可证",
+        "cta": "预约入门培训",
+        "offlineBadge": "也可离线工作"
+      },
+      "enterprise": {
+        "name": "企业自托管",
+        "badge": "自托管",
+        "cta": "购买许可证"
+      }
+    },
+    "stats": {
+      "lowLatency": {
+        "title": "低延迟",
+        "description": "所有 API 端点的响应时间低于 50ms。"
+      },
+      "scalable": {
+        "title": "无限可扩展",
+        "description": "从单用户到企业团队，无需更改架构。",
+        "descriptionOffline": "本地优先架构随数据扩展。"
+      },
+      "ai": {
+        "title": "AI 驱动",
+        "description": "整个工作流程中的智能建议和自动化。",
+        "descriptionOffline": "BYOK AI 集成实现离线智能。"
+      }
+    }
+  },
+  "cta": {
+    "tagline": "准备好开始了吗？",
+    "title": "今天就改变您的知识管理",
+    "subtitle": "加入数千个使用 OpenStrand 将知识编织成可操作洞察的团队。",
+    "primaryCta": {
+      "href": "/",
+      "label": "永久免费开始"
+    },
+    "secondaryCta": {
+      "href": "/docs",
+      "label": "阅读文档"
+    },
+    "offlineBadge": "离线工作 - 无需互联网"
+  },
+  "testimonials": {
+    "eyebrow": "全球团队信赖",
+    "title": "真实故事，真实影响",
+    "subtitle": "了解团队如何将数据转化为活的知识。",
+    "items": [
+      {
+        "quote": "OpenStrand 将 10 年的研究论文编织成互联的知识图谱。间隔重复功能帮助我们的学生更好地保留复杂概念，提高了 85%。",
+        "name": "詹姆斯·帕克博士",
+        "role": "研究主管",
+        "company": "学术研究所"
+      },
+      {
+        "quote": "递归链系统终于让我们能够在不妥协的情况下建模复杂的产品分类。审批工作流让一切都为审计做好准备。",
+        "name": "莎拉·陈",
+        "role": "产品负责人",
+        "company": "TechCorp"
+      },
+      {
+        "quote": "我们从三种不同的工具转向只使用 OpenStrand。离线优先方法意味着我们的现场团队永远不会丢失工作。",
+        "name": "马库斯·约翰逊",
+        "role": "运营主管",
+        "company": "FieldOps"
+      }
+    ]
+  },
   "hero": {
     "badge": {
       "community": "永久免费 • 社区版"

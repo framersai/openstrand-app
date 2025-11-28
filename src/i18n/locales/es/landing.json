@@ -1,4 +1,152 @@
 {
+  "showcase": {
+    "eyebrow": "Diseño Visual Impresionante",
+    "title": "Temas Hermosos para Cada Flujo de Trabajo",
+    "subtitle": "Elige entre 9 temas diseñados profesionalmente con modos claro y oscuro. Cada tema está creado para legibilidad, accesibilidad y atractivo visual.",
+    "advantages": {
+      "design": {
+        "title": "Diseño Cuidado",
+        "description": "Paletas de colores y tipografía cuidadosamente elaboradas para una legibilidad óptima."
+      },
+      "accessibility": {
+        "title": "Cumple WCAG",
+        "description": "Todos los temas cumplen con los estándares de accesibilidad AA para contraste y legibilidad."
+      },
+      "ai": {
+        "title": "Mejorado con IA",
+        "description": "Sugerencias inteligentes de temas basadas en tu contenido y preferencias."
+      }
+    },
+    "themeSelector": {
+      "label": "Seleccionar un Tema"
+    },
+    "themePreview": {
+      "title": "Vista Previa del Tema",
+      "alt": "Vista Previa de Tarjeta de Ejemplo"
+    },
+    "themes": {
+      "modern": {
+        "title": "Moderno",
+        "description": "Gradientes limpios y sombras suaves para un aspecto contemporáneo."
+      },
+      "classic": {
+        "title": "Clásico",
+        "description": "Acentos profesionales en azul marino y dorado con elegancia tradicional."
+      },
+      "paper": {
+        "title": "Papel",
+        "description": "Estética tipo documento inspirada en el diseño impreso."
+      },
+      "aurora": {
+        "title": "Aurora",
+        "description": "Gradientes inspirados en auroras boreales con colores etéreos."
+      },
+      "ocean": {
+        "title": "Océano",
+        "description": "Azules y verdes azulados calmantes que recuerdan aguas profundas."
+      },
+      "forest": {
+        "title": "Bosque",
+        "description": "Verdes naturales y tonos tierra para una sensación arraigada."
+      },
+      "space": {
+        "title": "Espacio",
+        "description": "Púrpuras profundos y acentos cósmicos para observadores de estrellas."
+      },
+      "cyberpunk": {
+        "title": "Cyberpunk",
+        "description": "Acentos neón y efectos brillantes para una vibra futurista."
+      },
+      "minimal": {
+        "title": "Mínimo",
+        "description": "Diseño ultra limpio enfocado en espacios blancos para claridad."
+      }
+    }
+  },
+  "pricing": {
+    "badge": "Edición Community • Gratis para Siempre",
+    "title": "Gratis para Siempre. Sin Pruebas. Sin Trucos.",
+    "subtitle": "La Edición Community funciona offline para siempre sin costo. Actualiza a la nube para colaboración en equipo o auto-aloja con nuestra licencia empresarial.",
+    "tiers": {
+      "community": {
+        "name": "Edición Community",
+        "description": "Edición Community - Funciona offline, siempre gratis.",
+        "badge": "SIEMPRE GRATIS",
+        "cta": "Descargar Gratis para Siempre",
+        "highlights": {
+          "free": "Gratis para Siempre - Sin Tarjeta de Crédito",
+          "offline": "Funciona Offline para Siempre",
+          "openSource": "100% Código Abierto"
+        }
+      },
+      "team": {
+        "name": "Licencia de Equipo",
+        "badge": "Licencia de Equipo",
+        "cta": "Reservar incorporación",
+        "offlineBadge": "También Funciona Offline"
+      },
+      "enterprise": {
+        "name": "Auto-Alojamiento Empresarial",
+        "badge": "Auto-Alojamiento",
+        "cta": "Comprar Licencia"
+      }
+    },
+    "stats": {
+      "lowLatency": {
+        "title": "Baja Latencia",
+        "description": "Tiempos de respuesta menores a 50ms para todos los endpoints de API."
+      },
+      "scalable": {
+        "title": "Infinitamente Escalable",
+        "description": "Desde un usuario hasta equipos empresariales sin cambios de arquitectura.",
+        "descriptionOffline": "Arquitectura local-first que escala con tus datos."
+      },
+      "ai": {
+        "title": "Potenciado por IA",
+        "description": "Sugerencias inteligentes y automatizaciones en todo tu flujo de trabajo.",
+        "descriptionOffline": "Integración de IA BYOK para inteligencia offline."
+      }
+    }
+  },
+  "cta": {
+    "tagline": "¿Listo para Comenzar?",
+    "title": "Transforma Tu Conocimiento Hoy",
+    "subtitle": "Únete a miles de equipos que usan OpenStrand para tejer su conocimiento en insights accionables.",
+    "primaryCta": {
+      "href": "/",
+      "label": "Comenzar Gratis para Siempre"
+    },
+    "secondaryCta": {
+      "href": "/docs",
+      "label": "Leer la Documentación"
+    },
+    "offlineBadge": "Funciona offline - no se requiere internet"
+  },
+  "testimonials": {
+    "eyebrow": "Confiado por Equipos en Todo el Mundo",
+    "title": "Historias Reales, Impacto Real",
+    "subtitle": "Mira cómo los equipos están transformando sus datos en conocimiento vivo.",
+    "items": [
+      {
+        "quote": "OpenStrand entrelaza 10 años de papers de investigación en un grafo de conocimiento interconectado. La función de repetición espaciada ayuda a nuestros estudiantes a retener conceptos complejos un 85% mejor.",
+        "name": "Dr. James Park",
+        "role": "Director de Investigación",
+        "company": "Instituto Académico"
+      },
+      {
+        "quote": "El sistema de tramas recursivas finalmente nos permite modelar nuestra compleja taxonomía de productos sin compromisos. Los flujos de aprobación mantienen todo listo para auditoría.",
+        "name": "Sarah Chen",
+        "role": "Jefa de Producto",
+        "company": "TechCorp"
+      },
+      {
+        "quote": "Pasamos de tres herramientas diferentes a solo OpenStrand. El enfoque offline-first significa que nuestros equipos de campo nunca pierden trabajo.",
+        "name": "Marcus Johnson",
+        "role": "Líder de Operaciones",
+        "company": "FieldOps"
+      }
+    ]
+  },
   "hero": {
     "badge": {
       "community": "Gratis para siempre • Edición Community"

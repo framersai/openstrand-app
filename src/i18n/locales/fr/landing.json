@@ -1,4 +1,152 @@
 {
+  "showcase": {
+    "eyebrow": "Design Visuel Époustouflant",
+    "title": "De Beaux Thèmes pour Chaque Flux de Travail",
+    "subtitle": "Choisissez parmi 9 thèmes conçus professionnellement avec des modes clair et sombre. Chaque thème est créé pour la lisibilité, l'accessibilité et l'attrait visuel.",
+    "advantages": {
+      "design": {
+        "title": "Design Réfléchi",
+        "description": "Palettes de couleurs et typographie soigneusement élaborées pour une lisibilité optimale."
+      },
+      "accessibility": {
+        "title": "Conforme WCAG",
+        "description": "Tous les thèmes respectent les normes d'accessibilité AA pour le contraste et la lisibilité."
+      },
+      "ai": {
+        "title": "Amélioré par l'IA",
+        "description": "Suggestions de thèmes intelligentes basées sur votre contenu et vos préférences."
+      }
+    },
+    "themeSelector": {
+      "label": "Sélectionner un Thème"
+    },
+    "themePreview": {
+      "title": "Aperçu du Thème",
+      "alt": "Aperçu d'une Carte Exemple"
+    },
+    "themes": {
+      "modern": {
+        "title": "Moderne",
+        "description": "Dégradés épurés et ombres douces pour un aspect contemporain."
+      },
+      "classic": {
+        "title": "Classique",
+        "description": "Accents professionnels bleu marine et or avec une élégance traditionnelle."
+      },
+      "paper": {
+        "title": "Papier",
+        "description": "Esthétique de type document inspirée du design imprimé."
+      },
+      "aurora": {
+        "title": "Aurore",
+        "description": "Dégradés inspirés des aurores boréales avec des couleurs éthérées."
+      },
+      "ocean": {
+        "title": "Océan",
+        "description": "Bleus et sarcelles apaisants rappelant les eaux profondes."
+      },
+      "forest": {
+        "title": "Forêt",
+        "description": "Verts naturels et tons terreux pour un sentiment ancré."
+      },
+      "space": {
+        "title": "Espace",
+        "description": "Violets profonds et accents cosmiques pour les observateurs d'étoiles."
+      },
+      "cyberpunk": {
+        "title": "Cyberpunk",
+        "description": "Accents néon et effets lumineux pour une ambiance futuriste."
+      },
+      "minimal": {
+        "title": "Minimal",
+        "description": "Design ultra-épuré axé sur les espaces blancs pour plus de clarté."
+      }
+    }
+  },
+  "pricing": {
+    "badge": "Édition Community • Gratuit pour Toujours",
+    "title": "Gratuit pour Toujours. Sans Essai. Sans Piège.",
+    "subtitle": "L'Édition Community fonctionne hors ligne pour toujours sans frais. Passez au cloud pour la collaboration d'équipe ou auto-hébergez avec notre licence entreprise.",
+    "tiers": {
+      "community": {
+        "name": "Édition Community",
+        "description": "Édition Community - Fonctionne hors ligne, toujours gratuit.",
+        "badge": "TOUJOURS GRATUIT",
+        "cta": "Télécharger Gratuit pour Toujours",
+        "highlights": {
+          "free": "Gratuit pour Toujours - Sans Carte de Crédit",
+          "offline": "Fonctionne Hors Ligne pour Toujours",
+          "openSource": "100% Open Source"
+        }
+      },
+      "team": {
+        "name": "Licence Équipe",
+        "badge": "Licence Équipe",
+        "cta": "Réserver l'intégration",
+        "offlineBadge": "Fonctionne aussi Hors Ligne"
+      },
+      "enterprise": {
+        "name": "Auto-Hébergement Entreprise",
+        "badge": "Auto-Hébergement",
+        "cta": "Acheter la Licence"
+      }
+    },
+    "stats": {
+      "lowLatency": {
+        "title": "Faible Latence",
+        "description": "Temps de réponse inférieurs à 50ms pour tous les endpoints API."
+      },
+      "scalable": {
+        "title": "Infiniment Évolutif",
+        "description": "D'un seul utilisateur aux équipes d'entreprise sans changement d'architecture.",
+        "descriptionOffline": "Architecture local-first qui évolue avec vos données."
+      },
+      "ai": {
+        "title": "Propulsé par l'IA",
+        "description": "Suggestions intelligentes et automatisations dans tout votre flux de travail.",
+        "descriptionOffline": "Intégration IA BYOK pour l'intelligence hors ligne."
+      }
+    }
+  },
+  "cta": {
+    "tagline": "Prêt à Commencer ?",
+    "title": "Transformez Vos Connaissances Aujourd'hui",
+    "subtitle": "Rejoignez des milliers d'équipes utilisant OpenStrand pour tisser leurs connaissances en insights actionnables.",
+    "primaryCta": {
+      "href": "/",
+      "label": "Commencer Gratuitement"
+    },
+    "secondaryCta": {
+      "href": "/docs",
+      "label": "Lire la Documentation"
+    },
+    "offlineBadge": "Fonctionne hors ligne - pas d'internet requis"
+  },
+  "testimonials": {
+    "eyebrow": "Approuvé par des Équipes du Monde Entier",
+    "title": "Histoires Réelles, Impact Réel",
+    "subtitle": "Découvrez comment les équipes transforment leurs données en connaissances vivantes.",
+    "items": [
+      {
+        "quote": "OpenStrand tisse ensemble 10 ans d'articles de recherche en un graphe de connaissances interconnecté. La fonction de répétition espacée aide nos étudiants à retenir les concepts complexes 85% mieux.",
+        "name": "Dr. James Park",
+        "role": "Directeur de Recherche",
+        "company": "Institut Académique"
+      },
+      {
+        "quote": "Le système de brins récursifs nous permet enfin de modéliser notre taxonomie de produits complexe sans compromis. Les flux d'approbation gardent tout prêt pour l'audit.",
+        "name": "Sarah Chen",
+        "role": "Responsable Produit",
+        "company": "TechCorp"
+      },
+      {
+        "quote": "Nous sommes passés de trois outils différents à OpenStrand uniquement. L'approche hors ligne d'abord signifie que nos équipes terrain ne perdent jamais de travail.",
+        "name": "Marcus Johnson",
+        "role": "Responsable des Opérations",
+        "company": "FieldOps"
+      }
+    ]
+  },
   "hero": {
     "badge": {
       "community": "Free Forever • Community Edition"

@@ -1,4 +1,152 @@
 {
+  "showcase": {
+    "eyebrow": "Stunning Visual Design",
+    "title": "Beautiful Themes for Every Workflow",
+    "subtitle": "Choose from 9 professionally designed themes with light and dark modes. Each theme is crafted for readability, accessibility, and visual appeal.",
+    "advantages": {
+      "design": {
+        "title": "Thoughtful Design",
+        "description": "Carefully crafted color palettes and typography for optimal readability."
+      },
+      "accessibility": {
+        "title": "WCAG Compliant",
+        "description": "All themes meet AA accessibility standards for contrast and readability."
+      },
+      "ai": {
+        "title": "AI-Enhanced",
+        "description": "Smart theme suggestions based on your content and preferences."
+      }
+    },
+    "themeSelector": {
+      "label": "Select a Theme"
+    },
+    "themePreview": {
+      "title": "Theme Preview",
+      "alt": "Sample Card Preview"
+    },
+    "themes": {
+      "modern": {
+        "title": "Modern",
+        "description": "Clean gradients and smooth shadows for a contemporary feel."
+      },
+      "classic": {
+        "title": "Classic",
+        "description": "Professional navy and gold accents with traditional elegance."
+      },
+      "paper": {
+        "title": "Paper",
+        "description": "Document-like aesthetic inspired by print design."
+      },
+      "aurora": {
+        "title": "Aurora",
+        "description": "Northern lights-inspired gradients with ethereal colors."
+      },
+      "ocean": {
+        "title": "Ocean",
+        "description": "Calming blues and teals reminiscent of deep waters."
+      },
+      "forest": {
+        "title": "Forest",
+        "description": "Natural greens and earth tones for a grounded feel."
+      },
+      "space": {
+        "title": "Space",
+        "description": "Deep purples and cosmic accents for stargazers."
+      },
+      "cyberpunk": {
+        "title": "Cyberpunk",
+        "description": "Neon accents and glowing effects for a futuristic vibe."
+      },
+      "minimal": {
+        "title": "Minimal",
+        "description": "Ultra-clean whitespace-focused design for clarity."
+      }
+    }
+  },
+  "pricing": {
+    "badge": "Community Edition • Free Forever",
+    "title": "Free Forever. No Trials. No Tricks.",
+    "subtitle": "Community Edition works offline forever at no cost. Upgrade to cloud for team collaboration or self-host with our enterprise license.",
+    "tiers": {
+      "community": {
+        "name": "Community Edition",
+        "description": "Community Edition - Works offline, always free.",
+        "badge": "ALWAYS FREE",
+        "cta": "Download Free Forever",
+        "highlights": {
+          "free": "Free Forever - No Credit Card",
+          "offline": "Works Offline Forever",
+          "openSource": "100% Open Source"
+        }
+      },
+      "team": {
+        "name": "Team License",
+        "badge": "Team License",
+        "cta": "Book onboarding",
+        "offlineBadge": "Works Offline Too"
+      },
+      "enterprise": {
+        "name": "Enterprise Self-Host",
+        "badge": "Self-Host",
+        "cta": "Purchase License"
+      }
+    },
+    "stats": {
+      "lowLatency": {
+        "title": "Low Latency",
+        "description": "Sub-50ms response times for all API endpoints."
+      },
+      "scalable": {
+        "title": "Infinitely Scalable",
+        "description": "From single user to enterprise teams without architecture changes.",
+        "descriptionOffline": "Local-first architecture scales with your data."
+      },
+      "ai": {
+        "title": "AI-Powered",
+        "description": "Intelligent suggestions and automations across your workflow.",
+        "descriptionOffline": "BYOK AI integration for offline intelligence."
+      }
+    }
+  },
+  "cta": {
+    "tagline": "Ready to Get Started?",
+    "title": "Transform Your Knowledge Today",
+    "subtitle": "Join thousands of teams using OpenStrand to weave their knowledge into actionable insights.",
+    "primaryCta": {
+      "href": "/",
+      "label": "Start Free Forever"
+    },
+    "secondaryCta": {
+      "href": "/docs",
+      "label": "Read the Docs"
+    },
+    "offlineBadge": "Works offline - no internet required"
+  },
+  "testimonials": {
+    "eyebrow": "Trusted by Teams Worldwide",
+    "title": "Real Stories, Real Impact",
+    "subtitle": "See how teams are transforming their data into living knowledge.",
+    "items": [
+      {
+        "quote": "OpenStrand weaves together 10 years of research papers into an interconnected knowledge graph. The spaced repetition feature helps our students retain complex concepts 85% better.",
+        "name": "Dr. James Park",
+        "role": "Research Director",
+        "company": "Academic Institute"
+      },
+      {
+        "quote": "The recursive strand system finally lets us model our complex product taxonomy without compromises. Approval workflows keep everything audit-ready.",
+        "name": "Sarah Chen",
+        "role": "Head of Product",
+        "company": "TechCorp"
+      },
+      {
+        "quote": "We moved from three different tools to just OpenStrand. The offline-first approach means our field teams never lose work.",
+        "name": "Marcus Johnson",
+        "role": "Operations Lead",
+        "company": "FieldOps"
+      }
+    ]
+  },
   "hero": {
     "badge": {
       "community": "Free Forever • Community Edition"

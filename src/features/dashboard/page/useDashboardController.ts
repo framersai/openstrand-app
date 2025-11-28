@@ -34,6 +34,7 @@ import { VisualizationTier } from '@/lib/visualization/types';
 import { useFeatureFlags } from '@/lib/feature-flags';
 
 import { useSavedVisualizationsSync } from '@/hooks/useSavedVisualizationsSync';
+import { useDashboardAutoSave } from '@/hooks/useDashboardAutoSave';
 import {
   mergeRecommendations,
   recommendationKey,
@@ -196,6 +197,41 @@ export function useDashboardController() {
     userId: user?.id ?? null,
     onSynced: setSavedVisualizations,
     getLocalVisualizations: getLocalSavedVisualizations,
+  });
+
+  // Auto-save integration - restore session handler
+  const handleRestoreSession = useCallback(
+    async (session: { dataset: { id: string; filename: string } | null }) => {
+      if (session.dataset) {
+        try {
+          setIsProcessing(true);
+          // Try to reload the dataset by its ID or filename
+          const { datasetId, metadata: datasetMetadata } = await api.loadSampleDataset(
+            session.dataset.filename
+          );
+          setDataset({
+            id: datasetId,
+            file: null,
+            metadata: datasetMetadata,
+          });
+          toast.success(`Restored: ${session.dataset.filename}`);
+        } catch (error) {
+          console.error('Failed to restore dataset:', error);
+          toast.error('Could not restore previous dataset');
+        } finally {
+          setIsProcessing(false);
+        }
+      }
+    },
+    [setDataset]
+  );
+
+  const {
+    settings: autoSaveSettings,
+    saveCurrentSession,
+    sessionHistory,
+  } = useDashboardAutoSave({
+    onRestore: handleRestoreSession,
   });
 
   useEffect(() => {
@@ -1305,5 +1341,9 @@ export function useDashboardController() {
     providerUsage,
     activityTimeline,
     feedbackOverview,
+    // Auto-save
+    autoSaveSettings,
+    saveCurrentSession,
+    sessionHistory,
   };
 }
