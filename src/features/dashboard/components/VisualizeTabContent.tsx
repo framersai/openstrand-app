@@ -13,11 +13,27 @@ import {
   ArrowRight,
   RefreshCw,
   Clock,
+  BarChart3,
+  PieChart,
+  LineChart,
+  ScatterChart,
+  Table2,
+  Layers,
+  Info,
+  HelpCircle,
+  ChevronDown,
+  ChevronRight,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { PromptInput } from '@/components/prompt-input';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { api, ApiError } from '@/services/api';
 import type { DatasetInsights, FeedbackSummary, LeaderboardEntry } from '@/types';
 import { useAutoInsightsStore } from '@/store/auto-insights-store';
@@ -68,6 +84,71 @@ interface VisualizeTabContentProps {
   ) => void;
 }
 
+// Categorized visualization presets with icons and descriptions
+const VISUALIZATION_PRESETS = {
+  distribution: {
+    label: 'Distribution',
+    icon: BarChart3,
+    description: 'See how values are spread across categories',
+    presets: [
+      { prompt: 'Show a bar chart of top 10 values', label: 'Top 10 Values' },
+      { prompt: 'Create a histogram showing distribution', label: 'Histogram' },
+      { prompt: 'Show frequency distribution as a bar chart', label: 'Frequency' },
+    ],
+  },
+  composition: {
+    label: 'Composition',
+    icon: PieChart,
+    description: 'Understand parts of a whole',
+    presets: [
+      { prompt: 'Create a pie chart breakdown by category', label: 'Pie Chart' },
+      { prompt: 'Show percentage breakdown as a donut chart', label: 'Donut Chart' },
+      { prompt: 'Create a stacked bar chart showing composition', label: 'Stacked Bar' },
+    ],
+  },
+  trends: {
+    label: 'Trends',
+    icon: LineChart,
+    description: 'Track changes over time',
+    presets: [
+      { prompt: 'Display trends over time as a line chart', label: 'Line Chart' },
+      { prompt: 'Show monthly trends with area chart', label: 'Area Chart' },
+      { prompt: 'Create a timeline visualization', label: 'Timeline' },
+    ],
+  },
+  comparison: {
+    label: 'Comparison',
+    icon: Layers,
+    description: 'Compare values across groups',
+    presets: [
+      { prompt: 'Compare categories side by side', label: 'Side by Side' },
+      { prompt: 'Create a grouped bar chart comparison', label: 'Grouped Bars' },
+      { prompt: 'Show comparison with horizontal bars', label: 'Horizontal Bars' },
+    ],
+  },
+  correlation: {
+    label: 'Correlation',
+    icon: ScatterChart,
+    description: 'Find relationships between variables',
+    presets: [
+      { prompt: 'Create a scatter plot to show correlation', label: 'Scatter Plot' },
+      { prompt: 'Show relationship between two numeric columns', label: 'Relationship' },
+      { prompt: 'Create a bubble chart with size encoding', label: 'Bubble Chart' },
+    ],
+  },
+  summary: {
+    label: 'Summary',
+    icon: Table2,
+    description: 'Get statistical overview',
+    presets: [
+      { prompt: 'Show summary statistics table', label: 'Statistics' },
+      { prompt: 'Create a data summary with key metrics', label: 'Key Metrics' },
+      { prompt: 'Generate a comprehensive data overview', label: 'Overview' },
+    ],
+  },
+};
+
+// Quick prompt suggestions for the input
 const PROMPT_SUGGESTIONS = [
   'Show a bar chart of top values',
   'Create a pie chart breakdown',
@@ -344,38 +425,170 @@ export function VisualizeTabContent({
 
   const hasCachedInsights = cachedInsightsEntry && cachedInsightsEntry.recommendations.length > 0;
 
-  return (
-    <div className="flex flex-col gap-4" role="region" aria-label="Visualization creation panel">
-      {/* Prompt Input Section */}
-      <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium text-foreground">Custom Prompt</h3>
-          {useHeuristics && (
-            <Badge variant="outline" className="text-xs gap-1">
-              <Zap className="h-3 w-3 text-amber-500" aria-hidden="true" />
-              Fast Mode
-            </Badge>
-          )}
-        </div>
-        <PromptInput
-          onSubmit={onSubmitPrompt}
-          isProcessing={isProcessing}
-          suggestions={PROMPT_SUGGESTIONS}
-          placeholder="Describe the visualization you want..."
-        />
-      </section>
+  // State for preset sections
+  const [expandedPresets, setExpandedPresets] = useState<string[]>(['distribution']);
+  
+  const togglePresetSection = (key: string) => {
+    setExpandedPresets(prev => 
+      prev.includes(key) 
+        ? prev.filter(k => k !== key) 
+        : [...prev, key]
+    );
+  };
 
-      {/* Divider */}
-      <div className="relative py-2">
-        <div className="absolute inset-0 flex items-center" aria-hidden="true">
-          <div className="w-full border-t border-border/50" />
+  return (
+    <TooltipProvider>
+      <div className="flex flex-col gap-4" role="region" aria-label="Visualization creation panel">
+        {/* Custom Prompt Section */}
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-medium text-foreground">Custom Prompt</h3>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button className="text-muted-foreground hover:text-foreground transition-colors">
+                    <HelpCircle className="h-3.5 w-3.5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="max-w-[250px]">
+                  <p className="text-xs">
+                    Describe the visualization you want in natural language. Be specific about chart type, columns, and any filters.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            {useHeuristics && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge variant="outline" className="text-xs gap-1 cursor-help">
+                    <Zap className="h-3 w-3 text-amber-500" aria-hidden="true" />
+                    Fast Mode
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent side="left" className="max-w-[200px]">
+                  <p className="text-xs">
+                    Using local heuristics for faster visualization generation without API calls.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+          <PromptInput
+            onSubmit={onSubmitPrompt}
+            isProcessing={isProcessing}
+            suggestions={PROMPT_SUGGESTIONS}
+            placeholder="e.g., Show a bar chart of sales by region..."
+          />
+        </section>
+
+        {/* Quick Presets Section */}
+        <section className="space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Quick Presets</h3>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">
+                    <Info className="h-3 w-3" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="max-w-[220px]">
+                  <p className="text-xs">
+                    Click any preset to instantly generate that visualization type for your data.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </div>
+          
+          <div className="space-y-1">
+            {Object.entries(VISUALIZATION_PRESETS).map(([key, category]) => {
+              const Icon = category.icon;
+              const isExpanded = expandedPresets.includes(key);
+              
+              return (
+                <Collapsible 
+                  key={key} 
+                  open={isExpanded}
+                  onOpenChange={() => togglePresetSection(key)}
+                >
+                  <CollapsibleTrigger asChild>
+                    <button 
+                      className={cn(
+                        "w-full flex items-center gap-2 p-2 rounded-lg text-left transition-colors",
+                        "hover:bg-accent/50",
+                        isExpanded && "bg-accent/30"
+                      )}
+                      disabled={!hasDataset}
+                    >
+                      <Icon className={cn(
+                        "h-4 w-4 flex-shrink-0",
+                        hasDataset ? "text-primary" : "text-muted-foreground/50"
+                      )} />
+                      <span className={cn(
+                        "flex-1 text-sm font-medium",
+                        !hasDataset && "text-muted-foreground/50"
+                      )}>
+                        {category.label}
+                      </span>
+                      {isExpanded ? (
+                        <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                      ) : (
+                        <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                      )}
+                    </button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="pl-6 pr-2 pb-2 space-y-1">
+                      <p className="text-[11px] text-muted-foreground mb-2">
+                        {category.description}
+                      </p>
+                      {category.presets.map((preset, idx) => (
+                        <Tooltip key={idx}>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => hasDataset && onQuickAction(preset.prompt)}
+                              disabled={!hasDataset || isProcessing}
+                              className={cn(
+                                "w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-all",
+                                "hover:bg-primary/10 hover:text-primary",
+                                "disabled:opacity-50 disabled:cursor-not-allowed",
+                                "border border-transparent hover:border-primary/20"
+                              )}
+                            >
+                              {preset.label}
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="right" className="max-w-[200px]">
+                            <p className="text-xs font-mono">{preset.prompt}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ))}
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              );
+            })}
+          </div>
+          
+          {!hasDataset && (
+            <p className="text-[11px] text-muted-foreground text-center py-2">
+              Upload data to use presets
+            </p>
+          )}
+        </section>
+
+        {/* Divider */}
+        <div className="relative py-2">
+          <div className="absolute inset-0 flex items-center" aria-hidden="true">
+            <div className="w-full border-t border-border/50" />
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-card px-3 text-xs text-muted-foreground uppercase tracking-wider">
+              or use AI analysis
+            </span>
+          </div>
         </div>
-        <div className="relative flex justify-center">
-          <span className="bg-card px-3 text-xs text-muted-foreground uppercase tracking-wider">
-            or use AI
-          </span>
-        </div>
-      </div>
 
       {/* Auto Insights Section */}
       <section className="space-y-3">
