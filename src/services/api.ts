@@ -1392,27 +1392,3 @@ export interface AIArtisanQuota {
 }
 
 export const api = new ApiService();
-
-    css?: string;
-    js: string;
-  };
-  sandbox_config: {
-    libraries: string[];
-    sandbox: string[];
-    csp: string;
-  };
-  cost: number;
-  generation_time_ms: number;
-  model_used: string;
-  can_edit: boolean;
-  can_remix: boolean;
-}
-
-export interface AIArtisanQuota {
-  remaining: number;
-  limit: number;
-  plan: string;
-  resets_at?: string;
-}
-
-export const api = new ApiService();

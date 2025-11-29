@@ -106,9 +106,3 @@ export {
   GitFork,
   Star
 } from 'lucide-react';
-
-  // GitHub
-  Github,
-  GitFork,
-  Star
-} from 'lucide-react';

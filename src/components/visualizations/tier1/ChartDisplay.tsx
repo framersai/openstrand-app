@@ -169,3 +169,30 @@ const ChartDisplay = forwardRef<ChartDisplayRef, ChartDisplayProps>(
           return <Scatter {...chartProps} />;
         case 'radar':
           return <Radar {...chartProps} />;
+        case 'chart':
+          // If type is still 'chart', try to infer from data structure
+          if (chartData?.datasets?.[0]?.data?.[0]?.x !== undefined) {
+            return <Scatter {...chartProps} />;
+          }
+          // Default to bar chart
+          return <Bar {...chartProps} />;
+        default:
+          return (
+            <div className="flex items-center justify-center h-full text-muted-foreground">
+              <p>Unsupported chart type: {chartType}</p>
+            </div>
+          );
+      }
+    };
+
+    return (
+      <div className={className || 'w-full h-full'}>
+        {getChartComponent()}
+      </div>
+    );
+  }
+);
+
+ChartDisplay.displayName = 'ChartDisplay';
+
+export default ChartDisplay;
