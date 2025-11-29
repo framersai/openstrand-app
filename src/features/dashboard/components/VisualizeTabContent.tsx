@@ -77,11 +77,18 @@ const PROMPT_SUGGESTIONS = [
 
 /**
  * Build an intelligent, contextual prompt from a recommendation.
- * Creates natural language prompts that help AI generate meaningful visualizations.
+ * 
+ * Priority:
+ * 1. Use the backend-generated prompt if available (contains full context)
+ * 2. Fall back to client-side generation for legacy recommendations
  */
 const buildPromptFromRecommendation = (recommendation: InsightRecommendation): string => {
-  if (recommendation.prompt) return recommendation.prompt;
+  // Backend now generates rich, contextual prompts - use them if available
+  if (recommendation.prompt && recommendation.prompt.length > 50) {
+    return recommendation.prompt;
+  }
 
+  // Fallback for legacy or simple recommendations
   const type = recommendation.type ?? 'chart';
   const x = recommendation.x;
   const y = recommendation.y;
@@ -91,81 +98,77 @@ const buildPromptFromRecommendation = (recommendation: InsightRecommendation): s
   // Helper to format column names more naturally
   const formatColumn = (col: string | undefined): string => {
     if (!col) return '';
-    // Convert snake_case and camelCase to readable format
     return col
       .replace(/_/g, ' ')
       .replace(/([a-z])([A-Z])/g, '$1 $2')
-      .toLowerCase();
+      .toLowerCase()
+      .replace(/\b\w/g, c => c.toUpperCase());
   };
 
-  // Generate contextual prompts based on chart type and data
+  // Build a reasonable fallback prompt
+  const parts: string[] = [];
+  
   switch (type.toLowerCase()) {
     case 'line':
       if (x && y) {
-        return `Analyze the trend of ${formatColumn(y)} over ${formatColumn(x)}. Show how values change over time and highlight any significant patterns, peaks, or anomalies. Include insights about growth rate or seasonality if applicable.`;
+        parts.push(`Analyze the trend of ${formatColumn(y)} over ${formatColumn(x)}.`);
+        parts.push('Identify patterns, peaks, and anomalies.');
+      } else {
+        parts.push('Create a line chart showing trends over time.');
       }
-      return `Create a line chart showing trends over time. Identify key patterns and inflection points.`;
+      break;
 
     case 'bar':
       if (x && y) {
-        const aggText = aggregation && aggregation !== 'none' 
-          ? ` (${aggregation})` 
-          : '';
-        return `Compare ${formatColumn(y)}${aggText} across different ${formatColumn(x)} categories. Highlight the top and bottom performers, and explain what drives the differences.`;
+        parts.push(`Compare ${formatColumn(y)} across ${formatColumn(x)} categories.`);
+        parts.push('Highlight top and bottom performers.');
+      } else {
+        parts.push('Create a bar chart comparing categories.');
       }
-      return `Create a bar chart comparing values across categories. Identify the leaders and laggards.`;
+      break;
 
     case 'pie':
     case 'doughnut':
       if (x) {
-        return `Show the distribution breakdown by ${formatColumn(x)}. Visualize what percentage each category represents and highlight the dominant segments.`;
+        parts.push(`Show the distribution breakdown by ${formatColumn(x)}.`);
+        parts.push('Identify dominant segments.');
+      } else {
+        parts.push('Create a pie chart showing proportional breakdown.');
       }
-      return `Create a pie chart showing the proportional breakdown. Identify the largest segments.`;
+      break;
 
     case 'scatter':
       if (x && y) {
-        return `Explore the relationship between ${formatColumn(x)} and ${formatColumn(y)}. Look for correlations, clusters, or outliers that reveal interesting patterns in the data.`;
+        parts.push(`Explore the relationship between ${formatColumn(x)} and ${formatColumn(y)}.`);
+        parts.push('Look for correlations and outliers.');
+      } else {
+        parts.push('Create a scatter plot for correlation analysis.');
       }
-      return `Create a scatter plot to identify correlations and outliers between two variables.`;
+      break;
 
-    case 'heatmap':
-      if (x && y) {
-        return `Create a heatmap showing the intensity of ${formatColumn(y)} across ${formatColumn(x)}. Identify hotspots and patterns in the distribution.`;
-      }
-      return `Generate a heatmap to visualize data density and patterns.`;
-
-    case 'radar':
-      return `Create a radar chart comparing multiple metrics. Show the relative strengths across different dimensions.`;
-
-    case 'map':
-      return `Visualize the geographic distribution of the data. Highlight regional patterns and concentrations.`;
+    case 'table':
+      parts.push('Display the data in an interactive, sortable table.');
+      break;
 
     default:
-      // Fallback to a more intelligent generic prompt
-      const parts: string[] = [];
-      
       if (y && x) {
-        parts.push(`Analyze ${formatColumn(y)} by ${formatColumn(x)}`);
-      } else if (y) {
-        parts.push(`Visualize the distribution of ${formatColumn(y)}`);
+        parts.push(`Visualize ${formatColumn(y)} by ${formatColumn(x)}.`);
       } else if (x) {
-        parts.push(`Break down the data by ${formatColumn(x)}`);
+        parts.push(`Analyze the distribution of ${formatColumn(x)}.`);
       } else {
-        parts.push(`Create an insightful visualization of this data`);
+        parts.push('Create an insightful visualization of this data.');
       }
-
-      if (groupBy) {
-        parts.push(`segmented by ${formatColumn(groupBy)}`);
-      }
-
-      if (aggregation && aggregation !== 'none') {
-        parts.push(`using ${aggregation}`);
-      }
-
-      parts.push('. Identify key patterns, outliers, and actionable insights.');
-      
-      return parts.join(' ');
   }
+
+  if (groupBy) {
+    parts.push(`Group by ${formatColumn(groupBy)}.`);
+  }
+
+  if (aggregation && aggregation !== 'none') {
+    parts.push(`Use ${aggregation} aggregation.`);
+  }
+
+  return parts.join(' ');
 };
 
 const getRecommendationsFromInsights = (

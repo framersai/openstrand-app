@@ -158,14 +158,16 @@ export function VisualizationList({
                   const alreadyGenerated = usedRecommendationKeys?.has(key) ?? false;
                   const ChartIcon = CHART_ICONS[rec.type?.toLowerCase() || 'bar'] || BarChart3;
                   
-                  // Format the title nicely
-                  const title = rec.title_suggestion 
-                    ? rec.title_suggestion
-                    : rec.y && rec.x
-                      ? `${formatColumnName(rec.y)} by ${formatColumnName(rec.x)}`
-                      : rec.x
-                        ? `Distribution of ${formatColumnName(rec.x)}`
-                        : `Insight ${index + 1}`;
+                  // Format the title nicely - prefer backend-generated title
+                  const title = rec.title 
+                    ? rec.title
+                    : rec.title_suggestion 
+                      ? rec.title_suggestion
+                      : rec.y && rec.x
+                        ? `${formatColumnName(rec.y)} by ${formatColumnName(rec.x)}`
+                        : rec.x
+                          ? `Distribution of ${formatColumnName(rec.x)}`
+                          : `Insight ${index + 1}`;
 
                   return (
                     <button
