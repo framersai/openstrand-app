@@ -89,9 +89,9 @@ const STORAGE_KEYS = {
 } as const;
 
 const DEFAULT_CREDITS = {
-  openai: { daily: 10, used: 0 },
-  visualizations: { daily: 5, used: 0 },
-  datasets: { daily: 3, used: 0 },
+  openai: { daily: 100, used: 0 },
+  visualizations: { daily: 999999, used: 0 }, // Unlimited for guests
+  datasets: { daily: 50, used: 0 },
 };
 
 const DEFAULT_PREFERENCES: GuestPreferences = {
