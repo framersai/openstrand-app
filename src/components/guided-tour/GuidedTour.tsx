@@ -235,7 +235,7 @@ export function GuidedTour({ onComplete, forceShow = false }: GuidedTourProps) {
 
       {/* Tour Tooltip - responsive width and centered on mobile */}
       <Card
-        className="fixed z-50 w-[calc(100vw-2rem)] max-w-md shadow-2xl border-primary/20 bg-background/98 backdrop-blur"
+        className="fixed z-50 w-[calc(100vw-2rem)] max-w-md shadow-2xl border-primary/30 bg-card text-card-foreground"
         style={{
           top: typeof window !== 'undefined' && window.innerWidth < 768 
             ? '50%' 
@@ -275,7 +275,7 @@ export function GuidedTour({ onComplete, forceShow = false }: GuidedTourProps) {
           </div>
 
           {/* Content */}
-          <p className="text-sm text-muted-foreground mb-4 sm:mb-6">
+          <p className="text-sm text-foreground/80 mb-4 sm:mb-6 leading-relaxed">
             {step.content}
           </p>
 
