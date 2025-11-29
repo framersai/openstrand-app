@@ -1,5 +1,10 @@
 'use client';
 
+/**
+ * Dashboard Page - Visualization-First Design
+ * Professional, responsive, and intuitive layout
+ */
+
 import { useEffect, useMemo, useState } from 'react';
 import {
   Upload,
@@ -7,6 +12,8 @@ import {
   Command,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   Database,
   BarChart3,
   Layers,
@@ -14,6 +21,12 @@ import {
   Trash2,
   Settings,
   Loader2,
+  PanelLeftClose,
+  PanelLeft,
+  Zap,
+  RefreshCw,
+  Menu,
+  X,
 } from 'lucide-react';
 
 import { CommandPalette, type CommandAction } from '@/components/command-palette';
@@ -34,6 +47,19 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
+import { Badge } from '@/components/ui/badge';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { useFeatureFlags } from '@/lib/feature-flags';
 import { useAppMode } from '@/hooks/useAppMode';
@@ -107,6 +133,8 @@ export default function DashboardPage() {
 
   const [activeTab, setActiveTab] = useState<'upload' | 'visualize'>('upload');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
+  const [datasetInfoExpanded, setDatasetInfoExpanded] = useState(true);
 
   const shouldShowLocalOnboarding = environmentMode === 'offline';
   const shouldShowTeamOnboarding =
@@ -160,9 +188,96 @@ export default function DashboardPage() {
     onOpenSettings: openSettings,
   });
 
+  // Sidebar content component - reused for desktop and mobile
+  const SidebarContent = () => (
+    <div className="flex flex-col h-full">
+      {/* Tabs */}
+      <Tabs
+        value={activeTab}
+        onValueChange={(v) => {
+          setActiveTab(v as 'upload' | 'visualize');
+          setMobileSheetOpen(false);
+        }}
+        className="flex-1 flex flex-col"
+      >
+        <TabsList className="mx-3 mt-3 grid grid-cols-2 h-9 bg-muted/50">
+          <TabsTrigger 
+            value="upload" 
+            className="text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"
+          >
+            <Database className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
+            Data
+          </TabsTrigger>
+          <TabsTrigger 
+            value="visualize" 
+            className="text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"
+          >
+            <Sparkles className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
+            Create
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent 
+          value="upload" 
+          className="flex-1 overflow-y-auto p-3 mt-0 focus-visible:outline-none"
+          tabIndex={-1}
+        >
+          <UploadTabContent
+            metadata={metadata ?? null}
+            isProcessing={isProcessing}
+            isLoadingSamples={isLoadingSamples}
+            samples={sampleDatasets}
+            activeDatasetId={dataset?.id}
+            onFileUpload={handleFileUpload}
+            onClearDataset={handleClearDataset}
+            onLoadSample={handleLoadSampleDataset}
+            planTier={planTier}
+            planLimitMb={planLimitMb}
+            summary={datasetSummary}
+            isSummaryLoading={isSummaryLoading}
+            onRefreshSummary={handleRefreshSummary}
+          />
+        </TabsContent>
+
+        <TabsContent 
+          value="visualize" 
+          className="flex-1 overflow-y-auto p-3 mt-0 data-[state=inactive]:hidden focus-visible:outline-none" 
+          forceMount
+          tabIndex={-1}
+        >
+          <VisualizeTabContent
+            datasetId={dataset?.id ?? null}
+            isProcessing={isProcessing}
+            useHeuristics={useHeuristics}
+            hasDataset={Boolean(dataset)}
+            onSubmitPrompt={handlePromptSubmit}
+            onQuickAction={handleGenerateVisualization}
+            onProcessingChange={setIsProcessing}
+            datasetFeedback={datasetFeedback}
+            canSubmitFeedback={canSubmitFeedback}
+            onDatasetVote={handleDatasetVote}
+            onDatasetFavorite={handleDatasetFavorite}
+            leaderboardDatasets={datasetLeaderboard}
+            leaderboardVisualizations={visualizationLeaderboard}
+            leaderboardLoading={leaderboardLoading}
+            onRefreshLeaderboards={refreshLeaderboards}
+            onNavigateToVisualizations={focusVisualizations}
+            onAutoInsightsUpdate={handleAutoInsightsUpdate}
+            onRegisterAutoInsightsRunner={(runner) => {
+              autoInsightsRunnerRef.current = runner ?? null;
+            }}
+            onRegisterRecommendationRunner={(runner) => {
+              recommendationRunnerRef.current = runner ?? null;
+            }}
+          />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+
   return (
     <TooltipProvider>
-      <div className="min-h-screen flex flex-col bg-background">
+      <div className="min-h-screen min-h-[100dvh] flex flex-col bg-background">
         <GuidedTour />
         {shouldShowLocalOnboarding && <LocalOnboarding onOpenSettings={openSettings} />}
         {shouldShowTeamOnboarding && <TeamOnboarding onOpenSettings={openSettings} />}
@@ -170,21 +285,21 @@ export default function DashboardPage() {
 
         {/* Main Layout */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Left Sidebar */}
+          {/* Desktop Sidebar - Hidden on mobile */}
           <aside
             className={cn(
-              "flex flex-col border-r border-border/40 bg-card/30 transition-all duration-300",
-              sidebarCollapsed ? "w-16" : "w-80 lg:w-[360px]"
+              "hidden md:flex flex-col border-r border-border/40 bg-card/50 transition-all duration-300",
+              sidebarCollapsed ? "w-14" : "w-72 lg:w-80 xl:w-[340px]"
             )}
             role="complementary"
             aria-label="Workspace sidebar"
           >
             {/* Sidebar Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border/40">
+            <div className="flex items-center justify-between px-3 py-2 border-b border-border/40">
               {!sidebarCollapsed && (
-                <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
                   Workspace
-                </h2>
+                </span>
               )}
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -192,111 +307,28 @@ export default function DashboardPage() {
                     variant="ghost"
                     size="icon"
                     onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                    className="h-8 w-8 rounded-lg hover:bg-accent"
+                    className="h-7 w-7 rounded-md hover:bg-accent ml-auto"
                     aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-                    aria-expanded={!sidebarCollapsed}
                   >
                     {sidebarCollapsed ? (
-                      <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                      <PanelLeft className="h-3.5 w-3.5" aria-hidden="true" />
                     ) : (
-                      <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                      <PanelLeftClose className="h-3.5 w-3.5" aria-hidden="true" />
                     )}
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent side="right">
-                  {sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                <TooltipContent side="right" className="text-xs">
+                  {sidebarCollapsed ? 'Expand' : 'Collapse'}
                 </TooltipContent>
               </Tooltip>
             </div>
 
             {/* Sidebar Content */}
             {!sidebarCollapsed ? (
-              <div className="flex-1 flex flex-col overflow-hidden">
-                {/* Tabs */}
-                <Tabs
-                  value={activeTab}
-                  onValueChange={(v) => setActiveTab(v as 'upload' | 'visualize')}
-                  className="flex-1 flex flex-col"
-                >
-                  <TabsList className="mx-4 mt-4 grid grid-cols-2 h-10">
-                    <TabsTrigger 
-                      value="upload" 
-                      className="text-sm font-medium data-[state=active]:bg-background"
-                    >
-                      <Upload className="mr-2 h-4 w-4" aria-hidden="true" />
-                      Data
-                    </TabsTrigger>
-                    <TabsTrigger 
-                      value="visualize" 
-                      className="text-sm font-medium data-[state=active]:bg-background"
-                    >
-                      <Sparkles className="mr-2 h-4 w-4" aria-hidden="true" />
-                      Create
-                    </TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent 
-                    value="upload" 
-                    className="flex-1 overflow-y-auto p-4 mt-0 focus-visible:outline-none"
-                    tabIndex={-1}
-                  >
-                    <UploadTabContent
-                      metadata={metadata ?? null}
-                      isProcessing={isProcessing}
-                      isLoadingSamples={isLoadingSamples}
-                      samples={sampleDatasets}
-                      activeDatasetId={dataset?.id}
-                      onFileUpload={handleFileUpload}
-                      onClearDataset={handleClearDataset}
-                      onLoadSample={handleLoadSampleDataset}
-                      planTier={planTier}
-                      planLimitMb={planLimitMb}
-                      summary={datasetSummary}
-                      isSummaryLoading={isSummaryLoading}
-                      onRefreshSummary={handleRefreshSummary}
-                    />
-                  </TabsContent>
-
-                  <TabsContent 
-                    value="visualize" 
-                    className="flex-1 overflow-y-auto p-4 mt-0 data-[state=inactive]:hidden focus-visible:outline-none" 
-                    forceMount
-                    tabIndex={-1}
-                  >
-                    <VisualizeTabContent
-                      datasetId={dataset?.id ?? null}
-                      isProcessing={isProcessing}
-                      useHeuristics={useHeuristics}
-                      hasDataset={Boolean(dataset)}
-                      onSubmitPrompt={handlePromptSubmit}
-                      onQuickAction={handleGenerateVisualization}
-                      onProcessingChange={setIsProcessing}
-                      datasetFeedback={datasetFeedback}
-                      canSubmitFeedback={canSubmitFeedback}
-                      onDatasetVote={handleDatasetVote}
-                      onDatasetFavorite={handleDatasetFavorite}
-                      leaderboardDatasets={datasetLeaderboard}
-                      leaderboardVisualizations={visualizationLeaderboard}
-                      leaderboardLoading={leaderboardLoading}
-                      onRefreshLeaderboards={refreshLeaderboards}
-                      onNavigateToVisualizations={focusVisualizations}
-                      onAutoInsightsUpdate={handleAutoInsightsUpdate}
-                      onRegisterAutoInsightsRunner={(runner) => {
-                        autoInsightsRunnerRef.current = runner ?? null;
-                      }}
-                      onRegisterRecommendationRunner={(runner) => {
-                        recommendationRunnerRef.current = runner ?? null;
-                      }}
-                    />
-                  </TabsContent>
-                </Tabs>
-              </div>
+              <SidebarContent />
             ) : (
               /* Collapsed Sidebar Icons */
-              <nav 
-                className="flex-1 flex flex-col items-center py-4 gap-2"
-                aria-label="Sidebar navigation"
-              >
+              <nav className="flex-1 flex flex-col items-center py-3 gap-1">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -306,14 +338,12 @@ export default function DashboardPage() {
                         setSidebarCollapsed(false);
                         setActiveTab('upload');
                       }}
-                      className="h-10 w-10"
-                      aria-label="Data & Upload"
-                      aria-current={activeTab === 'upload' ? 'page' : undefined}
+                      className="h-9 w-9"
                     >
-                      <Upload className="h-4 w-4" aria-hidden="true" />
+                      <Database className="h-4 w-4" aria-hidden="true" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="right">Data & Upload</TooltipContent>
+                  <TooltipContent side="right" className="text-xs">Data</TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -324,29 +354,26 @@ export default function DashboardPage() {
                         setSidebarCollapsed(false);
                         setActiveTab('visualize');
                       }}
-                      className="h-10 w-10"
-                      aria-label="Create Visualizations"
-                      aria-current={activeTab === 'visualize' ? 'page' : undefined}
+                      className="h-9 w-9"
                     >
                       <Sparkles className="h-4 w-4" aria-hidden="true" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="right">Create Visualizations</TooltipContent>
+                  <TooltipContent side="right" className="text-xs">Create</TooltipContent>
                 </Tooltip>
-                <div className="flex-1" aria-hidden="true" />
+                <div className="flex-1" />
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={openSettings}
-                      className="h-10 w-10"
-                      aria-label="Open settings"
+                      className="h-9 w-9"
                     >
                       <Settings className="h-4 w-4" aria-hidden="true" />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="right">Settings</TooltipContent>
+                  <TooltipContent side="right" className="text-xs">Settings</TooltipContent>
                 </Tooltip>
               </nav>
             )}
@@ -354,96 +381,140 @@ export default function DashboardPage() {
 
           {/* Main Content */}
           <main 
-            className="flex-1 overflow-y-auto bg-muted/20"
+            className="flex-1 flex flex-col overflow-hidden bg-muted/20"
             role="main"
             aria-label="Visualization workspace"
           >
-            <div className="max-w-6xl mx-auto p-6 lg:p-8">
-              {/* Header Bar */}
-              <header className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-4">
-                  {dataset ? (
-                    <div className="flex items-center gap-4">
-                      <div 
-                        className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center"
-                        aria-hidden="true"
-                      >
-                        <Database className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <h1 className="text-xl font-semibold text-foreground">
+            {/* Compact Header Bar */}
+            <header className="flex-shrink-0 flex items-center gap-2 px-3 sm:px-4 lg:px-6 py-2 border-b border-border/40 bg-background/80 backdrop-blur-sm">
+              {/* Mobile Menu Button */}
+              <Sheet open={mobileSheetOpen} onOpenChange={setMobileSheetOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="md:hidden h-8 w-8"
+                    aria-label="Open menu"
+                  >
+                    <Menu className="h-4 w-4" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-[300px] sm:w-[340px] p-0">
+                  <SheetHeader className="px-4 py-3 border-b">
+                    <SheetTitle className="text-sm font-semibold">Workspace</SheetTitle>
+                  </SheetHeader>
+                  <SidebarContent />
+                </SheetContent>
+              </Sheet>
+
+              {/* Dataset Info - Collapsible on mobile */}
+              {dataset ? (
+                <Collapsible 
+                  open={datasetInfoExpanded} 
+                  onOpenChange={setDatasetInfoExpanded}
+                  className="flex-1 min-w-0"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Database className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h1 className="text-sm font-semibold truncate">
                           {metadata?.filename || 'Dataset'}
                         </h1>
-                        <p className="text-sm text-muted-foreground">
-                          {(metadata?.rowCount || 0).toLocaleString()} rows · {metadata?.columns?.length || 0} columns
-                        </p>
+                        <CollapsibleTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-5 w-5 sm:hidden">
+                            {datasetInfoExpanded ? (
+                              <ChevronUp className="h-3 w-3" />
+                            ) : (
+                              <ChevronDown className="h-3 w-3" />
+                            )}
+                          </Button>
+                        </CollapsibleTrigger>
                       </div>
+                      <p className="text-[10px] text-muted-foreground hidden sm:block">
+                        {(metadata?.rowCount || 0).toLocaleString()} rows · {metadata?.columns?.length || 0} cols
+                      </p>
                     </div>
-                  ) : (
-                    <h1 className="text-xl font-semibold text-foreground">Dashboard</h1>
-                  )}
-                </div>
+                  </div>
+                  <CollapsibleContent className="sm:hidden">
+                    <p className="text-[10px] text-muted-foreground mt-1 ml-10">
+                      {(metadata?.rowCount || 0).toLocaleString()} rows · {metadata?.columns?.length || 0} columns
+                    </p>
+                  </CollapsibleContent>
+                </Collapsible>
+              ) : (
+                <h1 className="flex-1 text-sm font-semibold">Dashboard</h1>
+              )}
 
-                <div className="flex items-center gap-3" role="toolbar" aria-label="Quick actions">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setIsPaletteOpen(true)}
-                        className="h-9"
-                      >
-                        <Command className="mr-2 h-4 w-4" aria-hidden="true" />
-                        <span className="hidden sm:inline">Commands</span>
-                        <kbd className="ml-2 hidden sm:inline text-xs bg-muted px-1.5 py-0.5 rounded font-mono">
-                          ⌘K
-                        </kbd>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Open command palette (⌘K)</TooltipContent>
-                  </Tooltip>
+              {/* Action Buttons */}
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+                {/* Command Palette - Hidden label on mobile */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsPaletteOpen(true)}
+                      className="h-8 px-2 sm:px-3"
+                    >
+                      <Command className="h-3.5 w-3.5" aria-hidden="true" />
+                      <kbd className="ml-1.5 hidden sm:inline text-[10px] bg-muted px-1 py-0.5 rounded font-mono">
+                        ⌘K
+                      </kbd>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="text-xs">Command palette (⌘K)</TooltipContent>
+                </Tooltip>
 
-                  {dataset && (
-                    <>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={runAutoInsights}
-                        disabled={isProcessing}
-                        className="h-9"
-                        aria-busy={autoInsightsSnapshot.isLoading}
-                      >
-                        {autoInsightsSnapshot.isLoading ? (
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                        ) : (
-                          <Sparkles className="mr-2 h-4 w-4" aria-hidden="true" />
-                        )}
-                        <span className="hidden sm:inline">
-                          {autoInsightsSnapshot.isLoading ? 'Analyzing...' : 'Auto Insights'}
-                        </span>
-                      </Button>
-                      {visualizations.length > 0 && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={handleClearAllVisualizations}
-                              className="h-9 text-muted-foreground hover:text-destructive"
-                              aria-label="Clear all visualizations"
-                            >
-                              <Trash2 className="h-4 w-4" aria-hidden="true" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Clear all visualizations</TooltipContent>
-                        </Tooltip>
+                {dataset && (
+                  <>
+                    {/* Auto Insights Button - Prominent */}
+                    <Button
+                      onClick={runAutoInsights}
+                      disabled={isProcessing || autoInsightsSnapshot.isLoading}
+                      size="sm"
+                      className={cn(
+                        "h-8 px-2 sm:px-3 gap-1.5",
+                        autoInsightsSnapshot.isLoading 
+                          ? "bg-primary/80" 
+                          : "bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80"
                       )}
-                    </>
-                  )}
-                </div>
-              </header>
+                    >
+                      {autoInsightsSnapshot.isLoading ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                      ) : (
+                        <Zap className="h-3.5 w-3.5" aria-hidden="true" />
+                      )}
+                      <span className="hidden sm:inline text-xs">
+                        {autoInsightsSnapshot.isLoading ? 'Analyzing' : 'Insights'}
+                      </span>
+                    </Button>
 
-              {/* Visualizations Area */}
+                    {/* Clear Button */}
+                    {visualizations.length > 0 && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={handleClearAllVisualizations}
+                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent className="text-xs">Clear all</TooltipContent>
+                      </Tooltip>
+                    )}
+                  </>
+                )}
+              </div>
+            </header>
+
+            {/* Visualizations Area - Takes up remaining space */}
+            <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
               {visualizations.length > 0 ? (
                 <VisualizationWorkspace
                   ref={visualizationPanelRef as any}
@@ -467,95 +538,96 @@ export default function DashboardPage() {
                   usedRecommendationKeys={usedRecommendationKeys}
                 />
               ) : (
-                /* Empty State */
-                <Card 
-                  className="p-12 lg:p-16 text-center border-dashed bg-card/50"
-                  role="region"
-                  aria-label={dataset ? "Ready to create visualizations" : "No dataset loaded"}
-                >
-                  {!dataset ? (
-                    <div className="max-w-md mx-auto">
-                      <div 
-                        className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 mb-6"
-                        aria-hidden="true"
-                      >
-                        <Layers className="h-10 w-10 text-primary" />
-                      </div>
-                      <h2 className="text-2xl font-semibold mb-3 text-foreground">
-                        No Dataset Loaded
-                      </h2>
-                      <p className="text-muted-foreground mb-8 text-base leading-relaxed">
-                        Upload a CSV, JSON, or Excel file to start creating visualizations with AI assistance.
-                      </p>
-                      <div className="flex items-center justify-center gap-4">
-                        <Button 
-                          onClick={() => setActiveTab('upload')} 
-                          size="lg"
-                          className="h-11 px-6"
-                        >
-                          <Upload className="mr-2 h-4 w-4" aria-hidden="true" />
-                          Upload Dataset
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          onClick={() => setIsPaletteOpen(true)}
-                          size="lg"
-                          className="h-11 px-6"
-                        >
-                          <Command className="mr-2 h-4 w-4" aria-hidden="true" />
-                          Quick Actions
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="max-w-md mx-auto">
-                      <div 
-                        className={cn(
-                          "inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-6",
+                /* Empty State - Compact and centered */
+                <div className="h-full flex items-center justify-center">
+                  <Card 
+                    className="w-full max-w-lg p-6 sm:p-8 text-center border-dashed bg-card/50"
+                    role="region"
+                    aria-label={dataset ? "Ready to create visualizations" : "No dataset loaded"}
+                  >
+                    {!dataset ? (
+                      <>
+                        <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 mb-4">
+                          <Layers className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
+                        </div>
+                        <h2 className="text-lg sm:text-xl font-semibold mb-2">
+                          No Dataset Loaded
+                        </h2>
+                        <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
+                          Upload a CSV, JSON, or Excel file to start creating visualizations.
+                        </p>
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+                          <Button 
+                            onClick={() => {
+                              setActiveTab('upload');
+                              setMobileSheetOpen(true);
+                            }} 
+                            size="default"
+                            className="w-full sm:w-auto"
+                          >
+                            <Upload className="mr-2 h-4 w-4" />
+                            Upload Dataset
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            onClick={() => setIsPaletteOpen(true)}
+                            size="default"
+                            className="w-full sm:w-auto"
+                          >
+                            <Command className="mr-2 h-4 w-4" />
+                            Quick Actions
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className={cn(
+                          "inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl mb-4",
                           "bg-gradient-to-br from-emerald-500/20 to-emerald-500/5",
                           autoInsightsSnapshot.isLoading && "animate-pulse"
-                        )}
-                        aria-hidden="true"
-                      >
-                        <BarChart3 className="h-10 w-10 text-emerald-600 dark:text-emerald-400" />
-                      </div>
-                      <h2 className="text-2xl font-semibold mb-3 text-foreground">
-                        Ready to Visualize
-                      </h2>
-                      <p className="text-muted-foreground mb-8 text-base leading-relaxed">
-                        Your dataset is loaded. Create visualizations using natural language or run Auto Insights for AI-recommended charts.
-                      </p>
-                      <div className="flex items-center justify-center gap-4">
-                        <Button 
-                          onClick={runAutoInsights} 
-                          disabled={isProcessing}
-                          size="lg"
-                          className={cn(
-                            "h-11 px-6",
-                            autoInsightsSnapshot.isLoading && "animate-pulse"
-                          )}
-                          aria-busy={autoInsightsSnapshot.isLoading}
-                        >
-                          {autoInsightsSnapshot.isLoading ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                          ) : (
-                            <Sparkles className="mr-2 h-4 w-4" aria-hidden="true" />
-                          )}
-                          {autoInsightsSnapshot.isLoading ? 'Analyzing...' : 'Auto Insights'}
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          onClick={() => setActiveTab('visualize')}
-                          size="lg"
-                          className="h-11 px-6 bg-transparent text-foreground hover:bg-accent"
-                        >
-                          <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
-                          Create Manually
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </Card>
+                        )}>
+                          <BarChart3 className="h-7 w-7 sm:h-8 sm:w-8 text-emerald-600 dark:text-emerald-400" />
+                        </div>
+                        <h2 className="text-lg sm:text-xl font-semibold mb-2">
+                          Ready to Visualize
+                        </h2>
+                        <p className="text-sm text-muted-foreground mb-6 max-w-sm mx-auto">
+                          Create visualizations with natural language or run AI-powered insights.
+                        </p>
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+                          <Button 
+                            onClick={runAutoInsights} 
+                            disabled={isProcessing || autoInsightsSnapshot.isLoading}
+                            size="default"
+                            className={cn(
+                              "w-full sm:w-auto gap-2",
+                              "bg-gradient-to-r from-primary to-primary/90"
+                            )}
+                          >
+                            {autoInsightsSnapshot.isLoading ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Zap className="h-4 w-4" />
+                            )}
+                            {autoInsightsSnapshot.isLoading ? 'Analyzing...' : 'Auto Insights'}
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            onClick={() => {
+                              setActiveTab('visualize');
+                              setMobileSheetOpen(true);
+                            }}
+                            size="default"
+                            className="w-full sm:w-auto"
+                          >
+                            <Plus className="mr-2 h-4 w-4" />
+                            Create Manually
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                  </Card>
+                </div>
               )}
             </div>
           </main>
