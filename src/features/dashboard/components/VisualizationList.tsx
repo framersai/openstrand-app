@@ -1,10 +1,17 @@
 'use client';
 
-import { Sparkles, Info } from 'lucide-react';
+/**
+ * Visualization List Component
+ * Displays generated visualizations and AI recommendations
+ * with clean, professional styling
+ */
+
+import { Sparkles, Info, Zap, BarChart3, LineChart, PieChart, Table2, TrendingUp, ArrowRight } from 'lucide-react';
 import { EmptyVisualization } from '@/components/icons/EmptyVisualization';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
   Tooltip,
   TooltipContent,
@@ -13,23 +20,19 @@ import {
 } from '@/components/ui/tooltip';
 import { VisualizationDisplay } from '@/components/visualization-display';
 import { cn } from '@/lib/utils';
+import { formatColumnName, formatChartType, formatAggregation, formatPercent } from '@/lib/utils/format';
 import type { Visualization, FeedbackSummary } from '@/types';
 import type { InsightRecommendation } from '@/types/insights';
 import { recommendationKey } from '../page/recommendation-utils';
 
-const PREVIEW_BAR_COUNT = 8;
-
-function createPreviewBars(seed: string): number[] {
-  const source = seed && seed.length > 0 ? seed : 'insight';
-  const values: number[] = [];
-  let accumulator = 0;
-  for (let i = 0; i < PREVIEW_BAR_COUNT; i++) {
-    const char = source.charCodeAt(i % source.length);
-    accumulator = (accumulator + char * (i + 3)) % 101;
-    values.push(20 + (accumulator % 60));
-  }
-  return values;
-}
+// Chart type icons
+const CHART_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  bar: BarChart3,
+  line: LineChart,
+  pie: PieChart,
+  table: Table2,
+  scatter: TrendingUp,
+};
 
 interface VisualizationListProps {
   visualizations: Visualization[];
@@ -105,126 +108,154 @@ export function VisualizationList({
 
     return (
       <TooltipProvider>
-        <div className="glass-card rounded-xl p-4 space-y-3 animate-in">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <Sparkles className="h-4 w-4" />
-            </span>
-            <div>
-              <p className="text-sm font-semibold">AI Suggestions</p>
-              <p className="text-xs text-muted-foreground">
-                {autoInsightsStatus || 'Discover ready-made charts tailored to this dataset.'}
+        <Card className="border-primary/20 bg-gradient-to-br from-primary/5 via-background to-background">
+          <CardContent className="p-4">
+            {/* Header */}
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Zap className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold">AI Insights</h3>
+                  <p className="text-xs text-muted-foreground">
+                    {autoInsightsLoading 
+                      ? 'Analyzing your data...' 
+                      : hasRecommendations 
+                        ? `${autoInsights.length} suggestions found`
+                        : 'Ready to analyze'}
+                  </p>
+                </div>
+              </div>
+              {autoInsightsLoading && (
+                <Badge variant="secondary" className="gap-1.5 text-[10px] font-medium">
+                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                  Processing
+                </Badge>
+              )}
+            </div>
+
+            {/* Error State */}
+            {autoInsightsError && (
+              <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-destructive mb-4">
+                <Info className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" />
+                <span>{autoInsightsError}</span>
+              </div>
+            )}
+
+            {/* Empty State */}
+            {!hasRecommendations && !autoInsightsLoading && !autoInsightsError && autoInsightsStatus && (
+              <p className="text-xs text-muted-foreground text-center py-4">
+                No recommendations available yet.
               </p>
-            </div>
-          </div>
-          {autoInsightsLoading && (
-            <div className="inline-flex items-center gap-2 rounded-full border border-border/60 px-3 py-1 text-[11px] text-muted-foreground">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
-              Processing
-            </div>
-          )}
-        </div>
+            )}
 
-        {autoInsightsError && (
-          <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
-            <Info className="mt-0.5 h-3.5 w-3.5" />
-            <span>{autoInsightsError}</span>
-          </div>
-        )}
+            {/* Recommendations Grid */}
+            {hasRecommendations && (
+              <div className="grid gap-2 sm:grid-cols-2">
+                {autoInsights.slice(0, 6).map((rec, index) => {
+                  const key = recommendationKey(rec);
+                  const alreadyGenerated = usedRecommendationKeys?.has(key) ?? false;
+                  const ChartIcon = CHART_ICONS[rec.type?.toLowerCase() || 'bar'] || BarChart3;
+                  
+                  // Format the title nicely
+                  const title = rec.title_suggestion 
+                    ? rec.title_suggestion
+                    : rec.y && rec.x
+                      ? `${formatColumnName(rec.y)} by ${formatColumnName(rec.x)}`
+                      : rec.x
+                        ? `Distribution of ${formatColumnName(rec.x)}`
+                        : `Insight ${index + 1}`;
 
-        {!hasRecommendations && !autoInsightsLoading && !autoInsightsError && autoInsightsStatus && (
-          <p className="text-xs text-muted-foreground">No recommended visuals returned yet.</p>
-        )}
+                  return (
+                    <button
+                      key={`${key}-${index}`}
+                      onClick={() => !alreadyGenerated && onRunRecommendation?.(rec)}
+                      disabled={alreadyGenerated || !onRunRecommendation}
+                      className={cn(
+                        "group relative text-left p-3 rounded-lg border transition-all duration-200",
+                        "hover:border-primary/40 hover:bg-primary/5",
+                        alreadyGenerated 
+                          ? "border-primary/30 bg-primary/5 opacity-60 cursor-default"
+                          : "border-border/60 bg-card/50 cursor-pointer"
+                      )}
+                    >
+                      {/* Chart Type Badge */}
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <Badge 
+                          variant="secondary" 
+                          className="h-5 gap-1 text-[10px] font-medium uppercase tracking-wide"
+                        >
+                          <ChartIcon className="h-3 w-3" />
+                          {formatChartType(rec.type || 'bar')}
+                        </Badge>
+                        {typeof rec.confidence === 'number' && rec.confidence > 0.7 && (
+                          <Badge variant="outline" className="h-5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">
+                            {formatPercent(rec.confidence)}
+                          </Badge>
+                        )}
+                      </div>
 
-        {hasRecommendations && (
-          <ul className="grid gap-2">
-            {autoInsights.slice(0, 5).map((rec, index) => {
-              const key = recommendationKey(rec);
-              const label = rec.title_suggestion || rec.type || `Suggestion ${index + 1}`;
-              const bars = createPreviewBars(key);
-              const alreadyGenerated = usedRecommendationKeys?.has(key) ?? false;
-              return (
-                <li
-                  key={`${label}-${index}`}
-                  className="rounded-lg border border-border/60 bg-background/70 px-3 py-2 text-xs"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <p className="font-semibold text-foreground">{label}</p>
-                      <div className="flex items-center gap-1 text-muted-foreground">
+                      {/* Title */}
+                      <h4 className="text-sm font-medium text-foreground mb-1 line-clamp-2">
+                        {title}
+                      </h4>
+
+                      {/* Axis Info */}
+                      <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-muted-foreground">
+                        {rec.x && (
+                          <span>
+                            <span className="font-medium text-foreground/70">X:</span> {formatColumnName(rec.x)}
+                          </span>
+                        )}
+                        {rec.y && (
+                          <span>
+                            <span className="font-medium text-foreground/70">Y:</span> {formatColumnName(rec.y)}
+                          </span>
+                        )}
+                        {rec.aggregation && rec.aggregation !== 'none' && (
+                          <span>
+                            <span className="font-medium text-foreground/70">Agg:</span> {formatAggregation(rec.aggregation)}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Generate indicator */}
+                      {!alreadyGenerated && (
+                        <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <ArrowRight className="h-4 w-4 text-primary" />
+                        </div>
+                      )}
+                      {alreadyGenerated && (
+                        <Badge className="absolute bottom-2 right-2 h-5 text-[10px] bg-primary/20 text-primary border-0">
+                          Added
+                        </Badge>
+                      )}
+
+                      {/* Reason tooltip */}
+                      {rec.reason && (
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <button
                               type="button"
-                              className="inline-flex items-center gap-1 text-[11px] font-medium uppercase tracking-wide text-primary"
+                              className="absolute top-2 right-2 h-5 w-5 rounded-full bg-muted/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={(e) => e.stopPropagation()}
                             >
-                              Why?
+                              <Info className="h-3 w-3 text-muted-foreground" />
                             </button>
                           </TooltipTrigger>
-                          <TooltipContent side="bottom" className="max-w-xs">
-                            <p>{rec.reason || 'Suggested insight based on Auto Insights analysis.'}</p>
+                          <TooltipContent side="left" className="max-w-xs text-xs">
+                            {rec.reason}
                           </TooltipContent>
                         </Tooltip>
-                        {rec.aggregation && rec.aggregation !== 'none' && (
-                          <span className="text-[11px] text-muted-foreground">
-                            Uses {rec.aggregation} aggregation
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {typeof rec.confidence === 'number' && (
-                        <span className="rounded-full border border-border/40 px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">
-                          {(rec.confidence * 100).toFixed(0)}% confident
-                        </span>
                       )}
-                      {alreadyGenerated && (
-                        <span className="rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] uppercase tracking-wide text-primary">
-                          Generated
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="mt-2 grid gap-1 text-[11px] text-muted-foreground sm:grid-cols-2">
-                    {rec.x && <span><strong>X:</strong> {rec.x}</span>}
-                    {rec.y && <span><strong>Y:</strong> {rec.y}</span>}
-                    {rec.groupBy && <span><strong>Group:</strong> {rec.groupBy}</span>}
-                    {rec.aggregation && rec.aggregation !== 'none' && (
-                      <span><strong>Aggregation:</strong> {rec.aggregation}</span>
-                    )}
-                  </div>
-
-                  <div className="mt-3 flex h-12 items-end gap-1 rounded-md bg-primary/5 px-2 py-2">
-                    {bars.map((height, barIndex) => (
-                      <span
-                        key={`${label}-bar-${barIndex}`}
-                        style={{ height: `${height}%` }}
-                        className="flex-1 rounded-full bg-gradient-to-t from-primary/30 via-primary/60 to-primary/80"
-                      />
-                    ))}
-                  </div>
-
-                  {onRunRecommendation && (
-                    <div className="mt-2 flex justify-end">
-                      <Button
-                        size="sm"
-                        variant={alreadyGenerated ? 'secondary' : 'outline'}
-                        className="text-xs"
-                        disabled={alreadyGenerated}
-                        onClick={() => { void onRunRecommendation(rec); }}
-                      >
-                        {alreadyGenerated ? 'Added' : 'Generate'}
-                      </Button>
-                    </div>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        )}
-        </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </TooltipProvider>
     );
   };
@@ -232,9 +263,9 @@ export function VisualizationList({
   const renderGeneratingBanner = () => {
     if (!isProcessing) return null;
     return (
-      <div className="rounded-xl border border-dashed border-primary/30 bg-primary/5 px-4 py-3 text-sm text-primary flex items-center gap-2">
+      <div className="rounded-lg border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-primary flex items-center gap-3">
         <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-        <span>Generating visualization...</span>
+        <span className="font-medium">Generating visualization...</span>
       </div>
     );
   };
@@ -248,27 +279,25 @@ export function VisualizationList({
         )}
       >
         {renderRecommendationsPanel()}
-        <Card className="glass-card h-full min-h-[420px] flex items-center justify-center overflow-hidden">
-          <CardContent className="text-center relative knowledge-particles pt-10 sm:pt-14 pb-8">
+        <Card className="min-h-[360px] flex items-center justify-center border-dashed bg-card/50">
+          <CardContent className="text-center py-12">
             {isProcessing ? (
-              <div className="space-y-3 flex flex-col items-center">
-                <div className="h-10 w-10 rounded-full border-2 border-primary border-t-transparent animate-spin pulse-glow" />
-                <h3 className="text-lg font-semibold gradient-text">Generating visualization...</h3>
-                <p className="text-sm text-muted-foreground max-w-sm">
-                  Hang tight while we process your request and render the chart. Results will appear here.
-                </p>
+              <div className="space-y-4 flex flex-col items-center">
+                <div className="h-12 w-12 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                <div>
+                  <h3 className="text-lg font-semibold">Generating Visualization</h3>
+                  <p className="text-sm text-muted-foreground mt-1 max-w-sm">
+                    Processing your request and creating the chart...
+                  </p>
+                </div>
               </div>
             ) : (
               <>
-                <EmptyVisualization className="mx-auto mb-6 float" size="xl" />
-                <h3 className="text-lg font-semibold mb-2 gradient-text">No Visualizations Yet</h3>
+                <EmptyVisualization className="mx-auto mb-6" size="lg" />
+                <h3 className="text-lg font-semibold mb-2">No Visualizations Yet</h3>
                 <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-                  Upload a dataset and describe what you want to visualize using natural language.
+                  Upload a dataset and use AI Insights or describe what you want to visualize.
                 </p>
-                <Button className="mt-6 btn-neon" size="sm">
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Get Started
-                </Button>
               </>
             )}
           </CardContent>
@@ -280,20 +309,34 @@ export function VisualizationList({
   return (
     <div
       className={cn(
-        'space-y-6 transition-shadow',
+        'space-y-4 transition-shadow',
         highlightNew && 'ring-2 ring-primary/40 ring-offset-2 rounded-xl'
       )}
     >
       {renderRecommendationsPanel()}
       {renderGeneratingBanner()}
+      
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Visualizations ({visualizations.length})</h2>
-        <Button variant="outline" size="sm" onClick={onClearAll} disabled={isProcessing}>
+        <div className="flex items-center gap-3">
+          <h2 className="text-base font-semibold">Visualizations</h2>
+          <Badge variant="secondary" className="text-xs">
+            {visualizations.length}
+          </Badge>
+        </div>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={onClearAll} 
+          disabled={isProcessing}
+          className="text-xs text-muted-foreground hover:text-destructive"
+        >
           Clear All
         </Button>
       </div>
 
-      <div className="grid gap-6">
+      {/* Visualization Grid */}
+      <div className="grid gap-4">
         {visualizations.map((viz) => (
           <VisualizationDisplay
             key={viz.id}

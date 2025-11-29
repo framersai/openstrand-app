@@ -10,13 +10,21 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState, Suspense, lazy } from 'react';
-import { Download, Maximize2, Edit3, Trash2, Copy, Info, FileText } from 'lucide-react';
+import { Download, Maximize2, Edit3, Trash2, Copy, Info, FileText, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FeedbackButtons } from '@/components/feedback-buttons';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { toTitleCase, truncate } from '@/lib/utils/format';
 import type { Visualization, FeedbackSummary } from '@/types';
 import { VisualizationTier } from '@/lib/visualization/types';
 import type { AIArtisanResult } from '@/lib/visualization/types';
@@ -41,19 +49,19 @@ const AIArtisanSecurityNotice = lazy(() =>
 
 const TIER_BADGE_MAP: Record<number, { label: string; className: string }> = {
   [VisualizationTier.Static]: {
-    label: 'Tier 1 - Static',
+    label: 'Static',
     className:
-      'border-sky-200 bg-sky-100 text-sky-800 dark:border-sky-500/40 dark:bg-sky-500/20 dark:text-sky-200',
+      'border-sky-200/50 bg-sky-50 text-sky-700 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-300',
   },
   [VisualizationTier.Dynamic]: {
-    label: 'Tier 2 - Dynamic',
+    label: 'Dynamic',
     className:
-      'border-amber-200 bg-amber-100 text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/20 dark:text-amber-200',
+      'border-amber-200/50 bg-amber-50 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300',
   },
   [VisualizationTier.AIArtisan]: {
-    label: 'Tier 3 - AI Artisan',
+    label: 'AI Artisan',
     className:
-      'border-purple-200 bg-purple-100 text-purple-800 dark:border-purple-500/40 dark:bg-purple-500/20 dark:text-purple-200',
+      'border-purple-200/50 bg-purple-50 text-purple-700 dark:border-purple-500/30 dark:bg-purple-500/10 dark:text-purple-300',
   },
 };
 
@@ -313,134 +321,119 @@ export const VisualizationDisplay: React.FC<VisualizationDisplayProps> = ({
     }
   };
   
+  // Format the title nicely
+  const formattedTitle = useMemo(() => {
+    if (!visualization.title) return 'Visualization';
+    // If it looks like a generated title with underscores or camelCase, format it
+    if (visualization.title.includes('_') || /[a-z][A-Z]/.test(visualization.title)) {
+      return toTitleCase(visualization.title);
+    }
+    return visualization.title;
+  }, [visualization.title]);
+
   return (
-    <Card className={cn('visualization-card', isFullscreen && 'fixed inset-4 z-50', className)}>
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="space-y-1">
-            <CardTitle className="text-lg flex flex-wrap items-center gap-2">
-              <span>{visualization.title}</span>
-              {tierBadge && (
-                <Badge className={cn('border text-[11px] font-semibold uppercase tracking-wide', tierBadge.className)}>
-                  {tierBadge.label}
-                </Badge>
-              )}
-              {generationMode && (
-                <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                  {generationMode}
-                </span>
-              )}
-            </CardTitle>
-            {visualization.description && (
-              <p className="text-sm text-muted-foreground">{visualization.description}</p>
+    <Card className={cn('visualization-card overflow-hidden', isFullscreen && 'fixed inset-4 z-50', className)}>
+      <CardHeader className="pb-3 space-y-0">
+        {/* Top row: badges and actions */}
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {tierBadge && (
+              <Badge variant="outline" className={cn('h-5 text-[10px] font-medium', tierBadge.className)}>
+                {tierBadge.label}
+              </Badge>
             )}
-            {!visualization.description && visualization.prompt && (
-              <p className="text-xs text-muted-foreground leading-snug">
-                Prompt: <span className="italic">"{visualization.prompt}"</span>
-              </p>
-            )}
-            {(tierMetadata?.suggestedApproach || typeof tierMetadata?.estimatedCost === 'number') && (
-              <p className="text-xs text-muted-foreground">
-                {tierMetadata?.suggestedApproach}
-                {typeof tierMetadata?.estimatedCost === 'number' && (
-                  <>
-                    {tierMetadata?.suggestedApproach ? ' · ' : ''}
-                    Est. cost ${tierMetadata.estimatedCost.toFixed(2)} (BYOK)
-                  </>
-                )}
-              </p>
-            )}
-            {tierMetadata?.tierReasoning && (
-              <p className="text-[11px] text-muted-foreground/80">
-                Reasoning: {tierMetadata.tierReasoning}
-              </p>
+            {generationMode && (
+              <Badge variant="outline" className="h-5 text-[10px] font-medium text-muted-foreground">
+                {generationMode}
+              </Badge>
             )}
           </div>
           
           {showControls && (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5">
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8"
+                className="h-7 w-7"
                 onClick={toggleFullscreen}
                 disabled={disabled}
+                title="Fullscreen"
               >
-                <Maximize2 className="h-4 w-4" />
+                <Maximize2 className="h-3.5 w-3.5" />
               </Button>
               
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={toggleModifyInput}
-                disabled={disabled}
-              >
-                <Edit3 className="h-4 w-4" />
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => setShowDetails(true)}
-                disabled={disabled}
-                title="Details"
-              >
-                <FileText className="h-4 w-4" />
-              </Button>
-              
-              {visualization.type !== 'table' && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={safeExport}
-                  disabled={disabled}
-                >
-                  <Download className="h-4 w-4" />
-                </Button>
-              )}
-              
-              {visualization.debug && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={cn('h-8 w-8', showDebug && 'text-primary')}
-                  onClick={toggleDebug}
-                  title="Toggle debug details"
-                  disabled={disabled}
-                >
-                  <Info className="h-4 w-4" />
-                </Button>
-              )}
-              
-              {onExport && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={safeOnExport}
-                  disabled={disabled}
-                >
-                  <Copy className="h-4 w-4" />
-                </Button>
-              )}
-              
-              {onRemove && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-destructive"
-                  onClick={safeOnRemove}
-                  disabled={disabled}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              )}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    disabled={disabled}
+                  >
+                    <MoreHorizontal className="h-3.5 w-3.5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-40">
+                  <DropdownMenuItem onClick={toggleModifyInput}>
+                    <Edit3 className="h-3.5 w-3.5 mr-2" />
+                    Modify
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setShowDetails(true)}>
+                    <FileText className="h-3.5 w-3.5 mr-2" />
+                    Details
+                  </DropdownMenuItem>
+                  {visualization.type !== 'table' && (
+                    <DropdownMenuItem onClick={safeExport}>
+                      <Download className="h-3.5 w-3.5 mr-2" />
+                      Export Image
+                    </DropdownMenuItem>
+                  )}
+                  {onExport && (
+                    <DropdownMenuItem onClick={safeOnExport}>
+                      <Copy className="h-3.5 w-3.5 mr-2" />
+                      Copy Data
+                    </DropdownMenuItem>
+                  )}
+                  {visualization.debug && (
+                    <DropdownMenuItem onClick={toggleDebug}>
+                      <Info className="h-3.5 w-3.5 mr-2" />
+                      {showDebug ? 'Hide Debug' : 'Show Debug'}
+                    </DropdownMenuItem>
+                  )}
+                  {onRemove && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem 
+                        onClick={safeOnRemove}
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <Trash2 className="h-3.5 w-3.5 mr-2" />
+                        Remove
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           )}
         </div>
+
+        {/* Title */}
+        <h3 className="text-base font-semibold leading-tight">
+          {formattedTitle}
+        </h3>
+        
+        {/* Description or prompt */}
+        {visualization.description ? (
+          <p className="text-sm text-muted-foreground mt-1">
+            {visualization.description}
+          </p>
+        ) : visualization.prompt ? (
+          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+            <span className="font-medium">Prompt:</span>{' '}
+            <span className="italic">&ldquo;{truncate(visualization.prompt, 120)}&rdquo;</span>
+          </p>
+        ) : null}
         
         {/* Modify input */}
         {showModifyInput && (
@@ -450,8 +443,8 @@ export const VisualizationDisplay: React.FC<VisualizationDisplayProps> = ({
               value={modifyPrompt}
               onChange={(e) => setModifyPrompt(e.target.value)}
               onKeyDown={handleInputKeyDown}
-              placeholder="Describe how to modify this visualization..."
-              className="flex-1 px-3 py-1 text-sm rounded border bg-background"
+              placeholder="Describe how to modify..."
+              className="flex-1 px-3 py-1.5 text-sm rounded-md border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20"
               disabled={disabled}
             />
             <Button size="sm" onClick={handleModifySubmit} disabled={disabled}>
