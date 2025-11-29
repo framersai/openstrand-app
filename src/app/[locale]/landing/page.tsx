@@ -8,35 +8,45 @@ import { landingStructuredData } from '@/components/seo/structured-data';
 import { getRouteMetadata, siteMetadata } from '@/config/seo';
 import type { Locale } from '@/i18n/config';
 import { LazyOnViewport } from '@/components/utility/LazyOnViewport';
+import {
+  FeaturesSkeleton,
+  InteractiveExamplesSkeleton,
+  VisualizationShowcaseSkeleton,
+  PricingSkeleton,
+  TestimonialsSkeleton,
+  CTASkeleton,
+  SpiralCurriculumSkeleton,
+} from '@/components/landing/landing-skeletons';
 
 // Defer heavy client components until they are near viewport to reduce TBT
+// Each component shows a skeleton loader while loading for better perceived performance
 const FeaturesSection = dynamic(
   () => import('@/components/landing/features-section-new').then((m) => m.FeaturesSection),
-  { ssr: false },
+  { ssr: false, loading: () => <FeaturesSkeleton /> },
 );
 const InteractiveExamples = dynamic(
   () => import('@/components/landing/interactive-examples').then((m) => m.InteractiveExamples),
-  { ssr: false, loading: () => <div className="container mx-auto h-40 sm:h-56" /> },
+  { ssr: false, loading: () => <InteractiveExamplesSkeleton /> },
 );
 const VisualizationShowcase = dynamic(
   () => import('@/components/landing/visualization-showcase').then((m) => m.VisualizationShowcase),
-  { ssr: false },
+  { ssr: false, loading: () => <VisualizationShowcaseSkeleton /> },
 );
 const PricingSection = dynamic(
   () => import('@/components/landing/pricing-section').then((m) => m.PricingSection),
-  { ssr: false },
+  { ssr: false, loading: () => <PricingSkeleton /> },
 );
 const TestimonialsEnhanced = dynamic(
   () => import('@/components/landing/testimonials-enhanced').then((m) => m.TestimonialsEnhanced),
-  { ssr: false },
+  { ssr: false, loading: () => <TestimonialsSkeleton /> },
 );
 const CTASection = dynamic(
   () => import('@/components/landing/cta-section').then((m) => m.CTASection),
-  { ssr: false },
+  { ssr: false, loading: () => <CTASkeleton /> },
 );
 const SpiralCurriculumSection = dynamic(
   () => import('@/components/landing/spiral-curriculum-section').then((m) => m.SpiralCurriculumSection),
-  { ssr: false },
+  { ssr: false, loading: () => <SpiralCurriculumSkeleton /> },
 );
 
 type LandingPageParams = {
