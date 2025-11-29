@@ -8,6 +8,9 @@
 /* Import custom animations */
 @import '../styles/animations.css';
 
+/* Import mobile responsiveness enhancements */
+@import '../styles/mobile-responsive.css';
+
 @layer base {
   :root {
     color-scheme: light;

@@ -233,33 +233,35 @@ export function GuidedTour({ onComplete, forceShow = false }: GuidedTourProps) {
         }
       `}</style>
 
-      {/* Tour Tooltip - responsive width and centered on mobile */}
+      {/* Tour Tooltip - fully responsive with bottom sheet on mobile */}
       <Card
-        className="fixed z-50 w-[calc(100vw-2rem)] max-w-md shadow-2xl border-primary/30 bg-card text-card-foreground"
+        className="fixed z-50 shadow-2xl border-primary/30 bg-card text-card-foreground
+          sm:w-[calc(100vw-2rem)] sm:max-w-md
+          max-sm:bottom-0 max-sm:left-0 max-sm:right-0 max-sm:rounded-b-none max-sm:rounded-t-2xl max-sm:w-full max-sm:max-w-full
+          max-sm:animate-in max-sm:slide-in-from-bottom-full max-sm:duration-300"
         style={{
-          top: typeof window !== 'undefined' && window.innerWidth < 768 
-            ? '50%' 
-            : `${Math.min(Math.max(tooltipPosition.top, window.innerHeight * 0.12), window.innerHeight * 0.88)}px`,
-          left: typeof window !== 'undefined' && window.innerWidth < 768 
-            ? '50%' 
-            : `${Math.min(Math.max(tooltipPosition.left, window.innerWidth * 0.2), window.innerWidth * 0.8)}px`,
-          transform: typeof window !== 'undefined' && window.innerWidth < 768 
-            ? 'translate(-50%, -50%)' 
-            : 'none',
+          // Desktop positioning
+          ...(typeof window !== 'undefined' && window.innerWidth >= 640 ? {
+            top: `${Math.min(Math.max(tooltipPosition.top, window.innerHeight * 0.12), window.innerHeight * 0.7)}px`,
+            left: `${Math.min(Math.max(tooltipPosition.left, 16), window.innerWidth - 400)}px`,
+          } : {}),
         }}
       >
-        <CardContent className="p-4 sm:p-6">
+        <CardContent className="p-4 sm:p-6 safe-area-bottom">
+          {/* Mobile drag handle indicator */}
+          <div className="sm:hidden w-12 h-1 bg-muted-foreground/20 rounded-full mx-auto mb-4" />
+          
           {/* Header */}
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3">
+          <div className="flex items-start justify-between mb-3 sm:mb-4">
+            <div className="flex items-center gap-2 sm:gap-3">
               {step.icon && (
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
                   {step.icon}
                 </div>
               )}
-              <div>
-                <h3 className="font-semibold text-lg">{step.title}</h3>
-                <Badge variant="secondary" className="text-xs mt-1">
+              <div className="min-w-0">
+                <h3 className="font-semibold text-base sm:text-lg leading-tight">{step.title}</h3>
+                <Badge variant="secondary" className="text-[10px] sm:text-xs mt-1">
                   Step {currentStep + 1} of {TOUR_STEPS.length}
                 </Badge>
               </div>
@@ -268,7 +270,8 @@ export function GuidedTour({ onComplete, forceShow = false }: GuidedTourProps) {
               variant="ghost"
               size="sm"
               onClick={handleSkip}
-              className="h-8 w-8 p-0"
+              className="h-10 w-10 sm:h-8 sm:w-8 p-0 flex-shrink-0 -mr-2 -mt-1"
+              aria-label="Close tour"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -285,26 +288,16 @@ export function GuidedTour({ onComplete, forceShow = false }: GuidedTourProps) {
               variant="outline"
               size="sm"
               onClick={step.action.handler}
-              className="w-full mb-4"
+              className="w-full mb-4 min-h-[44px]"
             >
               {step.action.label}
             </Button>
           )}
 
-          {/* Navigation */}
-          <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handlePrev}
-              disabled={currentStep === 0}
-            >
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              Previous
-            </Button>
-
-            {/* Progress dots */}
-            <div className="flex gap-1">
+          {/* Navigation - stacked on mobile landscape */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-2">
+            {/* Progress dots - centered on mobile */}
+            <div className="flex gap-1.5 justify-center sm:order-2">
               {TOUR_STEPS.map((_, index) => (
                 <div
                   key={index}
@@ -318,17 +311,33 @@ export function GuidedTour({ onComplete, forceShow = false }: GuidedTourProps) {
                 />
               ))}
             </div>
+            
+            {/* Buttons row */}
+            <div className="flex items-center justify-between sm:contents gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handlePrev}
+                disabled={currentStep === 0}
+                className="min-h-[44px] sm:min-h-[36px] sm:order-1"
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Previous</span>
+                <span className="sm:hidden">Back</span>
+              </Button>
 
-            <Button
-              variant={currentStep === TOUR_STEPS.length - 1 ? 'default' : 'ghost'}
-              size="sm"
-              onClick={handleNext}
-            >
-              {currentStep === TOUR_STEPS.length - 1 ? 'Finish' : 'Next'}
-              {currentStep < TOUR_STEPS.length - 1 && (
-                <ChevronRight className="h-4 w-4 ml-1" />
-              )}
-            </Button>
+              <Button
+                variant={currentStep === TOUR_STEPS.length - 1 ? 'default' : 'ghost'}
+                size="sm"
+                onClick={handleNext}
+                className="min-h-[44px] sm:min-h-[36px] sm:order-3"
+              >
+                {currentStep === TOUR_STEPS.length - 1 ? 'Finish' : 'Next'}
+                {currentStep < TOUR_STEPS.length - 1 && (
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                )}
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

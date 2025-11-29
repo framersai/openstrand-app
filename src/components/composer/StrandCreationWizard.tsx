@@ -399,13 +399,13 @@ export function StrandCreationWizard({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-hidden flex flex-col">
-        <DialogHeader className="flex-shrink-0">
-          <DialogTitle className="flex items-center gap-2">
-            <Plus className="h-5 w-5 text-primary" />
+      <DialogContent className="w-full max-w-full sm:max-w-[700px] h-[100dvh] sm:h-auto sm:max-h-[90vh] overflow-hidden flex flex-col rounded-none sm:rounded-lg m-0 sm:m-auto">
+        <DialogHeader className="flex-shrink-0 px-4 sm:px-6 pt-4 sm:pt-6">
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Plus className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
             Create New {creationType === 'folder' ? 'Folder' : 'Strand'}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs sm:text-sm">
             {parentTitle ? (
               <span className="text-xs">
                 Inside: <span className="font-medium">{parentTitle}</span>
@@ -417,8 +417,19 @@ export function StrandCreationWizard({
         </DialogHeader>
 
         {/* Progress Steps */}
-        <div className="flex-shrink-0 space-y-3 py-2 border-b border-border">
-          <div className="flex items-center justify-between gap-2 overflow-x-auto pb-1">
+        <div className="flex-shrink-0 space-y-2 sm:space-y-3 py-2 px-4 sm:px-6 border-b border-border">
+          {/* Mobile: Compact step indicator */}
+          <div className="flex sm:hidden items-center justify-between gap-2">
+            <span className="text-xs text-muted-foreground">
+              Step {stepIndex + 1} of {activeSteps.length}
+            </span>
+            <span className="text-sm font-medium text-primary">
+              {activeSteps[stepIndex]?.title}
+            </span>
+          </div>
+          
+          {/* Desktop: Full step navigation */}
+          <div className="hidden sm:flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {activeSteps.map((step, idx) => {
               const Icon = STEP_ICONS[step.icon] || FileText;
               const isActive = step.id === currentStep;
@@ -432,7 +443,7 @@ export function StrandCreationWizard({
                   onClick={() => isClickable && goToStep(step.id)}
                   disabled={!isClickable}
                   className={cn(
-                    "flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all whitespace-nowrap",
+                    "flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all whitespace-nowrap min-h-[44px]",
                     isActive && "bg-primary/10 text-primary",
                     isCompleted && "text-primary",
                     !isActive && !isCompleted && "text-muted-foreground",
@@ -452,7 +463,7 @@ export function StrandCreationWizard({
                       idx + 1
                     )}
                   </div>
-                  <span className="text-sm font-medium hidden sm:inline">{step.title}</span>
+                  <span className="text-sm font-medium">{step.title}</span>
                 </button>
               );
             })}
@@ -462,17 +473,17 @@ export function StrandCreationWizard({
 
         {/* Error Display */}
         {error && (
-          <div className="flex-shrink-0 flex items-center gap-2 p-3 bg-destructive/10 text-destructive rounded-lg text-sm mx-1">
+          <div className="flex-shrink-0 flex items-center gap-2 p-3 mx-4 sm:mx-6 bg-destructive/10 text-destructive rounded-lg text-xs sm:text-sm">
             <AlertCircle className="h-4 w-4 flex-shrink-0" />
             <span className="flex-1">{error}</span>
-            <button onClick={() => setError(null)} className="p-1 hover:bg-destructive/20 rounded">
+            <button onClick={() => setError(null)} className="p-1 hover:bg-destructive/20 rounded min-h-[44px] min-w-[44px] flex items-center justify-center -mr-1">
               <X className="h-3 w-3" />
             </button>
           </div>
         )}
 
         {/* Step Content */}
-        <div className="flex-1 overflow-y-auto py-4 px-1">
+        <div className="flex-1 overflow-y-auto py-4 px-4 sm:px-6 -webkit-overflow-scrolling-touch">
           {/* Step 1: Source Selection */}
           {currentStep === 'source' && (
             <SourceSelector
@@ -786,26 +797,27 @@ export function StrandCreationWizard({
           )}
         </div>
 
-        {/* Navigation */}
-        <div className="flex-shrink-0 flex items-center justify-between pt-4 border-t border-border">
+        {/* Navigation - Fixed bottom on mobile */}
+        <div className="flex-shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-4 px-4 sm:px-6 pb-4 sm:pb-6 border-t border-border bg-background safe-area-bottom">
           <Button
             type="button"
             variant="ghost"
             onClick={goPrev}
             disabled={stepIndex === 0}
+            className="order-2 sm:order-1 min-h-[48px] sm:min-h-[40px]"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 order-1 sm:order-2">
             {/* Skip analysis option */}
             {currentStep === 'analysis' && !isAnalyzing && (
               <Button
                 type="button"
                 variant="ghost"
                 onClick={skipAnalysis}
-                className="text-muted-foreground"
+                className="text-muted-foreground min-h-[48px] sm:min-h-[40px]"
               >
                 Skip
               </Button>
@@ -816,17 +828,19 @@ export function StrandCreationWizard({
                 type="button"
                 onClick={handleSubmit}
                 disabled={submitting}
-                className="min-w-[120px]"
+                className="flex-1 sm:flex-initial min-w-[120px] min-h-[48px] sm:min-h-[40px]"
               >
                 {submitting ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Creating...
+                    <span className="hidden sm:inline">Creating...</span>
+                    <span className="sm:hidden">...</span>
                   </>
                 ) : (
                   <>
                     <CheckCircle className="h-4 w-4 mr-2" />
-                    Create {creationType === 'folder' ? 'Folder' : 'Strand'}
+                    <span className="hidden sm:inline">Create {creationType === 'folder' ? 'Folder' : 'Strand'}</span>
+                    <span className="sm:hidden">Create</span>
                   </>
                 )}
               </Button>
@@ -835,6 +849,7 @@ export function StrandCreationWizard({
                 type="button"
                 onClick={goNext}
                 disabled={!canProceed()}
+                className="flex-1 sm:flex-initial min-h-[48px] sm:min-h-[40px]"
               >
                 Next
                 <ArrowRight className="h-4 w-4 ml-2" />

@@ -41,17 +41,17 @@ export function SourceSelector({
   onCreationTypeChange,
 }: SourceSelectorProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6">
       {/* Creation Type Toggle */}
       <div className="space-y-2">
         <label className="text-sm font-medium text-foreground">What are you creating?</label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
           <button
             type="button"
             onClick={() => onCreationTypeChange('strand')}
             className={cn(
-              "flex items-center gap-3 p-4 rounded-xl border-2 transition-all",
-              "hover:border-primary/50 hover:bg-primary/5",
+              "flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl border-2 transition-all min-h-[80px] sm:min-h-0",
+              "hover:border-primary/50 hover:bg-primary/5 active:scale-[0.98]",
               creationType === 'strand'
                 ? "border-primary bg-primary/10 shadow-sm"
                 : "border-border bg-card"
@@ -66,9 +66,9 @@ export function SourceSelector({
                 creationType === 'strand' ? "text-primary" : "text-muted-foreground"
               )} />
             </div>
-            <div className="text-left">
-              <div className="font-medium">Strand</div>
-              <div className="text-xs text-muted-foreground">A piece of content</div>
+            <div className="text-center sm:text-left">
+              <div className="font-medium text-sm sm:text-base">Strand</div>
+              <div className="text-[10px] sm:text-xs text-muted-foreground">A piece of content</div>
             </div>
           </button>
           
@@ -76,8 +76,8 @@ export function SourceSelector({
             type="button"
             onClick={() => onCreationTypeChange('folder')}
             className={cn(
-              "flex items-center gap-3 p-4 rounded-xl border-2 transition-all",
-              "hover:border-primary/50 hover:bg-primary/5",
+              "flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl border-2 transition-all min-h-[80px] sm:min-h-0",
+              "hover:border-primary/50 hover:bg-primary/5 active:scale-[0.98]",
               creationType === 'folder'
                 ? "border-primary bg-primary/10 shadow-sm"
                 : "border-border bg-card"
@@ -92,9 +92,9 @@ export function SourceSelector({
                 creationType === 'folder' ? "text-primary" : "text-muted-foreground"
               )} />
             </div>
-            <div className="text-left">
-              <div className="font-medium">Folder</div>
-              <div className="text-xs text-muted-foreground">Organize strands</div>
+            <div className="text-center sm:text-left">
+              <div className="font-medium text-sm sm:text-base">Folder</div>
+              <div className="text-[10px] sm:text-xs text-muted-foreground">Organize strands</div>
             </div>
           </button>
         </div>
@@ -114,33 +114,33 @@ export function SourceSelector({
                 type="button"
                 onClick={() => onSourceChange(option.type)}
                 className={cn(
-                  "flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left",
-                  "hover:border-primary/50 hover:bg-primary/5",
+                  "flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border-2 transition-all text-left min-h-[60px]",
+                  "hover:border-primary/50 hover:bg-primary/5 active:scale-[0.99]",
                   isSelected
                     ? "border-primary bg-primary/10 shadow-sm"
                     : "border-border bg-card"
                 )}
               >
                 <div className={cn(
-                  "p-2.5 rounded-lg flex-shrink-0",
+                  "p-2 sm:p-2.5 rounded-lg flex-shrink-0",
                   isSelected ? "bg-primary/20" : "bg-muted"
                 )}>
                   <Icon className={cn(
-                    "h-5 w-5",
+                    "h-4 w-4 sm:h-5 sm:w-5",
                     isSelected ? "text-primary" : "text-muted-foreground"
                   )} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{option.title}</span>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-medium text-sm sm:text-base">{option.title}</span>
                     {option.type === 'url' && (
-                      <Badge variant="secondary" className="text-[10px] gap-1">
-                        <Sparkles className="h-2.5 w-2.5" />
+                      <Badge variant="secondary" className="text-[9px] sm:text-[10px] gap-0.5 sm:gap-1 px-1.5 py-0">
+                        <Sparkles className="h-2 w-2 sm:h-2.5 sm:w-2.5" />
                         AI
                       </Badge>
                     )}
                   </div>
-                  <div className="text-xs text-muted-foreground">{option.description}</div>
+                  <div className="text-[11px] sm:text-xs text-muted-foreground line-clamp-1">{option.description}</div>
                 </div>
                 <div className={cn(
                   "w-5 h-5 rounded-full border-2 flex-shrink-0 transition-all",
