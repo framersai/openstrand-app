@@ -3,6 +3,7 @@
 /**
  * @module composer/wizard/UrlScraper
  * @description URL input and scraping component with preview
+ * Uses the backend ScraperService via openstrandAPI
  */
 
 import { useState, useCallback } from 'react';
@@ -21,6 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { openstrandAPI } from '@/services/openstrand.api';
 import type { UrlMetadata } from './types';
 
 interface UrlScraperProps {
@@ -44,6 +46,7 @@ export function UrlScraper({
 }: UrlScraperProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [canScrape, setCanScrape] = useState<boolean | null>(null);
 
   const isValidUrl = useCallback((str: string) => {
     try {
@@ -53,6 +56,21 @@ export function UrlScraper({
       return false;
     }
   }, []);
+
+  const checkUrl = useCallback(async (urlToCheck: string) => {
+    if (!urlToCheck || !isValidUrl(urlToCheck)) return;
+    
+    try {
+      const result = await openstrandAPI.scraper.check(urlToCheck);
+      setCanScrape(result.allowed);
+      if (!result.allowed && result.reason) {
+        setError(`Cannot scrape: ${result.reason}`);
+      }
+    } catch {
+      // Ignore check errors, will fail on actual scrape
+      setCanScrape(null);
+    }
+  }, [isValidUrl]);
 
   const scrapeUrl = useCallback(async () => {
     if (!url || !isValidUrl(url)) {
@@ -64,31 +82,28 @@ export function UrlScraper({
     setError(null);
 
     try {
-      // Call backend API to scrape URL
-      const response = await fetch('/api/scrape', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
+      // Use the backend scraper service
+      const data = await openstrandAPI.scraper.scrapeUrl({
+        url,
+        method: 'auto', // Auto-detect best extraction method
+        options: {
+          extractMetadata: true,
+          downloadImages: false, // Don't download images for wizard preview
+        },
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to scrape URL');
-      }
-
-      const data = await response.json();
       
       const scraped: UrlMetadata = {
         url,
         title: data.title || '',
-        description: data.description || '',
-        image: data.image,
-        favicon: data.favicon,
-        siteName: data.siteName,
-        type: data.type,
+        description: data.excerpt || '',
+        image: data.images?.[0]?.url,
+        favicon: undefined, // Not returned by scraper
+        siteName: data.sourceType,
+        type: data.sourceType,
         author: data.author,
-        publishedDate: data.publishedDate,
+        publishedDate: data.publishDate,
         content: data.content,
-        extractedText: data.extractedText,
+        extractedText: data.contentMarkdown || data.content,
       };
 
       onMetadataChange(scraped);
@@ -100,7 +115,8 @@ export function UrlScraper({
         onContentChange(scraped.extractedText || scraped.content || '');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to scrape URL');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to scrape URL';
+      setError(errorMessage);
       
       // Fallback: try to extract basic info from URL
       try {
