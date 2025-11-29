@@ -188,8 +188,8 @@ export default function DashboardPage() {
     onOpenSettings: openSettings,
   });
 
-  // Sidebar content component - reused for desktop and mobile
-  const SidebarContent = () => (
+  // Sidebar content - memoized to prevent unnecessary re-renders
+  const sidebarContent = useMemo(() => (
     <div className="flex flex-col h-full">
       {/* Tabs */}
       <Tabs
@@ -273,7 +273,35 @@ export default function DashboardPage() {
         </TabsContent>
       </Tabs>
     </div>
-  );
+  ), [
+    activeTab,
+    metadata,
+    isProcessing,
+    isLoadingSamples,
+    sampleDatasets,
+    dataset?.id,
+    handleFileUpload,
+    handleClearDataset,
+    handleLoadSampleDataset,
+    planTier,
+    planLimitMb,
+    datasetSummary,
+    isSummaryLoading,
+    handleRefreshSummary,
+    useHeuristics,
+    handlePromptSubmit,
+    handleGenerateVisualization,
+    datasetFeedback,
+    canSubmitFeedback,
+    handleDatasetVote,
+    handleDatasetFavorite,
+    datasetLeaderboard,
+    visualizationLeaderboard,
+    leaderboardLoading,
+    refreshLeaderboards,
+    focusVisualizations,
+    handleAutoInsightsUpdate,
+  ]);
 
   return (
     <TooltipProvider>
@@ -325,7 +353,7 @@ export default function DashboardPage() {
 
             {/* Sidebar Content */}
             {!sidebarCollapsed ? (
-              <SidebarContent />
+              sidebarContent
             ) : (
               /* Collapsed Sidebar Icons */
               <nav className="flex-1 flex flex-col items-center py-3 gap-1">
@@ -403,7 +431,7 @@ export default function DashboardPage() {
                   <SheetHeader className="px-4 py-3 border-b">
                     <SheetTitle className="text-sm font-semibold">Workspace</SheetTitle>
                   </SheetHeader>
-                  <SidebarContent />
+                  {sidebarContent}
                 </SheetContent>
               </Sheet>
 
