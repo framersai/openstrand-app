@@ -629,7 +629,7 @@ export default function DashboardPage() {
                             size="default"
                             className={cn(
                               "w-full sm:w-auto gap-2",
-                              "bg-gradient-to-r from-primary to-primary/90"
+                              "bg-primary hover:bg-primary/90 text-primary-foreground border-primary/20"
                             )}
                           >
                             {autoInsightsSnapshot.isLoading ? (

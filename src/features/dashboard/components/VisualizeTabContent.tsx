@@ -399,7 +399,9 @@ export function VisualizeTabContent({
             disabled={!hasDataset || isProcessing || autoInsightsLoading}
             className={cn(
               "flex-1 h-10 text-sm font-medium",
-              hasCachedInsights ? "bg-secondary text-secondary-foreground hover:bg-secondary/80" : ""
+              hasCachedInsights 
+                ? "bg-secondary text-secondary-foreground hover:bg-secondary/80" 
+                : "bg-primary text-primary-foreground hover:bg-primary/90"
             )}
             variant={hasCachedInsights ? "secondary" : "default"}
             aria-busy={autoInsightsLoading}

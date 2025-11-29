@@ -49,7 +49,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'relative overflow-hidden border border-primary/25 bg-[hsl(var(--surface-1))] text-primary shadow-[var(--shadow-glow)] hover:border-primary/35 hover:bg-[hsl(var(--surface-2))] hover:text-primary dark:border-primary/40 dark:bg-[hsl(var(--surface-2))] dark:text-primary-foreground dark:hover:bg-[hsl(var(--surface-3))] dark:shadow-[var(--shadow-glow)]',
+          'relative overflow-hidden border border-primary/30 bg-primary text-primary-foreground shadow-[var(--shadow-glow)] hover:bg-primary/90 hover:border-primary/40 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 dark:border-primary/40',
         destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-lg hover:shadow-xl',
         outline:
           'border border-border/70 bg-[hsl(var(--surface-1))] text-foreground hover:border-primary/40 hover:bg-[hsl(var(--surface-2))] hover:text-primary dark:border-border/40 dark:bg-[hsl(var(--surface-2))] dark:hover:border-primary/50',
