@@ -241,8 +241,7 @@ export default function DashboardPage() {
 
         <TabsContent 
           value="visualize" 
-          className="flex-1 overflow-y-auto p-3 mt-0 data-[state=inactive]:hidden focus-visible:outline-none" 
-          forceMount
+          className="flex-1 overflow-y-auto p-3 mt-0 focus-visible:outline-none" 
           tabIndex={-1}
         >
           <VisualizeTabContent
