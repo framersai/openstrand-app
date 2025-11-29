@@ -11,36 +11,19 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
+import { 
+  spiralPathAPI, 
+  type StrandSuggestions, 
+  type TagSuggestion, 
+  type PrerequisiteSuggestion, 
+  type DifficultySuggestion 
+} from '@/services/openstrand.api';
 
 // ============================================================================
-// Types
+// Types (re-export from API for convenience)
 // ============================================================================
 
-export interface TagSuggestion {
-  tag: string;
-  confidence: number;
-  source: 'parent' | 'sibling' | 'content';
-}
-
-export interface PrerequisiteSuggestion {
-  strandId: string;
-  title: string;
-  confidence: number;
-}
-
-export interface DifficultySuggestion {
-  level: 'beginner' | 'intermediate' | 'advanced' | 'expert';
-  confidence: number;
-  reason: string;
-}
-
-export interface StrandSuggestions {
-  tags: TagSuggestion[];
-  categories: Array<{ category: string; confidence: number }>;
-  prerequisites: PrerequisiteSuggestion[];
-  difficulty: DifficultySuggestion;
-  estimatedTime: number;
-}
+export type { TagSuggestion, PrerequisiteSuggestion, DifficultySuggestion, StrandSuggestions };
 
 export interface UseSmartSuggestionsOptions {
   /** Parent strand/folder ID */
@@ -96,6 +79,7 @@ export function useSmartSuggestions({
   
   const debouncedTitle = useDebounce(title, debounceMs);
   const fetchedRef = useRef(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const fetchSuggestions = useCallback(async () => {
     if (!debouncedTitle.trim()) {
@@ -103,35 +87,29 @@ export function useSmartSuggestions({
       return;
     }
 
+    // Cancel any pending request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+
     setLoading(true);
     setError(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-      const response = await fetch(`${apiUrl}/api/v1/spiral-path/suggestions`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          parentId: parentId || null,
-          title: debouncedTitle,
-          content: content || undefined,
-        }),
+      const data = await spiralPathAPI.getSuggestions({
+        parentId: parentId || null,
+        title: debouncedTitle,
+        content: content || undefined,
       });
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch suggestions: ${response.statusText}`);
-      }
-
-      const data = await response.json();
       
-      if (data.success && data.data) {
-        setSuggestions(data.data);
-      } else {
-        setSuggestions(DEFAULT_SUGGESTIONS);
-      }
+      setSuggestions(data);
     } catch (err) {
+      // Don't set error if request was aborted
+      if (err instanceof Error && err.name === 'AbortError') {
+        return;
+      }
+      
       console.error('Failed to fetch suggestions:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch suggestions');
       // Use fallback suggestions on error
@@ -159,6 +137,15 @@ export function useSmartSuggestions({
     fetchedRef.current = false;
   }, [title]);
 
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
   return {
     suggestions,
     loading,
@@ -174,26 +161,20 @@ export function useSmartSuggestions({
 export function useAvailableTags(scopeId?: string) {
   const [tags, setTags] = useState<Array<{ tag: string; count: number }>>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTags = async () => {
       setLoading(true);
+      setError(null);
+      
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-        const url = scopeId 
-          ? `${apiUrl}/api/v1/spiral-path/tags?scopeId=${scopeId}`
-          : `${apiUrl}/api/v1/spiral-path/tags`;
-        
-        const response = await fetch(url);
-        
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success && Array.isArray(data.data)) {
-            setTags(data.data);
-          }
-        }
+        const data = await spiralPathAPI.getAvailableTags(scopeId);
+        setTags(data);
       } catch (err) {
         console.error('Failed to fetch tags:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch tags');
+        setTags([]);
       } finally {
         setLoading(false);
       }
@@ -202,8 +183,86 @@ export function useAvailableTags(scopeId?: string) {
     fetchTags();
   }, [scopeId]);
 
-  return { tags, loading };
+  return { tags, loading, error };
+}
+
+/**
+ * Hook for fetching a spiral learning path
+ */
+export function useSpiralPath(targetId: string | null, options?: {
+  targetType?: 'strand' | 'topic' | 'tag' | 'weave';
+  scope?: 'weave' | 'fabric' | 'all';
+  maxDepth?: number;
+  includeRelated?: boolean;
+  enabled?: boolean;
+}) {
+  const [path, setPath] = useState<Awaited<ReturnType<typeof spiralPathAPI.buildPath>> | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchPath = useCallback(async () => {
+    if (!targetId) {
+      setPath(null);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = await spiralPathAPI.buildPath({
+        targetId,
+        targetType: options?.targetType || 'strand',
+        scope: options?.scope || 'all',
+        maxDepth: options?.maxDepth || 5,
+        includeRelated: options?.includeRelated || false,
+      });
+      setPath(data);
+    } catch (err) {
+      console.error('Failed to fetch spiral path:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch spiral path');
+      setPath(null);
+    } finally {
+      setLoading(false);
+    }
+  }, [targetId, options?.targetType, options?.scope, options?.maxDepth, options?.includeRelated]);
+
+  useEffect(() => {
+    if (options?.enabled !== false && targetId) {
+      fetchPath();
+    }
+  }, [fetchPath, options?.enabled, targetId]);
+
+  return { path, loading, error, refetch: fetchPath };
+}
+
+/**
+ * Hook for fetching tooltip data
+ */
+export function useTooltip(key: string) {
+  const [tooltip, setTooltip] = useState<Awaited<ReturnType<typeof spiralPathAPI.getTooltip>> | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchTooltip = async () => {
+      setLoading(true);
+      try {
+        const data = await spiralPathAPI.getTooltip(key);
+        setTooltip(data);
+      } catch (err) {
+        console.error('Failed to fetch tooltip:', err);
+        // Silently fail for tooltips
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (key) {
+      fetchTooltip();
+    }
+  }, [key]);
+
+  return { tooltip, loading };
 }
 
 export default useSmartSuggestions;
-

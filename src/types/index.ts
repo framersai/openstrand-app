@@ -693,4 +693,3 @@ export type {
   Relationship,
   RelationshipType,
   CapabilityMatrix
-} from './openstrand';

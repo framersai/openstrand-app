@@ -2706,6 +2706,173 @@ const normalizeTeamAdminResponse = (
   return { tokens, teams };
 };
 
+// ============================================================================
+// Spiral Path API (v1.8)
+// Learning path discovery and smart suggestions
+// ============================================================================
+
+export interface PathNode {
+  id: string;
+  type: 'strand' | 'topic' | 'weave';
+  title: string;
+  description?: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  estimatedTime?: number;
+  weaveId?: string;
+  weaveName?: string;
+  tags: string[];
+  depth: number;
+  position?: { x: number; y: number };
+  discoveryType: 'implicit' | 'explicit' | 'sibling' | 'tag';
+  status?: 'completed' | 'in_progress' | 'not_started';
+}
+
+export interface PathEdge {
+  id: string;
+  source: string;
+  target: string;
+  type: 'prerequisite' | 'corequisite' | 'postrequisite' | 'related';
+  weight: number;
+  reason?: string;
+}
+
+export interface UserPathProgress {
+  completed: string[];
+  inProgress: string[];
+  nextRecommended: string[];
+  estimatedTimeToTarget: number;
+  completionPercentage: number;
+}
+
+export interface PathMetrics {
+  totalNodes: number;
+  totalEdges: number;
+  criticalPath: string[];
+  estimatedTotalTime: number;
+  difficultyProgression: string[];
+  averageDifficulty: string;
+}
+
+export interface SpiralPathResponse {
+  target: PathNode;
+  prerequisites: PathNode[];
+  corequisites: PathNode[];
+  postrequisites: PathNode[];
+  related: PathNode[];
+  edges: PathEdge[];
+  userProgress?: UserPathProgress;
+  metrics: PathMetrics;
+}
+
+export interface TagSuggestion {
+  tag: string;
+  confidence: number;
+  source: 'parent' | 'sibling' | 'content';
+}
+
+export interface PrerequisiteSuggestion {
+  strandId: string;
+  title: string;
+  confidence: number;
+}
+
+export interface DifficultySuggestion {
+  level: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  confidence: number;
+  reason: string;
+}
+
+export interface StrandSuggestions {
+  tags: TagSuggestion[];
+  categories: Array<{ category: string; confidence: number }>;
+  prerequisites: PrerequisiteSuggestion[];
+  difficulty: DifficultySuggestion;
+  estimatedTime: number;
+}
+
+export interface TooltipData {
+  title: string;
+  text: string;
+  tip?: string;
+  spiral?: string;
+  learnMore?: string;
+  warning?: string;
+}
+
+export const spiralPathAPI = {
+  /**
+   * Build a complete learning path for a target
+   */
+  async buildPath(request: {
+    targetId: string;
+    targetType: 'strand' | 'topic' | 'tag' | 'weave';
+    scope?: 'weave' | 'fabric' | 'all';
+    weaveIds?: string[];
+    tagFilter?: string[];
+    maxDepth?: number;
+    includeRelated?: boolean;
+  }): Promise<SpiralPathResponse> {
+    const response = await apiFetch('/spiral-path/build', {
+      method: 'POST',
+      body: JSON.stringify(request),
+    });
+    const data = await parseData<{ success: boolean; data: SpiralPathResponse }>(response);
+    return data.data;
+  },
+
+  /**
+   * Quick path lookup for a strand
+   */
+  async getPath(targetId: string, options?: {
+    depth?: number;
+    includeRelated?: boolean;
+  }): Promise<SpiralPathResponse> {
+    const params = new URLSearchParams();
+    if (options?.depth) params.set('depth', String(options.depth));
+    if (options?.includeRelated) params.set('includeRelated', 'true');
+    
+    const url = `/spiral-path/${targetId}${params.toString() ? `?${params}` : ''}`;
+    const response = await apiFetch(url);
+    const data = await parseData<{ success: boolean; data: SpiralPathResponse }>(response);
+    return data.data;
+  },
+
+  /**
+   * Get smart suggestions for strand creation
+   */
+  async getSuggestions(request: {
+    parentId?: string | null;
+    title: string;
+    content?: string;
+  }): Promise<StrandSuggestions> {
+    const response = await apiFetch('/spiral-path/suggestions', {
+      method: 'POST',
+      body: JSON.stringify(request),
+    });
+    const data = await parseData<{ success: boolean; data: StrandSuggestions }>(response);
+    return data.data;
+  },
+
+  /**
+   * Get available tags for autocomplete
+   */
+  async getAvailableTags(scopeId?: string): Promise<Array<{ tag: string; count: number }>> {
+    const url = scopeId ? `/spiral-path/tags?scopeId=${scopeId}` : '/spiral-path/tags';
+    const response = await apiFetch(url);
+    const data = await parseData<{ success: boolean; data: Array<{ tag: string; count: number }> }>(response);
+    return data.data;
+  },
+
+  /**
+   * Get tooltip content for UI elements
+   */
+  async getTooltip(key: string): Promise<TooltipData> {
+    const response = await apiFetch(`/spiral-path/tooltips/${key}`);
+    const data = await parseData<{ success: boolean; data: TooltipData }>(response);
+    return data.data;
+  },
+};
+
 export const teamAdminAPI = {
   async list(): Promise<{ tokens: TeamApiToken[]; teams: TeamAdminSummary[] }> {
     const response = await apiFetch('/team-tokens');
@@ -2747,6 +2914,7 @@ export const openstrandAPI = {
   export: exportAPI,
   system: systemAPI,
   team: teamAdminAPI,
+  spiralPath: spiralPathAPI,
   // v1.3 Learning & Productivity APIs
   flashcards: flashcardAPI,
   quizzes: quizAPI,

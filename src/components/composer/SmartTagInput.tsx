@@ -5,19 +5,17 @@
  * @description Tag input with smart suggestions and autocomplete
  * 
  * Features:
- * - Autocomplete from existing tags
+ * - Autocomplete from existing tags via API
  * - AI-powered suggestions based on content
  * - Visual confidence indicators
  * - Keyboard navigation
  */
 
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { X, Plus, Sparkles, Check, Tag, Loader2 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { X, Plus, Sparkles, Tag, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import type { TagSuggestion } from '@/hooks/useSmartSuggestions';
+import type { TagSuggestion } from '@/services/openstrand.api';
 
 // ============================================================================
 // Types
@@ -321,4 +319,3 @@ export function SmartTagInput({
 }
 
 export default SmartTagInput;
-

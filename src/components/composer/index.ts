@@ -12,4 +12,3 @@ export type {
   StrandCreationData, 
   CreationType 
 } from './StrandCreationWizard';
-

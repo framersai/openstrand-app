@@ -20,13 +20,10 @@ import {
   FileText, 
   FolderPlus, 
   Sparkles, 
-  Tag, 
   GraduationCap,
-  Clock,
   Link2,
   CheckCircle,
   Loader2,
-  HelpCircle,
   Brain,
   AlertCircle
 } from 'lucide-react';
@@ -54,6 +51,7 @@ import { cn } from '@/lib/utils';
 import { InfoTooltip, STRAND_TOOLTIPS, LabelWithTooltip } from '@/components/ui/info-tooltip';
 import { SmartTagInput } from './SmartTagInput';
 import { useSmartSuggestions, useAvailableTags } from '@/hooks/useSmartSuggestions';
+import { openstrandAPI } from '@/services/openstrand.api';
 
 // ============================================================================
 // Types
@@ -128,7 +126,7 @@ export function StrandCreationWizard({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Smart suggestions
+  // Smart suggestions from backend API
   const { 
     suggestions, 
     loading: suggestionsLoading, 
@@ -140,15 +138,19 @@ export function StrandCreationWizard({
     debounceMs: 800,
   });
 
-  const { tags: availableTags } = useAvailableTags();
+  // Available tags from backend API
+  const { tags: availableTags, loading: tagsLoading } = useAvailableTags();
 
   // Apply suggestions when available
   useEffect(() => {
-    if (suggestions && !difficulty) {
-      setDifficulty(suggestions.difficulty.level);
-    }
-    if (suggestions && estimatedTime === 15) {
-      setEstimatedTime(suggestions.estimatedTime);
+    if (suggestions) {
+      // Only auto-apply if user hasn't manually set these values
+      if (!difficulty || difficulty === 'beginner') {
+        setDifficulty(suggestions.difficulty.level);
+      }
+      if (estimatedTime === 15 && suggestions.estimatedTime) {
+        setEstimatedTime(suggestions.estimatedTime);
+      }
     }
   }, [suggestions, difficulty, estimatedTime]);
 
@@ -371,7 +373,7 @@ export function StrandCreationWizard({
                   onChange={setTags}
                   suggestions={suggestions?.tags}
                   availableTags={availableTags}
-                  loading={suggestionsLoading}
+                  loading={suggestionsLoading || tagsLoading}
                   placeholder="Add tags..."
                 />
               </div>
@@ -584,4 +586,3 @@ export function StrandCreationWizard({
 }
 
 export default StrandCreationWizard;
-
