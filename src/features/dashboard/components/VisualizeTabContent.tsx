@@ -769,6 +769,7 @@ export function VisualizeTabContent({
           </p>
         </div>
       )}
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }
