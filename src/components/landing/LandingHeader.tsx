@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
 import {
   ChevronDown,
   Menu,
@@ -36,25 +35,104 @@ import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import { OpenStrandLogo } from '@/components/icons/OpenStrandLogo';
 import { GitHubStats } from '@/components/github/GitHubStats';
 import { ThemeSwitcher } from '@/components/theme-switcher';
+import { LanguageSwitcher } from '@/components/language-switcher';
 import { cn } from '@/lib/utils';
 
 interface LandingHeaderProps {
   variant?: 'landing' | 'dashboard';
 }
 
+// Hover dropdown component
+function HoverDropdown({
+  trigger,
+  children,
+  align = 'left',
+}: {
+  trigger: React.ReactNode;
+  children: React.ReactNode;
+  align?: 'left' | 'right';
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setIsOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsOpen(false);
+    }, 150);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <button
+        className={cn(
+          'group inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-accent/50',
+          isOpen && 'text-foreground bg-accent/50'
+        )}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {trigger}
+        <ChevronDown
+          className={cn(
+            'h-3 w-3 opacity-60 transition-transform duration-200',
+            isOpen && 'rotate-180'
+          )}
+        />
+      </button>
+      
+      {isOpen && (
+        <div
+          className={cn(
+            'absolute top-full mt-1.5 z-50 min-w-[280px] rounded-xl border border-border/50 bg-popover/95 backdrop-blur-xl shadow-xl p-2 animate-in fade-in-0 zoom-in-95',
+            align === 'right' ? 'right-0' : 'left-0'
+          )}
+        >
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Navigation Menu Item component for consistent styling
 function NavMenuItem({ 
   children, 
-  className 
+  className,
+  onClick,
 }: { 
   children: React.ReactNode; 
   className?: string;
+  onClick?: () => void;
 }) {
   return (
-    <div className={cn(
-      'flex gap-3 py-2 px-2 rounded-lg hover:bg-accent/50 transition-colors cursor-pointer',
-      className
-    )}>
+    <div 
+      className={cn(
+        'flex gap-3 py-2 px-2 rounded-lg hover:bg-accent/50 transition-colors cursor-pointer items-center',
+        className
+      )}
+      onClick={onClick}
+    >
       {children}
     </div>
   );
@@ -69,6 +147,9 @@ export function LandingHeader({ variant = 'landing' }: LandingHeaderProps) {
 
   const isLanding = variant === 'landing' || pathname?.includes('/landing');
   const isDashboard = pathname?.includes('/dashboard');
+
+  // Get current locale from pathname
+  const locale = pathname?.split('/')[1] || 'en';
 
   // Scroll detection for nav background
   useEffect(() => {
@@ -113,294 +194,246 @@ export function LandingHeader({ variant = 'landing' }: LandingHeaderProps) {
             </span>
           </Link>
 
-          {/* Desktop Navigation - Using NavigationMenu for hover behavior */}
-          <NavigationMenuPrimitive.Root className="hidden lg:flex relative z-10">
-            <NavigationMenuPrimitive.List className="flex items-center gap-1">
-              {/* Features - Simple link */}
-              <NavigationMenuPrimitive.Item>
-                <Link
-                  href="#features"
-                  className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-accent/50"
-                >
-                  Features
-                </Link>
-              </NavigationMenuPrimitive.Item>
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center gap-1">
+            {/* Features - Simple link */}
+            <Link
+              href="#features"
+              className="px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-accent/50"
+            >
+              Features
+            </Link>
 
-              {/* PKMS Dropdown */}
-              <NavigationMenuPrimitive.Item>
-                <NavigationMenuPrimitive.Trigger className="group inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-accent/50 data-[state=open]:text-foreground data-[state=open]:bg-accent/50">
+            {/* PKMS Dropdown */}
+            <HoverDropdown
+              trigger={
+                <>
                   <Brain className="h-4 w-4" />
                   Knowledge
-                  <ChevronDown className="h-3 w-3 opacity-60 transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                </NavigationMenuPrimitive.Trigger>
-                <NavigationMenuPrimitive.Content className="absolute left-0 top-0 w-[400px] data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52">
-                  <div className="p-3 space-y-1">
-                    <p className="text-xs text-muted-foreground font-medium px-2 py-1">Personal Knowledge Management</p>
-                    <NavigationMenuPrimitive.Link asChild>
-                      <Link href={localizePath('/pkms')}>
-                        <NavMenuItem>
-                          <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <FolderTree className="h-4 w-4 text-primary" />
-                          </div>
-                          <div>
-                            <div className="font-medium text-sm">Fabric Browser</div>
-                            <div className="text-xs text-muted-foreground">Navigate your knowledge hierarchy</div>
-                          </div>
-                        </NavMenuItem>
-                      </Link>
-                    </NavigationMenuPrimitive.Link>
-                    <NavigationMenuPrimitive.Link asChild>
-                      <Link href={localizePath('/weave')}>
-                        <NavMenuItem>
-                          <div className="h-9 w-9 rounded-lg bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
-                            <Network className="h-4 w-4 text-cyan-600" />
-                          </div>
-                          <div>
-                            <div className="font-medium text-sm">Knowledge Graph</div>
-                            <div className="text-xs text-muted-foreground">Visualize connections & relationships</div>
-                          </div>
-                        </NavMenuItem>
-                      </Link>
-                    </NavigationMenuPrimitive.Link>
-                    <NavigationMenuPrimitive.Link asChild>
-                      <Link href={localizePath('/composer')}>
-                        <NavMenuItem>
-                          <div className="h-9 w-9 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
-                            <FileText className="h-4 w-4 text-emerald-600" />
-                          </div>
-                          <div>
-                            <div className="font-medium text-sm">Strand Composer</div>
-                            <div className="text-xs text-muted-foreground">Create & import markdown notes</div>
-                          </div>
-                        </NavMenuItem>
-                      </Link>
-                    </NavigationMenuPrimitive.Link>
-                    <div className="border-t border-border/50 my-2" />
-                    <p className="text-xs text-muted-foreground font-medium px-2 py-1">Learning Tools</p>
-                    <NavigationMenuPrimitive.Link asChild>
-                      <Link href={localizePath('/flashcards')}>
-                        <NavMenuItem>
-                          <div className="h-9 w-9 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-                            <GraduationCap className="h-4 w-4 text-amber-600" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-sm flex items-center gap-2">
-                              Flashcards & Quizzes
-                              <Badge variant="secondary" className="text-[10px]">AI</Badge>
-                            </div>
-                            <div className="text-xs text-muted-foreground">Spaced repetition learning</div>
-                          </div>
-                        </NavMenuItem>
-                      </Link>
-                    </NavigationMenuPrimitive.Link>
-                  </div>
-                </NavigationMenuPrimitive.Content>
-              </NavigationMenuPrimitive.Item>
+                </>
+              }
+            >
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground font-medium px-2 py-1">Personal Knowledge Management</p>
+                <Link href={localizePath('/pkms')}>
+                  <NavMenuItem>
+                    <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <FolderTree className="h-4 w-4 text-primary" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Fabric Browser</div>
+                      <div className="text-xs text-muted-foreground">Navigate your knowledge hierarchy</div>
+                    </div>
+                  </NavMenuItem>
+                </Link>
+                <Link href={localizePath('/weave')}>
+                  <NavMenuItem>
+                    <div className="h-9 w-9 rounded-lg bg-cyan-500/10 flex items-center justify-center flex-shrink-0">
+                      <Network className="h-4 w-4 text-cyan-600" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Knowledge Graph</div>
+                      <div className="text-xs text-muted-foreground">Visualize connections & relationships</div>
+                    </div>
+                  </NavMenuItem>
+                </Link>
+                <Link href={localizePath('/composer')}>
+                  <NavMenuItem>
+                    <div className="h-9 w-9 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+                      <FileText className="h-4 w-4 text-emerald-600" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Strand Composer</div>
+                      <div className="text-xs text-muted-foreground">Create & import markdown notes</div>
+                    </div>
+                  </NavMenuItem>
+                </Link>
+                <div className="border-t border-border/50 my-2" />
+                <p className="text-xs text-muted-foreground font-medium px-2 py-1">Learning Tools</p>
+                <Link href={localizePath('/flashcards')}>
+                  <NavMenuItem>
+                    <div className="h-9 w-9 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+                      <GraduationCap className="h-4 w-4 text-amber-600" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium text-sm flex items-center gap-2">
+                        Flashcards & Quizzes
+                        <Badge variant="secondary" className="text-[10px]">AI</Badge>
+                      </div>
+                      <div className="text-xs text-muted-foreground">Spaced repetition learning</div>
+                    </div>
+                  </NavMenuItem>
+                </Link>
+              </div>
+            </HoverDropdown>
 
-              {/* Dashboard Dropdown */}
-              <NavigationMenuPrimitive.Item>
-                <NavigationMenuPrimitive.Trigger className="group inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-accent/50 data-[state=open]:text-foreground data-[state=open]:bg-accent/50">
+            {/* Dashboard Dropdown */}
+            <HoverDropdown
+              trigger={
+                <>
                   <BarChart3 className="h-4 w-4" />
                   Visualize
-                  <ChevronDown className="h-3 w-3 opacity-60 transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                </NavigationMenuPrimitive.Trigger>
-                <NavigationMenuPrimitive.Content className="absolute left-0 top-0 w-[400px] data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out">
-                  <div className="p-3 space-y-1">
-                    <p className="text-xs text-muted-foreground font-medium px-2 py-1">Data Visualization</p>
-                    <NavigationMenuPrimitive.Link asChild>
-                      <Link href={localizePath('/dashboard')}>
-                        <NavMenuItem>
-                          <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <BarChart3 className="h-4 w-4 text-primary" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-sm flex items-center gap-2">
-                              AI Dashboard
-                              <Badge variant="secondary" className="text-[10px]">New</Badge>
-                            </div>
-                            <div className="text-xs text-muted-foreground">Create charts with natural language</div>
-                          </div>
-                        </NavMenuItem>
-                      </Link>
-                    </NavigationMenuPrimitive.Link>
-                    <NavigationMenuPrimitive.Link asChild>
-                      <Link href={localizePath('/gallery')}>
-                        <NavMenuItem>
-                          <div className="h-9 w-9 rounded-lg bg-purple-500/10 flex items-center justify-center flex-shrink-0">
-                            <Layers className="h-4 w-4 text-purple-600" />
-                          </div>
-                          <div>
-                            <div className="font-medium text-sm">Community Gallery</div>
-                            <div className="text-xs text-muted-foreground">Browse & share visualizations</div>
-                          </div>
-                        </NavMenuItem>
-                      </Link>
-                    </NavigationMenuPrimitive.Link>
-                    <div className="border-t border-border/50 my-2" />
-                    <p className="text-xs text-muted-foreground font-medium px-2 py-1">AI Features</p>
-                    <NavigationMenuPrimitive.Link asChild>
-                      <Link href={localizePath('/dashboard#auto-insights')}>
-                        <NavMenuItem>
-                          <div className="h-9 w-9 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-                            <Sparkles className="h-4 w-4 text-amber-600" />
-                          </div>
-                          <div>
-                            <div className="font-medium text-sm">Auto Insights</div>
-                            <div className="text-xs text-muted-foreground">AI-powered data analysis</div>
-                          </div>
-                        </NavMenuItem>
-                      </Link>
-                    </NavigationMenuPrimitive.Link>
-                  </div>
-                </NavigationMenuPrimitive.Content>
-              </NavigationMenuPrimitive.Item>
+                </>
+              }
+            >
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground font-medium px-2 py-1">Data Visualization</p>
+                <Link href={localizePath('/dashboard')}>
+                  <NavMenuItem>
+                    <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <BarChart3 className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium text-sm flex items-center gap-2">
+                        AI Dashboard
+                        <Badge variant="secondary" className="text-[10px]">New</Badge>
+                      </div>
+                      <div className="text-xs text-muted-foreground">Create charts with natural language</div>
+                    </div>
+                  </NavMenuItem>
+                </Link>
+                <Link href={localizePath('/gallery')}>
+                  <NavMenuItem>
+                    <div className="h-9 w-9 rounded-lg bg-purple-500/10 flex items-center justify-center flex-shrink-0">
+                      <Layers className="h-4 w-4 text-purple-600" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Community Gallery</div>
+                      <div className="text-xs text-muted-foreground">Browse & share visualizations</div>
+                    </div>
+                  </NavMenuItem>
+                </Link>
+                <div className="border-t border-border/50 my-2" />
+                <p className="text-xs text-muted-foreground font-medium px-2 py-1">AI Features</p>
+                <Link href={localizePath('/dashboard#auto-insights')}>
+                  <NavMenuItem>
+                    <div className="h-9 w-9 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+                      <Sparkles className="h-4 w-4 text-amber-600" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Auto Insights</div>
+                      <div className="text-xs text-muted-foreground">AI-powered data analysis</div>
+                    </div>
+                  </NavMenuItem>
+                </Link>
+              </div>
+            </HoverDropdown>
 
-              {/* Pricing Dropdown */}
-              <NavigationMenuPrimitive.Item>
-                <NavigationMenuPrimitive.Trigger className="group inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-accent/50 data-[state=open]:text-foreground data-[state=open]:bg-accent/50">
-                  Pricing
-                  <ChevronDown className="h-3 w-3 opacity-60 transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                </NavigationMenuPrimitive.Trigger>
-                <NavigationMenuPrimitive.Content className="absolute left-0 top-0 w-[400px] data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out">
-                  <div className="p-3 space-y-1">
-                    <p className="text-xs text-muted-foreground font-medium px-2 py-1">Plans</p>
-                    <NavigationMenuPrimitive.Link asChild>
-                      <Link href="#pricing">
-                        <NavMenuItem>
-                          <div className="h-9 w-9 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
-                            <Download className="h-4 w-4 text-emerald-600" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-sm flex items-center gap-2">
-                              Community Edition
-                              <Badge className="bg-emerald-500 text-white text-[10px]">Free Forever</Badge>
-                            </div>
-                            <div className="text-xs text-muted-foreground">Open source, offline-first, single user</div>
-                          </div>
-                        </NavMenuItem>
-                      </Link>
-                    </NavigationMenuPrimitive.Link>
-                    <NavigationMenuPrimitive.Link asChild>
-                      <Link href={localizePath('/teams')}>
-                        <NavMenuItem>
-                          <div className="h-9 w-9 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
-                            <Users className="h-4 w-4 text-blue-600" />
-                          </div>
-                          <div>
-                            <div className="font-medium text-sm">Teams Edition</div>
-                            <div className="text-xs text-muted-foreground">Collaboration, sharing & community features</div>
-                          </div>
-                        </NavMenuItem>
-                      </Link>
-                    </NavigationMenuPrimitive.Link>
-                    <NavigationMenuPrimitive.Link asChild>
-                      <Link href={localizePath('/teams#enterprise')}>
-                        <NavMenuItem>
-                          <div className="h-9 w-9 rounded-lg bg-purple-500/10 flex items-center justify-center flex-shrink-0">
-                            <Building2 className="h-4 w-4 text-purple-600" />
-                          </div>
-                          <div>
-                            <div className="font-medium text-sm">Enterprise</div>
-                            <div className="text-xs text-muted-foreground">SSO, audit logs, dedicated support</div>
-                          </div>
-                        </NavMenuItem>
-                      </Link>
-                    </NavigationMenuPrimitive.Link>
-                    <div className="border-t border-border/50 my-2" />
-                    <p className="text-xs text-muted-foreground font-medium px-2 py-1">For Developers</p>
-                    <NavigationMenuPrimitive.Link asChild>
-                      <Link href={localizePath('/teams#api')}>
-                        <NavMenuItem>
-                          <div className="h-9 w-9 rounded-lg bg-orange-500/10 flex items-center justify-center flex-shrink-0">
-                            <Code2 className="h-4 w-4 text-orange-600" />
-                          </div>
-                          <div>
-                            <div className="font-medium text-sm">API & SDK</div>
-                            <div className="text-xs text-muted-foreground">RESTful API, TypeScript SDK</div>
-                          </div>
-                        </NavMenuItem>
-                      </Link>
-                    </NavigationMenuPrimitive.Link>
-                  </div>
-                </NavigationMenuPrimitive.Content>
-              </NavigationMenuPrimitive.Item>
+            {/* Pricing Dropdown */}
+            <HoverDropdown trigger="Pricing">
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground font-medium px-2 py-1">Plans</p>
+                <Link href="#pricing">
+                  <NavMenuItem>
+                    <div className="h-9 w-9 rounded-lg bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+                      <Download className="h-4 w-4 text-emerald-600" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium text-sm flex items-center gap-2">
+                        Community Edition
+                        <Badge className="bg-emerald-500 text-white text-[10px]">Free Forever</Badge>
+                      </div>
+                      <div className="text-xs text-muted-foreground">Open source, offline-first, single user</div>
+                    </div>
+                  </NavMenuItem>
+                </Link>
+                <Link href={localizePath('/teams')}>
+                  <NavMenuItem>
+                    <div className="h-9 w-9 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                      <Users className="h-4 w-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Teams Edition</div>
+                      <div className="text-xs text-muted-foreground">Collaboration, sharing & community features</div>
+                    </div>
+                  </NavMenuItem>
+                </Link>
+                <Link href={localizePath('/teams#enterprise')}>
+                  <NavMenuItem>
+                    <div className="h-9 w-9 rounded-lg bg-purple-500/10 flex items-center justify-center flex-shrink-0">
+                      <Building2 className="h-4 w-4 text-purple-600" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Enterprise</div>
+                      <div className="text-xs text-muted-foreground">SSO, audit logs, dedicated support</div>
+                    </div>
+                  </NavMenuItem>
+                </Link>
+                <div className="border-t border-border/50 my-2" />
+                <p className="text-xs text-muted-foreground font-medium px-2 py-1">For Developers</p>
+                <Link href={localizePath('/teams#api')}>
+                  <NavMenuItem>
+                    <div className="h-9 w-9 rounded-lg bg-orange-500/10 flex items-center justify-center flex-shrink-0">
+                      <Code2 className="h-4 w-4 text-orange-600" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">API & SDK</div>
+                      <div className="text-xs text-muted-foreground">RESTful API, TypeScript SDK</div>
+                    </div>
+                  </NavMenuItem>
+                </Link>
+              </div>
+            </HoverDropdown>
 
-              {/* Docs Dropdown */}
-              <NavigationMenuPrimitive.Item>
-                <NavigationMenuPrimitive.Trigger className="group inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-accent/50 data-[state=open]:text-foreground data-[state=open]:bg-accent/50">
+            {/* Docs Dropdown */}
+            <HoverDropdown
+              trigger={
+                <>
                   <BookOpen className="h-4 w-4" />
                   Docs
-                  <ChevronDown className="h-3 w-3 opacity-60 transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                </NavigationMenuPrimitive.Trigger>
-                <NavigationMenuPrimitive.Content className="absolute left-0 top-0 w-[320px] data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out">
-                  <div className="p-3 space-y-1">
-                    <NavigationMenuPrimitive.Link asChild>
-                      <Link href={localizePath('/tutorials')}>
-                        <NavMenuItem>
-                          <BookOpen className="h-4 w-4 text-primary" />
-                          <div>
-                            <div className="font-medium text-sm">Documentation Home</div>
-                            <div className="text-xs text-muted-foreground">Guides & tutorials</div>
-                          </div>
-                        </NavMenuItem>
-                      </Link>
-                    </NavigationMenuPrimitive.Link>
-                    <div className="border-t border-border/50 my-2" />
-                    <NavigationMenuPrimitive.Link asChild>
-                      <Link href={localizePath('/tutorials/backup-quickstart')}>
-                        <NavMenuItem>
-                          <Zap className="h-4 w-4 text-amber-500" />
-                          <span className="text-sm">Quick Start Guide</span>
-                        </NavMenuItem>
-                      </Link>
-                    </NavigationMenuPrimitive.Link>
-                    <NavigationMenuPrimitive.Link asChild>
-                      <Link href={localizePath('/tutorials/metadata-playbook')}>
-                        <NavMenuItem>
-                          <FileText className="h-4 w-4 text-blue-500" />
-                          <span className="text-sm">Metadata Playbook</span>
-                        </NavMenuItem>
-                      </Link>
-                    </NavigationMenuPrimitive.Link>
-                    <NavigationMenuPrimitive.Link asChild>
-                      <Link href={localizePath('/tutorials/pen-and-paper-strand')}>
-                        <NavMenuItem>
-                          <Star className="h-4 w-4 text-purple-500" />
-                          <span className="text-sm">Pen & Paper Modeling</span>
-                        </NavMenuItem>
-                      </Link>
-                    </NavigationMenuPrimitive.Link>
-                    <div className="border-t border-border/50 my-2" />
-                    <NavigationMenuPrimitive.Link asChild>
-                      <a 
-                        href="https://github.com/framersai/openstrand" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                      >
-                        <NavMenuItem>
-                          <Github className="h-4 w-4" />
-                          <span className="text-sm flex-1">GitHub Repository</span>
-                          <ExternalLink className="h-3 w-3 opacity-50" />
-                        </NavMenuItem>
-                      </a>
-                    </NavigationMenuPrimitive.Link>
-                  </div>
-                </NavigationMenuPrimitive.Content>
-              </NavigationMenuPrimitive.Item>
-            </NavigationMenuPrimitive.List>
-
-            {/* Viewport for dropdown content */}
-            <div className="absolute left-0 top-full flex justify-start perspective-[2000px]">
-              <NavigationMenuPrimitive.Viewport 
-                className="relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-xl border border-border/50 bg-popover/95 backdrop-blur-xl text-popover-foreground shadow-xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 origin-top-left md:w-[var(--radix-navigation-menu-viewport-width)]"
-              />
-            </div>
-          </NavigationMenuPrimitive.Root>
+                </>
+              }
+            >
+              <div className="space-y-1">
+                <Link href={localizePath('/tutorials')}>
+                  <NavMenuItem>
+                    <BookOpen className="h-4 w-4 text-primary" />
+                    <div>
+                      <div className="font-medium text-sm">Documentation Home</div>
+                      <div className="text-xs text-muted-foreground">Guides & tutorials</div>
+                    </div>
+                  </NavMenuItem>
+                </Link>
+                <div className="border-t border-border/50 my-2" />
+                <Link href={localizePath('/tutorials/backup-quickstart')}>
+                  <NavMenuItem>
+                    <Zap className="h-4 w-4 text-amber-500" />
+                    <span className="text-sm">Quick Start Guide</span>
+                  </NavMenuItem>
+                </Link>
+                <Link href={localizePath('/tutorials/metadata-playbook')}>
+                  <NavMenuItem>
+                    <FileText className="h-4 w-4 text-blue-500" />
+                    <span className="text-sm">Metadata Playbook</span>
+                  </NavMenuItem>
+                </Link>
+                <Link href={localizePath('/tutorials/pen-and-paper-strand')}>
+                  <NavMenuItem>
+                    <Star className="h-4 w-4 text-purple-500" />
+                    <span className="text-sm">Pen & Paper Modeling</span>
+                  </NavMenuItem>
+                </Link>
+                <div className="border-t border-border/50 my-2" />
+                <a 
+                  href="https://github.com/framersai/openstrand" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                >
+                  <NavMenuItem>
+                    <Github className="h-4 w-4" />
+                    <span className="text-sm flex-1">GitHub Repository</span>
+                    <ExternalLink className="h-3 w-3 opacity-50" />
+                  </NavMenuItem>
+                </a>
+              </div>
+            </HoverDropdown>
+          </div>
 
           {/* Right side actions */}
           <div className="hidden lg:flex items-center gap-2">
             <GitHubStats variant="compact" />
             <ThemeSwitcher />
+            <LanguageSwitcher currentLocale={locale as 'en' | 'zh-CN' | 'zh-TW' | 'ru' | 'pt' | 'hi' | 'fr'} variant="compact" showName={false} />
             
             {/* CTA Button - Changes based on context */}
             {isDashboard ? (
@@ -425,9 +458,10 @@ export function LandingHeader({ variant = 'landing' }: LandingHeaderProps) {
             )}
           </div>
 
-          {/* Mobile: Theme, Dashboard, Menu */}
+          {/* Mobile: Theme, Language, Dashboard, Menu */}
           <div className="flex items-center gap-1.5 lg:hidden">
             <ThemeSwitcher />
+            <LanguageSwitcher currentLocale={locale as 'en' | 'zh-CN' | 'zh-TW' | 'ru' | 'pt' | 'hi' | 'fr'} variant="compact" showName={false} />
             
             {/* Dashboard CTA - always visible on mobile */}
             <Button
