@@ -113,7 +113,7 @@
     "title": "Transformez Vos Connaissances Aujourd'hui",
     "subtitle": "Rejoignez des milliers d'équipes utilisant OpenStrand pour tisser leurs connaissances en insights actionnables.",
     "primaryCta": {
-      "href": "/",
+      "href": "/dashboard",
       "label": "Commencer Gratuitement"
     },
     "secondaryCta": {

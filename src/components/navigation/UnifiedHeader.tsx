@@ -189,10 +189,17 @@ export function UnifiedHeader({ onOpenSettings }: UnifiedHeaderProps) {
         icon: <Compass className="h-4 w-4" />,
         items: [
           {
+            key: 'dashboard',
+            href: '/dashboard',
+            label: 'Dashboard',
+            description: 'AI-powered data visualization',
+            icon: <BarChart3 className="h-4 w-4" />,
+          },
+          {
             key: 'feed',
-            href: '/',
+            href: '/gallery',
             label: 'Feed',
-            description: 'Your personalized activity stream',
+            description: 'Community visualizations',
             icon: <FeedIcon className="h-4 w-4" />,
           },
           {

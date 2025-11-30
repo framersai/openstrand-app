@@ -113,7 +113,7 @@
     "title": "今天就改變您的知識管理",
     "subtitle": "加入數千個使用 OpenStrand 將知識編織成可操作洞察的團隊。",
     "primaryCta": {
-      "href": "/",
+      "href": "/dashboard",
       "label": "永久免費開始"
     },
     "secondaryCta": {

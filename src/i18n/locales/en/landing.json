@@ -113,7 +113,7 @@
     "title": "Transform Your Knowledge Today",
     "subtitle": "Join thousands of teams using OpenStrand to weave their knowledge into actionable insights.",
     "primaryCta": {
-      "href": "/",
+      "href": "/dashboard",
       "label": "Start Free Forever"
     },
     "secondaryCta": {

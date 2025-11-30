@@ -113,7 +113,7 @@
     "title": "오늘 지식을 혁신하세요",
     "subtitle": "OpenStrand를 사용하여 지식을 실행 가능한 인사이트로 엮는 수천 개의 팀에 합류하세요.",
     "primaryCta": {
-      "href": "/",
+      "href": "/dashboard",
       "label": "영원히 무료로 시작"
     },
     "secondaryCta": {
