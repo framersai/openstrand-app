@@ -564,262 +564,74 @@ export function VisualizeTabContent({
           </div>
         )}
 
-      {/* Auto Insights Section - Hidden when shown in main content */}
+      {/* Auto Insights Button - Triggers analysis, results shown in main content */}
       {!hideAutoInsights && (
       <section 
         id="auto-insights-section"
         data-tour-id="auto-insights-section"
         className="space-y-3 scroll-mt-4"
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-primary" aria-hidden="true" />
-              Auto Insights
-            </h3>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button className="text-muted-foreground hover:text-foreground transition-colors">
-                  <HelpCircle className="h-3.5 w-3.5" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="max-w-[280px]">
-                <div className="space-y-2">
-                  <p className="text-xs font-medium">How Auto Insights Works</p>
-                  <p className="text-xs text-muted-foreground">
-                    Our AI analyzes your dataset's structure, data types, and patterns to automatically suggest the most meaningful visualizations.
-                  </p>
-                  <ul className="text-xs text-muted-foreground space-y-1">
-                    <li>• Detects numeric, categorical, and temporal columns</li>
-                    <li>• Identifies relationships and correlations</li>
-                    <li>• Suggests optimal chart types for your data</li>
-                    <li>• Generates contextual prompts with column names</li>
-                  </ul>
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </div>
-          {lastFetchTime && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="text-xs text-muted-foreground flex items-center gap-1 cursor-help">
-                  <Clock className="h-3 w-3" aria-hidden="true" />
-                  {lastFetchTime.toLocaleTimeString()}
-                </span>
-              </TooltipTrigger>
-              <TooltipContent side="left">
-                <p className="text-xs">Last analysis time. Results are cached for faster access.</p>
-              </TooltipContent>
-            </Tooltip>
+        {/* Simple Action Button */}
+        <Button
+          onClick={handleAutoInsights}
+          disabled={!hasDataset || isProcessing || autoInsightsLoading}
+          className="w-full h-11 text-sm font-medium gap-2"
+          variant={hasCachedInsights ? "secondary" : "default"}
+          aria-busy={autoInsightsLoading}
+        >
+          {autoInsightsLoading ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+              Analyzing...
+            </>
+          ) : hasCachedInsights ? (
+            <>
+              <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+              {recommendations.length} Insights Ready
+            </>
+          ) : (
+            <>
+              <Sparkles className="h-4 w-4" aria-hidden="true" />
+              Run Auto Insights
+            </>
           )}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={handleAutoInsights}
-                disabled={!hasDataset || isProcessing || autoInsightsLoading}
-                className={cn(
-                  "flex-1 h-10 text-sm font-medium",
-                  hasCachedInsights 
-                    ? "bg-secondary text-secondary-foreground hover:bg-secondary/80" 
-                    : "bg-primary text-primary-foreground hover:bg-primary/90"
-                )}
-                variant={hasCachedInsights ? "secondary" : "default"}
-                aria-busy={autoInsightsLoading}
-              >
-                {autoInsightsLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
-                    Analyzing...
-                  </>
-                ) : hasCachedInsights ? (
-                  <>
-                    <CheckCircle2 className="mr-2 h-4 w-4" aria-hidden="true" />
-                    View Insights
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="mr-2 h-4 w-4" aria-hidden="true" />
-                    Analyze Data
-                  </>
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="max-w-[220px]">
-              <p className="text-xs">
-                {hasCachedInsights 
-                  ? "View previously generated AI recommendations for your data"
-                  : "Run AI analysis to get smart visualization suggestions based on your data structure"
-                }
-              </p>
-            </TooltipContent>
-          </Tooltip>
-          
-          {hasCachedInsights && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  onClick={handleRefreshInsights}
-                  disabled={!hasDataset || isProcessing || autoInsightsLoading}
-                  variant="outline"
-                  size="icon"
-                  className="h-10 w-10 flex-shrink-0"
-                  aria-label="Refresh insights"
-                >
-                  <RefreshCw className={cn("h-4 w-4", autoInsightsLoading && "animate-spin")} aria-hidden="true" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p className="text-xs">Re-analyze data to get fresh recommendations</p>
-              </TooltipContent>
-            </Tooltip>
-          )}
-        </div>
+        </Button>
+        
+        {/* Refresh button when cached */}
+        {hasCachedInsights && !autoInsightsLoading && (
+          <Button
+            onClick={handleRefreshInsights}
+            disabled={!hasDataset || isProcessing}
+            variant="ghost"
+            size="sm"
+            className="w-full text-xs text-muted-foreground"
+          >
+            <RefreshCw className="h-3 w-3 mr-1" aria-hidden="true" />
+            Re-analyze for fresh insights
+          </Button>
+        )}
+        
+        {/* Status message */}
+        {autoInsightsError && (
+          <p className="text-xs text-destructive flex items-center gap-1">
+            <AlertCircle className="h-3 w-3" />
+            {autoInsightsError}
+          </p>
+        )}
         
         {!hasDataset && (
-          <p className="text-xs text-muted-foreground">
-            Upload a dataset to enable AI analysis
+          <p className="text-xs text-muted-foreground text-center">
+            Upload a dataset first
+          </p>
+        )}
+        
+        {/* Hint about where to see results */}
+        {hasCachedInsights && recommendations.length > 0 && (
+          <p className="text-xs text-muted-foreground text-center">
+            Click suggestions in the main area to generate charts →
           </p>
         )}
       </section>
-      )}
-
-      {/* Status & Recommendations - Always show when there are insights */}
-      {!hideAutoInsights && (autoInsightsLoading || autoInsightsError || recommendations.length > 0) && (
-        <section className="space-y-3 pt-2">
-          {/* Status Bar */}
-          {(autoInsightsLoading || autoInsightsError) && (
-            <div 
-              className={cn(
-                "flex items-center gap-2 p-2.5 rounded-lg text-xs font-medium",
-                autoInsightsLoading && "bg-primary/5 text-primary",
-                autoInsightsError && "bg-destructive/10 text-destructive"
-              )}
-              role="status"
-              aria-live="polite"
-            >
-              {autoInsightsLoading ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
-              ) : (
-                <AlertCircle className="h-3.5 w-3.5" aria-hidden="true" />
-              )}
-              <span>{autoInsightsLoading ? 'Analyzing your data...' : autoInsightsError}</span>
-            </div>
-          )}
-
-          {/* Recommendations Table */}
-          {recommendations.length > 0 && !autoInsightsLoading && (
-            <div className="border border-border/50 rounded-lg overflow-hidden">
-              <div className="bg-muted/30 px-3 py-2 border-b border-border/50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-foreground">
-                      AI Suggestions
-                    </span>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button className="text-muted-foreground/60 hover:text-muted-foreground transition-colors">
-                          <Info className="h-3 w-3" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent side="right" className="max-w-[250px]">
-                        <div className="space-y-1">
-                          <p className="text-xs font-medium">Smart Visualization Suggestions</p>
-                          <p className="text-xs text-muted-foreground">
-                            Click any suggestion to instantly create that visualization. Each suggestion is tailored to your data's columns and types.
-                          </p>
-                        </div>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Badge variant="secondary" className="text-xs h-5 cursor-help">
-                        {recommendations.length}
-                      </Badge>
-                    </TooltipTrigger>
-                    <TooltipContent side="left">
-                      <p className="text-xs">{recommendations.length} visualization suggestions available</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              </div>
-              <div className="divide-y divide-border/30" role="list">
-                {recommendations.slice(0, 6).map((rec, i) => {
-                  const key = rec.key || rec.title || `rec-${i}`;
-                  const isClicked = clickedRecommendationKey === key;
-                  const chartType = rec.type || 'chart';
-                  const title = rec.title || `${chartType}: ${rec.y || 'metric'}`;
-                  
-                  return (
-                    <button
-                      key={key}
-                      onClick={() => handleRecommendationRun(rec)}
-                      disabled={isProcessing || isClicked}
-                      className={cn(
-                        "w-full text-left px-3 py-2.5 transition-colors",
-                        "hover:bg-accent/50 focus-visible:bg-accent/50",
-                        "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-primary",
-                        "disabled:opacity-50 disabled:cursor-not-allowed",
-                        isClicked && "bg-primary/5"
-                      )}
-                      role="listitem"
-                      aria-busy={isClicked}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div 
-                          className={cn(
-                            "flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center text-xs font-medium",
-                            "bg-primary/10 text-primary"
-                          )}
-                          aria-hidden="true"
-                        >
-                          {isClicked ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          ) : (
-                            <TrendingUp className="h-3.5 w-3.5" />
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-foreground truncate">
-                              {title}
-                            </span>
-                            <Badge variant="outline" className="text-[10px] h-4 px-1.5 flex-shrink-0">
-                              {chartType}
-                            </Badge>
-                          </div>
-                          {rec.description && (
-                            <p className="text-xs text-muted-foreground truncate mt-0.5">
-                              {rec.description}
-                            </p>
-                          )}
-                        </div>
-                        <ArrowRight 
-                          className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" 
-                          aria-hidden="true"
-                        />
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* Empty State - Only show when Auto Insights is visible and no data */}
-      {!hideAutoInsights && !hasDataset && !autoInsightsLoading && recommendations.length === 0 && (
-        <div className="text-center py-6" role="status">
-          <Wand2 className="h-8 w-8 text-muted-foreground/50 mx-auto mb-3" aria-hidden="true" />
-          <p className="text-sm text-muted-foreground">
-            Upload data to unlock AI-powered insights
-          </p>
-        </div>
       )}
       </div>
     </TooltipProvider>

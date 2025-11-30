@@ -811,6 +811,135 @@ function PublishDialog({
 }
 
 // ============================================================================
+// IMAGE UPLOAD DIALOG
+// ============================================================================
+
+interface ImageUploadDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onUpload: (file: File) => void;
+  onUrlInsert: (url: string, alt: string) => void;
+  isUploading: boolean;
+}
+
+function ImageUploadDialog({
+  open,
+  onOpenChange,
+  onUpload,
+  onUrlInsert,
+  isUploading,
+}: ImageUploadDialogProps) {
+  const [mode, setMode] = useState<'upload' | 'url'>('upload');
+  const [url, setUrl] = useState('');
+  const [altText, setAltText] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onUpload(file);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      onUpload(file);
+    }
+  };
+
+  const handleUrlSubmit = () => {
+    if (url.trim()) {
+      onUrlInsert(url.trim(), altText.trim());
+      setUrl('');
+      setAltText('');
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Insert Image</DialogTitle>
+          <DialogDescription>
+            Upload an image or paste a URL
+          </DialogDescription>
+        </DialogHeader>
+
+        <Tabs value={mode} onValueChange={(v) => setMode(v as 'upload' | 'url')}>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="upload">Upload</TabsTrigger>
+            <TabsTrigger value="url">URL</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="upload" className="space-y-4">
+            <div
+              className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary/50 transition-colors"
+              onClick={() => fileInputRef.current?.click()}
+              onDrop={handleDrop}
+              onDragOver={(e) => e.preventDefault()}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileSelect}
+              />
+              {isUploading ? (
+                <div className="space-y-2">
+                  <Clock className="h-8 w-8 mx-auto animate-spin text-primary" />
+                  <p className="text-sm text-muted-foreground">Uploading...</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Image className="h-8 w-8 mx-auto text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">
+                    Click to select or drag and drop
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    PNG, JPG, GIF, WebP up to 10MB
+                  </p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="url" className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="image-url">Image URL</Label>
+              <Input
+                id="image-url"
+                placeholder="https://example.com/image.png"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="alt-text">Alt Text (optional)</Label>
+              <Input
+                id="alt-text"
+                placeholder="Description of the image"
+                value={altText}
+                onChange={(e) => setAltText(e.target.value)}
+              />
+            </div>
+            <Button onClick={handleUrlSubmit} disabled={!url.trim()} className="w-full">
+              Insert Image
+            </Button>
+          </TabsContent>
+        </Tabs>
+
+        <p className="text-xs text-muted-foreground text-center">
+          Tip: You can also paste images directly in the editor (Ctrl+V)
+        </p>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ============================================================================
 // MAIN EDITOR COMPONENT
 // ============================================================================
 
@@ -860,6 +989,9 @@ export function StrandEditor({
   const [showMetadataPanel, setShowMetadataPanel] = useState(false);
   const [history, setHistory] = useState<string[]>([initialContent]);
   const [historyIndex, setHistoryIndex] = useState(0);
+  const [showImageUpload, setShowImageUpload] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Draft manager
   const draftManager = DraftManager.getInstance();
@@ -945,8 +1077,9 @@ export function StrandEditor({
         cursorOffset = selectedText ? -1 : -5;
         break;
       case 'image':
-        replacement = `![${selectedText || 'alt text'}](image-url)`;
-        break;
+        // Open image upload dialog instead of inserting placeholder
+        setShowImageUpload(true);
+        return;
       case 'quote':
         replacement = `> ${selectedText || 'Quote'}`;
         break;
@@ -994,6 +1127,82 @@ export function StrandEditor({
       setContent(history[historyIndex + 1]);
     }
   }, [historyIndex, history]);
+
+  // Image upload handler
+  const handleImageUpload = useCallback(async (file: File) => {
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      // For now, create a local blob URL (in production, upload to server/CDN)
+      const url = URL.createObjectURL(file);
+      const altText = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+      
+      const textarea = textareaRef.current;
+      if (textarea) {
+        const start = textarea.selectionStart;
+        const imageMarkdown = `![${altText}](${url})`;
+        const newContent =
+          content.substring(0, start) + imageMarkdown + content.substring(start);
+        setContent(newContent);
+        
+        // Update history
+        const newHistory = history.slice(0, historyIndex + 1);
+        newHistory.push(newContent);
+        setHistory(newHistory);
+        setHistoryIndex(newHistory.length - 1);
+      }
+      
+      toast.success('Image added');
+      setShowImageUpload(false);
+    } catch (error) {
+      toast.error('Failed to upload image');
+    } finally {
+      setUploadingImage(false);
+    }
+  }, [content, history, historyIndex]);
+
+  const handleImageUrlInsert = useCallback((url: string, altText: string) => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      const start = textarea.selectionStart;
+      const imageMarkdown = `![${altText || 'image'}](${url})`;
+      const newContent =
+        content.substring(0, start) + imageMarkdown + content.substring(start);
+      setContent(newContent);
+      
+      const newHistory = history.slice(0, historyIndex + 1);
+      newHistory.push(newContent);
+      setHistory(newHistory);
+      setHistoryIndex(newHistory.length - 1);
+    }
+    setShowImageUpload(false);
+  }, [content, history, historyIndex]);
+
+  const handleFileDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    const files = e.dataTransfer.files;
+    if (files.length > 0 && files[0].type.startsWith('image/')) {
+      handleImageUpload(files[0]);
+    }
+  }, [handleImageUpload]);
+
+  const handlePaste = useCallback((e: React.ClipboardEvent) => {
+    const items = e.clipboardData.items;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.startsWith('image/')) {
+        const file = items[i].getAsFile();
+        if (file) {
+          e.preventDefault();
+          handleImageUpload(file);
+          return;
+        }
+      }
+    }
+  }, [handleImageUpload]);
 
   // Content change handler
   const handleContentChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -1177,12 +1386,15 @@ export function StrandEditor({
                 ref={textareaRef}
                 value={content}
                 onChange={handleContentChange}
+                onPaste={handlePaste}
+                onDrop={handleFileDrop}
+                onDragOver={(e) => e.preventDefault()}
                 className={cn(
                   'flex-1 w-full p-4 resize-none outline-none',
                   'font-mono text-sm bg-background',
                   'focus:ring-0 focus:outline-none'
                 )}
-                placeholder="Start writing your strand content here..."
+                placeholder="Start writing your strand content here... (paste images with Ctrl+V)"
                 spellCheck={false}
               />
             </div>
@@ -1223,6 +1435,15 @@ export function StrandEditor({
         publishTarget={publishTarget}
         onPublish={handlePublish}
         isPublishing={isPublishing}
+      />
+
+      {/* Image upload dialog */}
+      <ImageUploadDialog
+        open={showImageUpload}
+        onOpenChange={setShowImageUpload}
+        onUpload={handleImageUpload}
+        onUrlInsert={handleImageUrlInsert}
+        isUploading={uploadingImage}
       />
     </div>
   );
