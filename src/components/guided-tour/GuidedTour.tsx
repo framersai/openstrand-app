@@ -1,441 +1,642 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
   X,
   ChevronLeft,
   ChevronRight,
-  Info,
   HelpCircle,
-  Book,
-  Lightbulb,
-  Target,
   Sparkles,
   Keyboard,
   Upload,
   Settings,
+  BarChart3,
+  Layers,
+  Zap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
-interface TourStep {
+export interface TourStep {
   id: string;
-  target: string;
+  target: string; // CSS selector for the element to highlight
   title: string;
   content: string;
-  position?: 'top' | 'bottom' | 'left' | 'right' | 'center';
+  position?: 'top' | 'bottom' | 'left' | 'right' | 'auto';
   icon?: React.ReactNode;
+  spotlightPadding?: number;
   action?: {
     label: string;
     handler: () => void;
   };
 }
 
-const TOUR_STEPS: TourStep[] = [
+const DEFAULT_TOUR_STEPS: TourStep[] = [
   {
     id: 'welcome',
-    target: 'body',
+    target: '[data-tour-id="dashboard-main"]',
     title: 'Welcome to OpenStrand!',
-    content: 'Let\'s take a quick tour to help you get started with AI-powered data visualization. You can press Escape or click outside to skip anytime.',
-    position: 'center',
+    content: 'Create AI-powered visualizations from your data. This quick tour will show you the essentials. Click outside or press Esc anytime to explore on your own.',
+    position: 'auto',
     icon: <Sparkles className="h-5 w-5" />,
+    spotlightPadding: 20,
+  },
+  {
+    id: 'data-tab',
+    target: '[data-tour-id="upload-tab"]',
+    title: 'Upload Your Data',
+    content: 'Start here! Upload CSV, JSON, or TSV files. You can also browse sample datasets and community content.',
+    position: 'right',
+    icon: <Upload className="h-5 w-5" />,
+    spotlightPadding: 8,
+  },
+  {
+    id: 'create-tab',
+    target: '[data-tour-id="visualize-tab"]',
+    title: 'Create Visualizations',
+    content: 'Describe what you want in plain English. Try "Show sales by region as a bar chart" or use our quick presets.',
+    position: 'right',
+    icon: <BarChart3 className="h-5 w-5" />,
+    spotlightPadding: 8,
+  },
+  {
+    id: 'auto-insights',
+    target: '[data-tour-id="auto-insights"]',
+    title: 'AI Auto-Insights',
+    content: 'Let AI analyze your data and suggest the best visualizations automatically. One click to discover patterns!',
+    position: 'auto',
+    icon: <Zap className="h-5 w-5" />,
+    spotlightPadding: 12,
+  },
+  {
+    id: 'visualization-area',
+    target: '[data-tour-id="visualization-area"]',
+    title: 'Your Visualizations',
+    content: 'Charts appear here. Hover for options, click to expand, or drag to reorder. Export as PNG, SVG, or share links.',
+    position: 'left',
+    icon: <Layers className="h-5 w-5" />,
+    spotlightPadding: 16,
   },
   {
     id: 'keyboard-shortcuts',
-    target: 'body',
+    target: '[data-tour-id="command-palette"]',
     title: 'Keyboard Power User',
-    content: 'Press ⌘K (Ctrl+K on Windows) to open the command palette. Navigate anywhere, trigger any action, and search everything—all from your keyboard!',
-    position: 'center',
-    icon: <Keyboard className="h-5 w-5" />,
-  },
-  {
-    id: 'upload',
-    target: '[data-tour-id="upload-tab"]',
-    title: 'Upload Your Data',
-    content: 'Start by uploading a CSV, TSV, or JSON file. You can also use our sample datasets to explore the platform.',
-    position: 'right',
-    icon: <Upload className="h-5 w-5" />,
-  },
-  {
-    id: 'visualize',
-    target: '[data-tour-id="visualize-tab"]',
-    title: 'Create Visualizations',
-    content: 'Use natural language to describe what you want to see. Our AI will analyze your data and create the perfect visualization.',
-    position: 'right',
-    icon: <Target className="h-5 w-5" />,
-  },
-  {
-    id: 'quick-actions',
-    target: '[data-tour-id="quick-actions"]',
-    title: 'Quick Actions & Presets',
-    content: 'Use pre-configured templates for common visualizations, or run AI-powered Auto Insights to get smart suggestions.',
-    position: 'top',
-    icon: <Lightbulb className="h-5 w-5" />,
-  },
-  {
-    id: 'catalog',
-    target: 'a[href*="catalogs"]',
-    title: 'Explore Dataset Catalog',
-    content: 'Browse community-curated datasets with advanced filtering, tags, and search capabilities.',
+    content: 'Press ⌘K (Ctrl+K on Windows) for the command palette. Search, navigate, and execute actions without touching your mouse.',
     position: 'bottom',
-    icon: <Book className="h-5 w-5" />,
+    icon: <Keyboard className="h-5 w-5" />,
+    spotlightPadding: 8,
   },
   {
     id: 'settings',
     target: '.settings-button',
-    title: 'Customize Your Experience',
-    content: 'Configure AI providers, choose your preferred theme, set language preferences, and customize keyboard shortcuts.',
+    title: 'Customize Settings',
+    content: 'Configure AI providers, themes, languages, and keyboard shortcuts. Make OpenStrand work your way.',
     position: 'left',
     icon: <Settings className="h-5 w-5" />,
+    spotlightPadding: 8,
   },
 ];
 
-interface GuidedTourProps {
-  onComplete?: () => void;
-  forceShow?: boolean;
+interface SpotlightRect {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
 }
 
-export function GuidedTour({ onComplete, forceShow = false }: GuidedTourProps) {
+interface TooltipPosition {
+  top: number;
+  left: number;
+  arrowPosition: 'top' | 'bottom' | 'left' | 'right';
+}
+
+interface GuidedTourProps {
+  steps?: TourStep[];
+  onComplete?: () => void;
+  onDismiss?: () => void;
+  forceShow?: boolean;
+  storageKey?: string;
+}
+
+export function GuidedTour({
+  steps = DEFAULT_TOUR_STEPS,
+  onComplete,
+  onDismiss,
+  forceShow = false,
+  storageKey = 'guidedTourCompleted',
+}: GuidedTourProps) {
   const [isActive, setIsActive] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [tooltipPosition, setTooltipPosition] = useState({ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' });
-  const [isMobile, setIsMobile] = useState(false);
+  const [spotlight, setSpotlight] = useState<SpotlightRect | null>(null);
+  const [tooltipPos, setTooltipPos] = useState<TooltipPosition | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
-  // Check for mobile
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 640);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const calculatePosition = useCallback((step: TourStep) => {
-    if (step.position === 'center' || isMobile) {
-      return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' };
-    }
-
-    const target = document.querySelector(step.target) as HTMLElement;
-    if (!target) {
-      return { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' };
-    }
-
-    const rect = target.getBoundingClientRect();
-    const tooltipWidth = 380;
-    const tooltipHeight = 280;
+  // Calculate best position for tooltip
+  const calculateTooltipPosition = useCallback((
+    targetRect: DOMRect,
+    preferredPosition: TourStep['position'],
+    tooltipWidth: number,
+    tooltipHeight: number
+  ): TooltipPosition => {
+    const viewport = {
+      width: window.innerWidth,
+      height: window.innerHeight,
+    };
     const padding = 16;
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
+    const arrowOffset = 12;
 
-    let top: string;
-    let left: string;
-    let transform = '';
+    // Check available space in each direction
+    const spaceTop = targetRect.top - padding;
+    const spaceBottom = viewport.height - targetRect.bottom - padding;
+    const spaceLeft = targetRect.left - padding;
+    const spaceRight = viewport.width - targetRect.right - padding;
 
-    switch (step.position) {
+    // Determine best position
+    let position = preferredPosition;
+    if (position === 'auto' || !position) {
+      // Find best position based on available space
+      const spaces = [
+        { pos: 'bottom' as const, space: spaceBottom },
+        { pos: 'top' as const, space: spaceTop },
+        { pos: 'right' as const, space: spaceRight },
+        { pos: 'left' as const, space: spaceLeft },
+      ];
+      const best = spaces.reduce((a, b) => (a.space > b.space ? a : b));
+      position = best.pos;
+    }
+
+    let top: number;
+    let left: number;
+    let arrowPosition: TooltipPosition['arrowPosition'];
+
+    switch (position) {
       case 'top':
-        top = `${Math.max(padding, rect.top - tooltipHeight - padding)}px`;
-        left = `${Math.min(Math.max(padding, rect.left + rect.width / 2 - tooltipWidth / 2), viewportWidth - tooltipWidth - padding)}px`;
+        top = targetRect.top - tooltipHeight - arrowOffset;
+        left = targetRect.left + targetRect.width / 2 - tooltipWidth / 2;
+        arrowPosition = 'bottom';
         break;
       case 'bottom':
-        top = `${Math.min(rect.bottom + padding, viewportHeight - tooltipHeight - padding)}px`;
-        left = `${Math.min(Math.max(padding, rect.left + rect.width / 2 - tooltipWidth / 2), viewportWidth - tooltipWidth - padding)}px`;
+        top = targetRect.bottom + arrowOffset;
+        left = targetRect.left + targetRect.width / 2 - tooltipWidth / 2;
+        arrowPosition = 'top';
         break;
       case 'left':
-        top = `${Math.min(Math.max(padding, rect.top + rect.height / 2 - tooltipHeight / 2), viewportHeight - tooltipHeight - padding)}px`;
-        left = `${Math.max(padding, rect.left - tooltipWidth - padding)}px`;
+        top = targetRect.top + targetRect.height / 2 - tooltipHeight / 2;
+        left = targetRect.left - tooltipWidth - arrowOffset;
+        arrowPosition = 'right';
         break;
       case 'right':
-        top = `${Math.min(Math.max(padding, rect.top + rect.height / 2 - tooltipHeight / 2), viewportHeight - tooltipHeight - padding)}px`;
-        left = `${Math.min(rect.right + padding, viewportWidth - tooltipWidth - padding)}px`;
+        top = targetRect.top + targetRect.height / 2 - tooltipHeight / 2;
+        left = targetRect.right + arrowOffset;
+        arrowPosition = 'left';
         break;
       default:
-        top = '50%';
-        left = '50%';
-        transform = 'translate(-50%, -50%)';
+        top = targetRect.bottom + arrowOffset;
+        left = targetRect.left + targetRect.width / 2 - tooltipWidth / 2;
+        arrowPosition = 'top';
     }
 
-    return { top, left, transform };
-  }, [isMobile]);
+    // Clamp to viewport
+    top = Math.max(padding, Math.min(top, viewport.height - tooltipHeight - padding));
+    left = Math.max(padding, Math.min(left, viewport.width - tooltipWidth - padding));
 
+    return { top, left, arrowPosition };
+  }, []);
+
+  // Update spotlight and tooltip position
+  const updatePositions = useCallback(() => {
+    if (!isActive || !steps[currentStep]) return;
+
+    const step = steps[currentStep];
+    const target = document.querySelector(step.target) as HTMLElement;
+
+    if (target) {
+      const rect = target.getBoundingClientRect();
+      const spotPadding = step.spotlightPadding ?? 8;
+
+      setSpotlight({
+        top: rect.top - spotPadding,
+        left: rect.left - spotPadding,
+        width: rect.width + spotPadding * 2,
+        height: rect.height + spotPadding * 2,
+      });
+
+      // Scroll element into view if needed
+      if (rect.top < 100 || rect.bottom > window.innerHeight - 100) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      // Calculate tooltip position
+      const tooltipWidth = Math.min(360, window.innerWidth - 32);
+      const tooltipHeight = 240; // Approximate
+      const pos = calculateTooltipPosition(rect, step.position, tooltipWidth, tooltipHeight);
+      setTooltipPos(pos);
+    } else {
+      // No target found - center the tooltip
+      setSpotlight(null);
+      setTooltipPos({
+        top: window.innerHeight / 2 - 120,
+        left: window.innerWidth / 2 - 180,
+        arrowPosition: 'top',
+      });
+    }
+  }, [isActive, currentStep, steps, calculateTooltipPosition]);
+
+  // Initialize tour
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    setIsMounted(true);
+    if (typeof window === 'undefined') return undefined;
 
-    const tourSeen = localStorage.getItem('guidedTourCompleted');
+    const tourSeen = localStorage.getItem(storageKey);
     if (!tourSeen || forceShow) {
-      setTimeout(() => setIsActive(true), 500);
+      const timer = setTimeout(() => setIsActive(true), 600);
+      return () => clearTimeout(timer);
     }
-  }, [forceShow]);
+    return undefined;
+  }, [forceShow, storageKey]);
 
+  // Update positions on step change or resize
   useEffect(() => {
-    if (isActive && TOUR_STEPS[currentStep]) {
-      const newPosition = calculatePosition(TOUR_STEPS[currentStep]);
-      setTooltipPosition(newPosition);
+    if (!isActive) return;
+
+    updatePositions();
+
+    // Listen for resize and scroll
+    const handleUpdate = () => updatePositions();
+    window.addEventListener('resize', handleUpdate);
+    window.addEventListener('scroll', handleUpdate, true);
+
+    // Watch for DOM changes
+    resizeObserverRef.current = new ResizeObserver(handleUpdate);
+    const step = steps[currentStep];
+    if (step) {
+      const target = document.querySelector(step.target);
+      if (target) {
+        resizeObserverRef.current.observe(target);
+      }
     }
-  }, [isActive, currentStep, calculatePosition, isMobile]);
+
+    return () => {
+      window.removeEventListener('resize', handleUpdate);
+      window.removeEventListener('scroll', handleUpdate, true);
+      resizeObserverRef.current?.disconnect();
+    };
+  }, [isActive, currentStep, steps, updatePositions]);
 
   const handleComplete = useCallback(() => {
     setIsActive(false);
     if (typeof window !== 'undefined') {
-      localStorage.setItem('guidedTourCompleted', 'true');
+      localStorage.setItem(storageKey, 'true');
     }
     onComplete?.();
-  }, [onComplete]);
+  }, [onComplete, storageKey]);
 
-  const handleSkip = useCallback(() => {
-    handleComplete();
-  }, [handleComplete]);
+  const handleDismiss = useCallback(() => {
+    setIsActive(false);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(storageKey, 'true');
+    }
+    onDismiss?.();
+  }, [onDismiss, storageKey]);
 
+  const handleNext = useCallback(() => {
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      handleComplete();
+    }
+  }, [currentStep, steps.length, handleComplete]);
+
+  const handlePrev = useCallback(() => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
+  }, [currentStep]);
+
+  // Keyboard navigation
   useEffect(() => {
     if (!isActive) return;
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        handleSkip();
-      } else if (event.key === 'ArrowRight' || event.key === 'Enter') {
-        event.preventDefault();
-        if (currentStep < TOUR_STEPS.length - 1) {
-          setCurrentStep(currentStep + 1);
-        } else {
-          handleComplete();
-        }
-      } else if (event.key === 'ArrowLeft') {
-        event.preventDefault();
-        if (currentStep > 0) {
-          setCurrentStep(currentStep - 1);
-        }
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        handleDismiss();
+      } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
+        e.preventDefault();
+        handleNext();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        handlePrev();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isActive, handleSkip, handleComplete, currentStep]);
+  }, [isActive, handleDismiss, handleNext, handlePrev]);
 
-  const handleNext = () => {
-    if (currentStep < TOUR_STEPS.length - 1) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      handleComplete();
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    // Only dismiss if clicking the overlay, not the spotlight area
+    if (e.target === e.currentTarget) {
+      handleDismiss();
     }
   };
 
-  const handlePrev = () => {
-    if (currentStep > 0) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
+  if (!isMounted || !isActive) return null;
 
-  const step = TOUR_STEPS[currentStep];
+  const step = steps[currentStep];
+  const isLastStep = currentStep === steps.length - 1;
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
 
-  if (!isActive) return null;
-
-  return (
+  const tourContent = (
     <>
-      {/* Overlay - theme-aware with subtle blur */}
-      <div
-        className={cn(
-          "fixed inset-0 z-[9998]",
-          "bg-background/60 dark:bg-background/70",
-          "backdrop-blur-[2px]",
-          "transition-opacity duration-300"
-        )}
-        onClick={handleSkip}
-        aria-label="Close tour"
-      />
-
-      {/* Tour Card */}
-      <div
-        className={cn(
-          "fixed z-[9999] w-[calc(100vw-2rem)] max-w-[380px]",
-          // Mobile: bottom sheet style
-          "max-sm:bottom-4 max-sm:left-1/2 max-sm:-translate-x-1/2 max-sm:w-[calc(100vw-2rem)]",
-          // Animation
-          "animate-in fade-in-0 zoom-in-95 duration-200"
-        )}
-        style={!isMobile ? {
-          top: tooltipPosition.top,
-          left: tooltipPosition.left,
-          transform: tooltipPosition.transform || undefined,
-        } : undefined}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="tour-title"
+      {/* SVG Overlay with spotlight cutout */}
+      <svg
+        className="fixed inset-0 z-[9998] pointer-events-none"
+        style={{ width: '100%', height: '100%' }}
       >
-        <div className={cn(
-          "rounded-2xl overflow-hidden",
-          "bg-card dark:bg-card",
-          "border border-border/50 dark:border-border/30",
-          "shadow-xl dark:shadow-2xl dark:shadow-black/20",
-          "ring-1 ring-primary/10"
-        )}>
-          {/* Gradient accent bar */}
-          <div className="h-1 bg-gradient-to-r from-primary via-primary/80 to-primary/60" />
-          
-          <div className="p-5 sm:p-6">
-            {/* Header */}
-            <div className="flex items-start justify-between gap-3 mb-4">
-              <div className="flex items-center gap-3">
+        <defs>
+          <mask id="spotlight-mask">
+            <rect width="100%" height="100%" fill="white" />
+            {spotlight && (
+              <rect
+                x={spotlight.left}
+                y={spotlight.top}
+                width={spotlight.width}
+                height={spotlight.height}
+                rx="12"
+                fill="black"
+              />
+            )}
+          </mask>
+        </defs>
+        <rect
+          width="100%"
+          height="100%"
+          className="fill-black/50 dark:fill-black/60"
+          mask="url(#spotlight-mask)"
+          style={{ pointerEvents: 'auto' }}
+          onClick={handleOverlayClick}
+        />
+      </svg>
+
+      {/* Spotlight ring highlight */}
+      {spotlight && (
+        <div
+          className="fixed z-[9998] pointer-events-none rounded-xl ring-2 ring-primary ring-offset-2 ring-offset-transparent animate-pulse"
+          style={{
+            top: spotlight.top,
+            left: spotlight.left,
+            width: spotlight.width,
+            height: spotlight.height,
+          }}
+        />
+      )}
+
+      {/* Tooltip */}
+      {tooltipPos && (
+        <div
+          ref={tooltipRef}
+          className={cn(
+            "fixed z-[9999]",
+            "w-[calc(100vw-2rem)] max-w-[360px]",
+            "animate-in fade-in-0 slide-in-from-bottom-2 duration-200",
+            // Mobile: bottom sheet
+            isMobile && "!bottom-4 !left-1/2 !-translate-x-1/2 !top-auto"
+          )}
+          style={!isMobile ? {
+            top: tooltipPos.top,
+            left: tooltipPos.left,
+          } : undefined}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="tour-title"
+        >
+          {/* Arrow */}
+          {!isMobile && spotlight && (
+            <div
+              className={cn(
+                "absolute w-3 h-3 bg-card rotate-45 border-border/50",
+                tooltipPos.arrowPosition === 'top' && "top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 border-l border-t",
+                tooltipPos.arrowPosition === 'bottom' && "bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 border-r border-b",
+                tooltipPos.arrowPosition === 'left' && "left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 border-l border-b",
+                tooltipPos.arrowPosition === 'right' && "right-0 top-1/2 translate-x-1/2 -translate-y-1/2 border-r border-t"
+              )}
+            />
+          )}
+
+          <div className={cn(
+            "rounded-2xl overflow-hidden",
+            "bg-card",
+            "border border-border/50",
+            "shadow-2xl shadow-black/20"
+          )}>
+            {/* Accent bar */}
+            <div className="h-1 bg-gradient-to-r from-primary via-primary/80 to-primary/60" />
+
+            <div className="p-4 sm:p-5">
+              {/* Header */}
+              <div className="flex items-start gap-3 mb-3">
                 {step.icon && (
                   <div className={cn(
                     "h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0",
-                    "bg-primary/10 dark:bg-primary/20",
-                    "text-primary"
+                    "bg-primary/10 text-primary"
                   )}>
                     {step.icon}
                   </div>
                 )}
-                <div>
-                  <h3 
+                <div className="flex-1 min-w-0">
+                  <h3
                     id="tour-title"
-                    className="font-semibold text-base sm:text-lg text-foreground leading-tight"
+                    className="font-semibold text-base text-foreground leading-tight"
                   >
                     {step.title}
                   </h3>
-                  <Badge 
-                    variant="secondary" 
-                    className={cn(
-                      "mt-1.5 text-[10px] font-medium",
-                      "bg-muted/80 dark:bg-muted/50",
-                      "text-muted-foreground"
-                    )}
+                  <Badge
+                    variant="secondary"
+                    className="mt-1 text-[10px] font-medium bg-muted/80 text-muted-foreground"
                   >
-                    {currentStep + 1} of {TOUR_STEPS.length}
+                    {currentStep + 1} of {steps.length}
                   </Badge>
                 </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleDismiss}
+                  className="h-8 w-8 rounded-lg flex-shrink-0 -mr-1 -mt-1 text-muted-foreground hover:text-foreground"
+                  aria-label="Close tour"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleSkip}
-                className={cn(
-                  "h-8 w-8 rounded-lg flex-shrink-0 -mr-1 -mt-1",
-                  "text-muted-foreground hover:text-foreground",
-                  "hover:bg-muted/80 dark:hover:bg-muted/50"
-                )}
-                aria-label="Close tour (Esc)"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
 
-            {/* Content */}
-            <p className="text-sm text-muted-foreground leading-relaxed mb-5">
-              {step.content}
-            </p>
+              {/* Content */}
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                {step.content}
+              </p>
 
-            {/* Action button if provided */}
-            {step.action && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={step.action.handler}
-                className="w-full mb-4 h-10"
-              >
-                {step.action.label}
-              </Button>
-            )}
+              {/* Action button */}
+              {step.action && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={step.action.handler}
+                  className="w-full mb-3"
+                >
+                  {step.action.label}
+                </Button>
+              )}
 
-            {/* Progress bar */}
-            <div className="mb-4">
-              <div className="h-1 bg-muted/50 dark:bg-muted/30 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-primary rounded-full transition-all duration-300 ease-out"
-                  style={{ width: `${((currentStep + 1) / TOUR_STEPS.length) * 100}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Navigation */}
-            <div className="flex items-center justify-between gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handlePrev}
-                disabled={currentStep === 0}
-                className={cn(
-                  "h-9 px-3",
-                  "text-muted-foreground hover:text-foreground",
-                  "disabled:opacity-40"
-                )}
-              >
-                <ChevronLeft className="h-4 w-4 mr-1" />
-                Back
-              </Button>
-
-              {/* Step dots */}
-              <div className="flex gap-1.5">
-                {TOUR_STEPS.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentStep(index)}
-                    className={cn(
-                      "h-2 rounded-full transition-all duration-200",
-                      index === currentStep
-                        ? "w-6 bg-primary"
-                        : index < currentStep
-                        ? "w-2 bg-primary/50 hover:bg-primary/70"
-                        : "w-2 bg-muted hover:bg-muted-foreground/30"
-                    )}
-                    aria-label={`Go to step ${index + 1}`}
+              {/* Progress */}
+              <div className="mb-3">
+                <div className="h-1 bg-muted/50 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-primary rounded-full transition-all duration-300"
+                    style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
                   />
-                ))}
+                </div>
               </div>
 
-              <Button
-                variant={currentStep === TOUR_STEPS.length - 1 ? 'default' : 'ghost'}
-                size="sm"
-                onClick={handleNext}
-                className={cn(
-                  "h-9 px-3",
-                  currentStep === TOUR_STEPS.length - 1 
-                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                {currentStep === TOUR_STEPS.length - 1 ? (
-                  'Get Started'
-                ) : (
-                  <>
-                    Next
-                    <ChevronRight className="h-4 w-4 ml-1" />
-                  </>
-                )}
-              </Button>
-            </div>
+              {/* Navigation */}
+              <div className="flex items-center justify-between gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handlePrev}
+                  disabled={currentStep === 0}
+                  className="h-9 px-3 text-muted-foreground hover:text-foreground disabled:opacity-40"
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Back
+                </Button>
 
-            {/* Keyboard hint */}
-            <p className="text-[10px] text-muted-foreground/60 text-center mt-3">
-              Use ← → arrow keys to navigate • Esc to close
-            </p>
+                {/* Step dots */}
+                <div className="flex gap-1.5 max-sm:hidden">
+                  {steps.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentStep(index)}
+                      className={cn(
+                        "h-2 rounded-full transition-all duration-200",
+                        index === currentStep
+                          ? "w-5 bg-primary"
+                          : index < currentStep
+                          ? "w-2 bg-primary/50 hover:bg-primary/70"
+                          : "w-2 bg-muted hover:bg-muted-foreground/30"
+                      )}
+                      aria-label={`Go to step ${index + 1}`}
+                    />
+                  ))}
+                </div>
+
+                <Button
+                  variant={isLastStep ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={handleNext}
+                  className={cn(
+                    "h-9 px-3",
+                    isLastStep
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {isLastStep ? 'Get Started' : (
+                    <>
+                      Next
+                      <ChevronRight className="h-4 w-4 ml-1" />
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {/* Keyboard hint */}
+              <p className="text-[10px] text-muted-foreground/60 text-center mt-2 max-sm:hidden">
+                ← → to navigate • Esc to close • Click outside to dismiss
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </>
+  );
+
+  // Use portal to render at document root
+  return createPortal(tourContent, document.body);
+}
+
+// Reusable tour trigger button for help menus
+export function TourTriggerButton({
+  onClick,
+  className,
+  variant = 'ghost',
+  size = 'sm',
+  showLabel = true,
+}: {
+  onClick: () => void;
+  className?: string;
+  variant?: 'ghost' | 'outline' | 'default';
+  size?: 'sm' | 'default' | 'lg' | 'icon';
+  showLabel?: boolean;
+}) {
+  return (
+    <Button
+      variant={variant}
+      size={size}
+      onClick={onClick}
+      className={cn("gap-1.5", className)}
+    >
+      <HelpCircle className="h-4 w-4" />
+      {showLabel && <span>Take a Tour</span>}
+    </Button>
   );
 }
 
-// Tour activation button component
-export function TourActivationButton() {
+// Hook to control tour programmatically
+export function useTourController(storageKey = 'guidedTourCompleted') {
   const [showTour, setShowTour] = useState(false);
+
+  const startTour = useCallback(() => {
+    setShowTour(true);
+  }, []);
+
+  const resetTour = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(storageKey);
+    }
+    setShowTour(true);
+  }, [storageKey]);
+
+  const endTour = useCallback(() => {
+    setShowTour(false);
+  }, []);
+
+  return {
+    showTour,
+    startTour,
+    resetTour,
+    endTour,
+    TourComponent: showTour ? (
+      <GuidedTour
+        forceShow
+        storageKey={storageKey}
+        onComplete={endTour}
+        onDismiss={endTour}
+      />
+    ) : null,
+  };
+}
+
+// Legacy export for backwards compatibility
+export function TourActivationButton() {
+  const { startTour, TourComponent } = useTourController();
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={() => setShowTour(true)}
-        className="h-8 px-2 text-xs gap-1.5"
-      >
-        <HelpCircle className="h-3.5 w-3.5" />
-        <span className="hidden sm:inline">Tour</span>
-      </Button>
-
-      {showTour && (
-        <GuidedTour
-          forceShow
-          onComplete={() => setShowTour(false)}
-        />
-      )}
+      <TourTriggerButton onClick={startTour} showLabel={false} size="sm" className="h-8 px-2" />
+      {TourComponent}
     </>
   );
 }

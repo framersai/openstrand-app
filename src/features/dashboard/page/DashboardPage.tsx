@@ -204,6 +204,7 @@ export default function DashboardPage() {
           <TabsTrigger 
             value="upload" 
             className="text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            data-tour-id="upload-tab"
           >
             <Database className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
             Data
@@ -211,6 +212,7 @@ export default function DashboardPage() {
           <TabsTrigger 
             value="visualize" 
             className="text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            data-tour-id="visualize-tab"
           >
             <Sparkles className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
             Create
@@ -411,6 +413,7 @@ export default function DashboardPage() {
             className="flex-1 flex flex-col overflow-hidden bg-muted/20"
             role="main"
             aria-label="Visualization workspace"
+            data-tour-id="dashboard-main"
           >
             {/* Compact Header Bar */}
             <header className="flex-shrink-0 flex items-center gap-2 px-3 sm:px-4 lg:px-6 py-2 border-b border-border/40 bg-background/80 backdrop-blur-sm">
@@ -485,6 +488,7 @@ export default function DashboardPage() {
                       size="sm"
                       onClick={() => setIsPaletteOpen(true)}
                       className="h-8 px-2 sm:px-3"
+                      data-tour-id="command-palette"
                     >
                       <Command className="h-3.5 w-3.5" aria-hidden="true" />
                       <kbd className="ml-1.5 hidden sm:inline text-[10px] bg-muted px-1 py-0.5 rounded font-mono">
@@ -502,6 +506,7 @@ export default function DashboardPage() {
                       onClick={runAutoInsights}
                       disabled={isProcessing || autoInsightsSnapshot.isLoading}
                       size="sm"
+                      data-tour-id="auto-insights"
                       className={cn(
                         "h-8 px-2 sm:px-3 gap-1.5",
                         autoInsightsSnapshot.isLoading 
@@ -541,7 +546,7 @@ export default function DashboardPage() {
             </header>
 
             {/* Visualizations Area - Takes up remaining space */}
-            <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
+            <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6" data-tour-id="visualization-area">
               {visualizations.length > 0 ? (
                 <VisualizationWorkspace
                   ref={visualizationPanelRef as any}

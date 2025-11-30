@@ -1,7 +1,23 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { Menu, Settings, Sparkles, X, Database, User, Home, LifeBuoy, CreditCard } from 'lucide-react';
+import { 
+  Menu, 
+  Settings, 
+  Sparkles, 
+  X, 
+  Database, 
+  User, 
+  Home, 
+  LifeBuoy, 
+  CreditCard,
+  HelpCircle,
+  BookOpen,
+  Keyboard,
+  MessageCircle,
+  ExternalLink,
+  Play,
+} from 'lucide-react';
 
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { CostTracker } from '@/components/cost-tracker';
@@ -12,10 +28,18 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { AuthButton } from '@/features/auth';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
-import { TourActivationButton } from '@/components/guided-tour/GuidedTour';
+import { useTourController } from '@/components/guided-tour/GuidedTour';
 import { GuestCreditIndicator } from '@/components/guest-credit-indicator';
 import { useSupabase } from '@/features/auth';
 import type { Locale } from '@/i18n/config';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from '@/components/ui/dropdown-menu';
 
 interface DashboardHeaderProps {
   onOpenSettings: () => void;
@@ -44,11 +68,13 @@ export function DashboardHeader({ onOpenSettings }: DashboardHeaderProps) {
   const locale = useLocale() as Locale;
   const localizePath = useLocalizedPath();
   const { isAuthenticated, authEnabled } = useSupabase();
+  const { startTour, TourComponent } = useTourController();
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
   return (
     <TooltipProvider>
+      {TourComponent}
       <header className="dashboard-header sticky top-0 z-50 border-b border-border/60 bg-background/95 backdrop-blur-xl">
         <div className="container mx-auto px-4 py-3">
           <div className="flex w-full items-center gap-4">
@@ -119,7 +145,57 @@ export function DashboardHeader({ onOpenSettings }: DashboardHeaderProps) {
 
               <ThemeSwitcher tooltip="Change theme & appearance" />
               <LanguageSwitcher currentLocale={locale} variant="compact" showName={false} />
-              <TourActivationButton />
+              
+              {/* Help Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 px-2 gap-1.5">
+                    <HelpCircle className="h-4 w-4" />
+                    <span className="hidden xl:inline text-xs">Help</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                    Get Started
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem onClick={startTour} className="gap-2 cursor-pointer">
+                    <Play className="h-4 w-4 text-primary" />
+                    <span>Take a Tour</span>
+                    <Badge variant="secondary" className="ml-auto text-[10px]">New</Badge>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="gap-2 cursor-pointer">
+                    <Link href={localizePath('/tutorials')}>
+                      <BookOpen className="h-4 w-4" />
+                      <span>Tutorials</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => {
+                    // Trigger command palette with keyboard shortcut info
+                    const event = new KeyboardEvent('keydown', { key: 'k', metaKey: true });
+                    window.dispatchEvent(event);
+                  }}>
+                    <Keyboard className="h-4 w-4" />
+                    <span>Keyboard Shortcuts</span>
+                    <kbd className="ml-auto text-[10px] bg-muted px-1 py-0.5 rounded">⌘K</kbd>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                    Resources
+                  </DropdownMenuLabel>
+                  <DropdownMenuItem asChild className="gap-2 cursor-pointer">
+                    <a href="https://docs.openstrand.ai" target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="h-4 w-4" />
+                      <span>Documentation</span>
+                    </a>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="gap-2 cursor-pointer">
+                    <Link href={localizePath('/contact')}>
+                      <MessageCircle className="h-4 w-4" />
+                      <span>Contact Support</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               {/* Profile link */}
               <Link href={localizePath('/profile')}>
@@ -197,7 +273,15 @@ export function DashboardHeader({ onOpenSettings }: DashboardHeaderProps) {
                 <div className="flex items-center gap-2">
                   <ThemeSwitcher tooltip="Change theme & appearance" buttonVariant="ghost" />
                   <LanguageSwitcher currentLocale={locale} variant="compact" />
-                  <TourActivationButton />
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => { startTour(); closeMobileMenu(); }}
+                    className="h-8 px-2 gap-1.5"
+                  >
+                    <HelpCircle className="h-4 w-4" />
+                    <span className="text-xs">Tour</span>
+                  </Button>
                 </div>
               </div>
               <div className="flex items-center justify-between gap-2">
