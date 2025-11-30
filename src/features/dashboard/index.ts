@@ -2,6 +2,7 @@ export * from './components/DashboardHeader';
 export * from './components/UploadTabContent';
 export * from './components/VisualizeTabContent';
 export * from './components/DataSourceTabs';
+export * from './components/AutoInsightsProvider';
 export * from './components/VisualizationList';
 export * from './components/PlanSummaryPill';
 export * from './components/ExplorationRecipes';

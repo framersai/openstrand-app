@@ -38,6 +38,7 @@ import { TeamOnboarding } from '@/components/onboarding/TeamOnboarding';
 import {
   UploadTabContent,
   VisualizeTabContent,
+  AutoInsightsProvider,
 } from '@/features/dashboard';
 
 import { VisualizationWorkspace } from './VisualizationWorkspace';
@@ -243,9 +244,8 @@ export default function DashboardPage() {
 
         <TabsContent 
           value="visualize" 
-          className="flex-1 overflow-y-auto p-3 mt-0 focus-visible:outline-none data-[state=inactive]:hidden" 
+          className="flex-1 overflow-y-auto p-3 mt-0 focus-visible:outline-none" 
           tabIndex={-1}
-          forceMount
         >
           <VisualizeTabContent
             datasetId={dataset?.id ?? null}
@@ -264,13 +264,6 @@ export default function DashboardPage() {
             leaderboardLoading={leaderboardLoading}
             onRefreshLeaderboards={refreshLeaderboards}
             onNavigateToVisualizations={focusVisualizations}
-            onAutoInsightsUpdate={handleAutoInsightsUpdate}
-            onRegisterAutoInsightsRunner={(runner) => {
-              autoInsightsRunnerRef.current = runner ?? null;
-            }}
-            onRegisterRecommendationRunner={(runner) => {
-              recommendationRunnerRef.current = runner ?? null;
-            }}
           />
         </TabsContent>
       </Tabs>
@@ -308,6 +301,21 @@ export default function DashboardPage() {
   return (
     <TooltipProvider>
       <div className="min-h-screen min-h-[100dvh] flex flex-col bg-background">
+        {/* Auto Insights Provider - always mounted to ensure runner is available */}
+        <AutoInsightsProvider
+          datasetId={dataset?.id ?? null}
+          onRegisterRunner={(runner) => {
+            autoInsightsRunnerRef.current = runner ?? null;
+          }}
+          onRegisterRecommendationRunner={(runner) => {
+            recommendationRunnerRef.current = runner ?? null;
+          }}
+          onUpdate={handleAutoInsightsUpdate}
+          onQuickAction={handleGenerateVisualization}
+          onNavigateToVisualizations={focusVisualizations}
+          onProcessingChange={setIsProcessing}
+        />
+        
         <GuidedTour />
         {shouldShowLocalOnboarding && <LocalOnboarding onOpenSettings={openSettings} />}
         {shouldShowTeamOnboarding && <TeamOnboarding onOpenSettings={openSettings} />}

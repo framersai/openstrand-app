@@ -77,11 +77,6 @@ interface VisualizeTabContentProps {
   leaderboardLoading?: boolean;
   onRefreshLeaderboards?: () => void;
   onNavigateToVisualizations?: () => void;
-  onAutoInsightsUpdate?: (snapshot: AutoInsightsSnapshot) => void;
-  onRegisterAutoInsightsRunner?: (runner: (() => void) | undefined) => void;
-  onRegisterRecommendationRunner?: (
-    runner: ((recommendation: InsightRecommendation) => Promise<void>) | undefined
-  ) => void;
 }
 
 // Categorized visualization presets with icons and descriptions
@@ -272,9 +267,6 @@ export function VisualizeTabContent({
   onQuickAction,
   onProcessingChange,
   onNavigateToVisualizations,
-  onAutoInsightsUpdate,
-  onRegisterAutoInsightsRunner,
-  onRegisterRecommendationRunner,
 }: VisualizeTabContentProps) {
   const [autoInsights, setAutoInsights] = useState<DatasetInsights | null>(null);
   const [autoInsightsLoading, setAutoInsightsLoading] = useState(false);
@@ -399,29 +391,6 @@ export function VisualizeTabContent({
   const recommendations = useMemo<InsightRecommendation[]>(() => {
     return getRecommendationsFromInsights(autoInsights);
   }, [autoInsights]);
-
-  useEffect(() => {
-    onAutoInsightsUpdate?.({
-      insights: autoInsights,
-      isLoading: autoInsightsLoading,
-      error: autoInsightsError,
-      status: autoInsightsStatus,
-      logs: autoInsightsLogs,
-      recommendations,
-    });
-  }, [autoInsights, autoInsightsLoading, autoInsightsError, autoInsightsStatus, autoInsightsLogs, recommendations, onAutoInsightsUpdate]);
-
-  useEffect(() => {
-    if (!onRegisterAutoInsightsRunner) return;
-    onRegisterAutoInsightsRunner(() => void handleAutoInsights());
-    return () => onRegisterAutoInsightsRunner(undefined);
-  }, [handleAutoInsights, onRegisterAutoInsightsRunner]);
-
-  useEffect(() => {
-    if (!onRegisterRecommendationRunner) return;
-    onRegisterRecommendationRunner((rec) => handleRecommendationRun(rec));
-    return () => onRegisterRecommendationRunner(undefined);
-  }, [handleRecommendationRun, onRegisterRecommendationRunner]);
 
   const hasCachedInsights = cachedInsightsEntry && cachedInsightsEntry.recommendations.length > 0;
 
