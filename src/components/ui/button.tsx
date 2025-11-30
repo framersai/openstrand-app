@@ -49,15 +49,15 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'relative overflow-hidden border border-primary/30 bg-primary text-primary-foreground shadow-[var(--shadow-glow)] hover:bg-primary/90 hover:border-primary/40 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 dark:border-primary/40',
-        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-lg hover:shadow-xl',
+          'relative overflow-hidden border border-primary/30 bg-primary text-white shadow-[var(--shadow-glow)] hover:bg-primary/90 hover:border-primary/40 dark:bg-primary dark:text-white dark:hover:bg-primary/90 dark:border-primary/40',
+        destructive: 'bg-destructive text-white hover:bg-destructive/90 shadow-lg hover:shadow-xl',
         outline:
           'border border-border/70 bg-[hsl(var(--surface-1))] text-foreground hover:border-primary/40 hover:bg-[hsl(var(--surface-2))] hover:text-primary dark:border-border/40 dark:bg-[hsl(var(--surface-2))] dark:hover:border-primary/50',
         secondary:
           'border border-border/60 bg-[hsl(var(--surface-2))] text-foreground shadow-none hover:border-primary/30 hover:bg-[hsl(var(--surface-3))] hover:text-foreground dark:border-border/40 dark:bg-[hsl(var(--surface-2))] dark:hover:bg-[hsl(var(--surface-3))]',
-        ghost: 'text-foreground/85 hover:text-primary hover:bg-[hsl(var(--surface-2))] dark:hover:bg-[hsl(var(--surface-2))]',
+        ghost: 'text-foreground/85 shadow-none hover:text-primary hover:bg-[hsl(var(--surface-2))] dark:hover:bg-[hsl(var(--surface-2))]',
         link: 'text-primary underline-offset-4 hover:underline shadow-none',
-        gradient: 'relative overflow-hidden bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] text-primary-foreground hover:shadow-lg hover:shadow-primary/30 animate-gradient-x border-0',
+        gradient: 'relative overflow-hidden bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] text-white hover:shadow-lg hover:shadow-primary/30 animate-gradient-x border-0',
         glass: 'backdrop-blur-xl bg-card/70 border border-border/50 hover:bg-card/80 hover:shadow-lg',
         success: 'bg-[hsl(var(--color-success-500))] text-white hover:bg-[hsl(var(--color-success-600))] hover:shadow-lg hover:shadow-[hsl(var(--color-success-500))]/30',
       },

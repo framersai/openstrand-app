@@ -6,24 +6,11 @@ import {
   X, 
   Minus, 
   HelpCircle,
-  ExternalLink,
-  WifiOff,
-  Cloud,
-  Lock,
-  Users,
-  Code2,
-  Sparkles,
-  FileText,
-  FolderTree,
-  Network,
-  Zap,
-  DollarSign,
-  Server,
-  Smartphone,
+  ChevronDown,
+  ChevronRight,
 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
@@ -37,11 +24,10 @@ interface ComparisonSectionProps {
   className?: string;
 }
 
-type FeatureValue = boolean | 'partial' | 'paid' | 'plugin' | string;
+type FeatureValue = boolean | 'partial' | 'paid' | 'plugin' | 'roadmap' | string;
 
 interface Competitor {
   name: string;
-  logo?: string;
   tagline: string;
   url: string;
   pricing: string;
@@ -68,6 +54,8 @@ const FEATURE_CATEGORIES = [
       { key: 'hierarchy', label: 'Folder Hierarchy', tooltip: 'Nested folder organization' },
       { key: 'tagging', label: 'Tag System', tooltip: 'Flexible tagging and categorization' },
       { key: 'templates', label: 'Templates', tooltip: 'Reusable note templates' },
+      { key: 'dailyNotes', label: 'Daily Notes', tooltip: 'Automatic daily journal entries' },
+      { key: 'canvas', label: 'Canvas/Whiteboard', tooltip: 'Visual canvas for spatial organization' },
     ],
   },
   {
@@ -79,6 +67,7 @@ const FEATURE_CATEGORIES = [
       { key: 'localAI', label: 'Local AI (No API)', tooltip: 'AI features work offline without API keys' },
       { key: 'flashcards', label: 'Flashcard Generation', tooltip: 'Auto-generate flashcards from notes' },
       { key: 'quizzes', label: 'Quiz Generation', tooltip: 'Auto-generate quizzes from content' },
+      { key: 'aiChat', label: 'AI Chat Assistant', tooltip: 'Chat with AI about your notes' },
     ],
   },
   {
@@ -89,6 +78,7 @@ const FEATURE_CATEGORIES = [
       { key: 'noVendorLock', label: 'No Vendor Lock-in', tooltip: 'Easy to migrate to other tools' },
       { key: 'gdpr', label: 'GDPR Compliant', tooltip: 'Complies with EU data protection' },
       { key: 'auditLog', label: 'Audit Logging', tooltip: 'Track all changes and access' },
+      { key: 'versionHistory', label: 'Version History', tooltip: 'Track and restore previous versions' },
     ],
   },
   {
@@ -99,6 +89,16 @@ const FEATURE_CATEGORIES = [
       { key: 'sharing', label: 'Public Sharing', tooltip: 'Share notes publicly' },
       { key: 'permissions', label: 'Permission Controls', tooltip: 'Fine-grained access control' },
       { key: 'teams', label: 'Team Workspaces', tooltip: 'Dedicated team spaces' },
+    ],
+  },
+  {
+    name: 'Platform & Ecosystem',
+    features: [
+      { key: 'mobile', label: 'Mobile Apps', tooltip: 'Native iOS and Android apps' },
+      { key: 'webApp', label: 'Web App', tooltip: 'Access via web browser' },
+      { key: 'plugins', label: 'Plugin Ecosystem', tooltip: 'Extensible via third-party plugins' },
+      { key: 'api', label: 'Public API', tooltip: 'Developer API for integrations' },
+      { key: 'webClipper', label: 'Web Clipper', tooltip: 'Save web pages to your notes' },
     ],
   },
 ];
@@ -123,36 +123,46 @@ const COMPETITORS: Competitor[] = [
       hierarchy: true,
       tagging: true,
       templates: true,
+      dailyNotes: 'roadmap',
+      canvas: 'roadmap',
       // AI & Intelligence
       aiSummary: true,
       aiTagging: true,
       semanticSearch: true,
-      localAI: true, // Deterministic NLP, no API needed
+      localAI: true,
       flashcards: true,
       quizzes: true,
+      aiChat: 'paid',
       // Data & Privacy
       encryption: true,
       exportAll: true,
       noVendorLock: true,
       gdpr: true,
-      auditLog: 'paid', // Teams edition
+      auditLog: 'paid',
+      versionHistory: true,
       // Collaboration
-      realtime: 'paid', // Teams edition
+      realtime: 'paid',
       comments: 'paid',
       sharing: 'paid',
       permissions: 'paid',
       teams: 'paid',
+      // Platform
+      mobile: 'roadmap',
+      webApp: true,
+      plugins: 'roadmap',
+      api: true,
+      webClipper: 'roadmap',
     },
   },
   {
     name: 'Obsidian',
     tagline: 'A second brain',
     url: 'https://obsidian.md',
-    pricing: 'Free / $50/yr Sync',
+    pricing: 'Free / $50/yr',
     features: {
       offline: true,
-      openSource: false, // Core is closed source
-      selfHosted: 'partial', // Can self-host files, not sync
+      openSource: false,
+      selfHosted: 'partial',
       localFirst: true,
       noAccount: true,
       markdown: true,
@@ -161,22 +171,31 @@ const COMPETITORS: Competitor[] = [
       hierarchy: true,
       tagging: true,
       templates: 'plugin',
+      dailyNotes: 'plugin',
+      canvas: true,
       aiSummary: 'plugin',
       aiTagging: 'plugin',
       semanticSearch: 'plugin',
       localAI: 'plugin',
       flashcards: 'plugin',
       quizzes: 'plugin',
+      aiChat: 'plugin',
       encryption: 'paid',
       exportAll: true,
       noVendorLock: true,
       gdpr: true,
       auditLog: false,
+      versionHistory: 'paid',
       realtime: false,
       comments: false,
       sharing: 'paid',
       permissions: false,
       teams: false,
+      mobile: true,
+      webApp: false,
+      plugins: true,
+      api: false,
+      webClipper: 'plugin',
     },
   },
   {
@@ -185,38 +204,47 @@ const COMPETITORS: Competitor[] = [
     url: 'https://notion.so',
     pricing: 'Free / $8/mo+',
     features: {
-      offline: 'partial', // Limited offline
+      offline: 'partial',
       openSource: false,
       selfHosted: false,
       localFirst: false,
       noAccount: false,
-      markdown: 'partial', // Import/export only
+      markdown: 'partial',
       bidirectional: true,
       graphView: false,
       hierarchy: true,
       tagging: true,
       templates: true,
+      dailyNotes: false,
+      canvas: false,
       aiSummary: 'paid',
       aiTagging: false,
       semanticSearch: 'paid',
       localAI: false,
       flashcards: false,
       quizzes: false,
-      encryption: false, // Not E2E
+      aiChat: 'paid',
+      encryption: false,
       exportAll: true,
       noVendorLock: 'partial',
       gdpr: true,
       auditLog: 'paid',
+      versionHistory: 'paid',
       realtime: true,
       comments: true,
       sharing: true,
       permissions: true,
       teams: true,
+      mobile: true,
+      webApp: true,
+      plugins: 'partial',
+      api: true,
+      webClipper: true,
     },
   },
   {
     name: 'Roam Research',
-    tagline: 'A note-taking tool for networked thought',
+    tagline: 'Networked thought',
     url: 'https://roamresearch.com',
     pricing: '$15/mo',
     features: {
@@ -228,32 +256,41 @@ const COMPETITORS: Competitor[] = [
       markdown: true,
       bidirectional: true,
       graphView: true,
-      hierarchy: 'partial', // Outline-based
+      hierarchy: 'partial',
       tagging: true,
       templates: true,
+      dailyNotes: true,
+      canvas: false,
       aiSummary: false,
       aiTagging: false,
       semanticSearch: false,
       localAI: false,
       flashcards: 'plugin',
       quizzes: false,
+      aiChat: false,
       encryption: true,
       exportAll: true,
       noVendorLock: 'partial',
       gdpr: true,
       auditLog: false,
+      versionHistory: true,
       realtime: true,
       comments: false,
       sharing: true,
       permissions: true,
       teams: true,
+      mobile: true,
+      webApp: true,
+      plugins: true,
+      api: true,
+      webClipper: true,
     },
   },
   {
     name: 'Logseq',
-    tagline: 'Privacy-first knowledge base',
+    tagline: 'Privacy-first',
     url: 'https://logseq.com',
-    pricing: 'Free / $5/mo Sync',
+    pricing: 'Free / $5/mo',
     features: {
       offline: true,
       openSource: true,
@@ -263,25 +300,34 @@ const COMPETITORS: Competitor[] = [
       markdown: true,
       bidirectional: true,
       graphView: true,
-      hierarchy: 'partial', // Outline-based
+      hierarchy: 'partial',
       tagging: true,
       templates: true,
+      dailyNotes: true,
+      canvas: true,
       aiSummary: 'plugin',
       aiTagging: 'plugin',
       semanticSearch: 'plugin',
       localAI: 'plugin',
       flashcards: true,
       quizzes: false,
+      aiChat: 'plugin',
       encryption: 'paid',
       exportAll: true,
       noVendorLock: true,
       gdpr: true,
       auditLog: false,
+      versionHistory: 'paid',
       realtime: false,
       comments: false,
       sharing: 'paid',
       permissions: false,
       teams: false,
+      mobile: true,
+      webApp: false,
+      plugins: true,
+      api: false,
+      webClipper: 'plugin',
     },
   },
 ];
@@ -290,8 +336,8 @@ function FeatureCell({ value }: { value: FeatureValue }) {
   if (value === true) {
     return (
       <div className="flex items-center justify-center">
-        <div className="h-6 w-6 rounded-full bg-emerald-500/20 flex items-center justify-center">
-          <Check className="h-4 w-4 text-emerald-600" />
+        <div className="h-5 w-5 rounded-full bg-emerald-500/20 flex items-center justify-center">
+          <Check className="h-3 w-3 text-emerald-600" />
         </div>
       </div>
     );
@@ -300,8 +346,8 @@ function FeatureCell({ value }: { value: FeatureValue }) {
   if (value === false) {
     return (
       <div className="flex items-center justify-center">
-        <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center">
-          <X className="h-4 w-4 text-muted-foreground" />
+        <div className="h-5 w-5 rounded-full bg-muted flex items-center justify-center">
+          <X className="h-3 w-3 text-muted-foreground" />
         </div>
       </div>
     );
@@ -310,8 +356,8 @@ function FeatureCell({ value }: { value: FeatureValue }) {
   if (value === 'partial') {
     return (
       <div className="flex items-center justify-center">
-        <div className="h-6 w-6 rounded-full bg-amber-500/20 flex items-center justify-center">
-          <Minus className="h-4 w-4 text-amber-600" />
+        <div className="h-5 w-5 rounded-full bg-amber-500/20 flex items-center justify-center">
+          <Minus className="h-3 w-3 text-amber-600" />
         </div>
       </div>
     );
@@ -319,7 +365,7 @@ function FeatureCell({ value }: { value: FeatureValue }) {
   
   if (value === 'paid') {
     return (
-      <Badge variant="outline" className="text-[10px] border-blue-500/30 text-blue-600">
+      <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-500/30 text-blue-600">
         Paid
       </Badge>
     );
@@ -327,8 +373,16 @@ function FeatureCell({ value }: { value: FeatureValue }) {
   
   if (value === 'plugin') {
     return (
-      <Badge variant="outline" className="text-[10px] border-purple-500/30 text-purple-600">
+      <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-purple-500/30 text-purple-600">
         Plugin
+      </Badge>
+    );
+  }
+
+  if (value === 'roadmap') {
+    return (
+      <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-amber-500/30 text-amber-600">
+        Soon
       </Badge>
     );
   }
@@ -339,45 +393,47 @@ function FeatureCell({ value }: { value: FeatureValue }) {
 }
 
 export function CompetitorComparison({ id, className }: ComparisonSectionProps) {
-  const [expandedCategory, setExpandedCategory] = useState<string | null>('Core Philosophy');
+  const [expandedCategories, setExpandedCategories] = useState<string[]>(['Core Philosophy']);
+
+  const toggleCategory = (name: string) => {
+    setExpandedCategories(prev => 
+      prev.includes(name) 
+        ? prev.filter(c => c !== name)
+        : [...prev, name]
+    );
+  };
 
   return (
     <TooltipProvider>
-      <section id={id} className={cn('landing-section py-20', className)}>
+      <section id={id} className={cn('landing-section py-16', className)}>
         <div className="container mx-auto px-4">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <Badge variant="outline" className="mb-4">
-              <Sparkles className="h-3 w-3 mr-1" />
-              Fair Comparison
-            </Badge>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
+          {/* Header - No badge */}
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-3">
               How OpenStrand Compares
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              We believe in transparency. Here's an honest comparison with popular alternatives.
-              We've researched each tool's current features as of 2024.
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              An honest comparison with popular alternatives. We've researched each tool's current features.
             </p>
           </div>
 
           {/* Comparison Table */}
-          <div className="overflow-x-auto">
-            <div className="min-w-[900px]">
+          <div className="overflow-x-auto -mx-4 px-4">
+            <div className="min-w-[800px]">
               {/* Header row */}
-              <div className="grid grid-cols-6 gap-2 mb-4 sticky top-0 bg-background/95 backdrop-blur-sm z-10 py-3 border-b border-border">
+              <div className="grid grid-cols-6 gap-1.5 mb-3 sticky top-0 bg-background/95 backdrop-blur-sm z-10 py-2 border-b border-border">
                 <div className="col-span-1" />
                 {COMPETITORS.map((competitor, index) => (
                   <div 
                     key={competitor.name}
                     className={cn(
-                      'text-center p-3 rounded-xl',
-                      index === 0 && 'bg-primary/10 border-2 border-primary/30'
+                      'text-center p-2 rounded-lg',
+                      index === 0 && 'bg-primary/10 border border-primary/30'
                     )}
                   >
-                    <div className="font-semibold text-sm">{competitor.name}</div>
-                    <div className="text-xs text-muted-foreground">{competitor.tagline}</div>
+                    <div className="font-semibold text-xs">{competitor.name}</div>
                     <div className={cn(
-                      'text-xs font-medium mt-1',
+                      'text-[10px] font-medium mt-0.5',
                       index === 0 ? 'text-emerald-600' : 'text-muted-foreground'
                     )}>
                       {competitor.pricing}
@@ -387,106 +443,116 @@ export function CompetitorComparison({ id, className }: ComparisonSectionProps) 
               </div>
 
               {/* Feature categories */}
-              {FEATURE_CATEGORIES.map((category) => (
-                <div key={category.name} className="mb-4">
-                  {/* Category header */}
-                  <button
-                    onClick={() => setExpandedCategory(
-                      expandedCategory === category.name ? null : category.name
-                    )}
-                    className="w-full flex items-center gap-2 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors mb-2"
-                  >
-                    <span className="font-semibold text-sm">{category.name}</span>
-                    <span className="text-xs text-muted-foreground">
-                      ({category.features.length} features)
-                    </span>
-                  </button>
+              {FEATURE_CATEGORIES.map((category) => {
+                const isExpanded = expandedCategories.includes(category.name);
+                
+                return (
+                  <div key={category.name} className="mb-2">
+                    {/* Category header */}
+                    <button
+                      onClick={() => toggleCategory(category.name)}
+                      className="w-full flex items-center gap-2 p-2 rounded-lg bg-muted/40 hover:bg-muted/60 transition-colors"
+                    >
+                      {isExpanded ? (
+                        <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                      )}
+                      <span className="font-medium text-sm">{category.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        ({category.features.length})
+                      </span>
+                    </button>
 
-                  {/* Features */}
-                  {expandedCategory === category.name && (
-                    <div className="space-y-1">
-                      {category.features.map((feature) => (
-                        <div 
-                          key={feature.key}
-                          className="grid grid-cols-6 gap-2 py-2 px-3 rounded-lg hover:bg-muted/30 transition-colors"
-                        >
-                          <div className="col-span-1 flex items-center gap-2">
-                            <span className="text-sm">{feature.label}</span>
-                            <Tooltip>
-                              <TooltipTrigger>
-                                <HelpCircle className="h-3 w-3 text-muted-foreground" />
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p className="max-w-xs">{feature.tooltip}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </div>
-                          {COMPETITORS.map((competitor, index) => (
-                            <div 
-                              key={`${competitor.name}-${feature.key}`}
-                              className={cn(
-                                'flex items-center justify-center',
-                                index === 0 && 'bg-primary/5 rounded-lg'
-                              )}
-                            >
-                              <FeatureCell value={competitor.features[feature.key]} />
+                    {/* Features */}
+                    {isExpanded && (
+                      <div className="mt-1 space-y-0.5">
+                        {category.features.map((feature) => (
+                          <div 
+                            key={feature.key}
+                            className="grid grid-cols-6 gap-1.5 py-1.5 px-2 rounded hover:bg-muted/20 transition-colors"
+                          >
+                            <div className="col-span-1 flex items-center gap-1.5">
+                              <span className="text-xs">{feature.label}</span>
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  <HelpCircle className="h-3 w-3 text-muted-foreground/60" />
+                                </TooltipTrigger>
+                                <TooltipContent side="right">
+                                  <p className="max-w-xs text-xs">{feature.tooltip}</p>
+                                </TooltipContent>
+                              </Tooltip>
                             </div>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+                            {COMPETITORS.map((competitor, index) => (
+                              <div 
+                                key={`${competitor.name}-${feature.key}`}
+                                className={cn(
+                                  'flex items-center justify-center',
+                                  index === 0 && 'bg-primary/5 rounded'
+                                )}
+                              >
+                                <FeatureCell value={competitor.features[feature.key]} />
+                              </div>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
           {/* Legend */}
-          <div className="flex flex-wrap items-center justify-center gap-4 mt-8 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="h-5 w-5 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                <Check className="h-3 w-3 text-emerald-600" />
+          <div className="flex flex-wrap items-center justify-center gap-3 mt-6 text-xs">
+            <div className="flex items-center gap-1.5">
+              <div className="h-4 w-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                <Check className="h-2.5 w-2.5 text-emerald-600" />
               </div>
               <span className="text-muted-foreground">Included</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="h-5 w-5 rounded-full bg-amber-500/20 flex items-center justify-center">
-                <Minus className="h-3 w-3 text-amber-600" />
+            <div className="flex items-center gap-1.5">
+              <div className="h-4 w-4 rounded-full bg-amber-500/20 flex items-center justify-center">
+                <Minus className="h-2.5 w-2.5 text-amber-600" />
               </div>
               <span className="text-muted-foreground">Partial</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-[10px] border-blue-500/30 text-blue-600">
+            <div className="flex items-center gap-1.5">
+              <Badge variant="outline" className="text-[9px] px-1 py-0 border-blue-500/30 text-blue-600">
                 Paid
               </Badge>
               <span className="text-muted-foreground">Paid add-on</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-[10px] border-purple-500/30 text-purple-600">
+            <div className="flex items-center gap-1.5">
+              <Badge variant="outline" className="text-[9px] px-1 py-0 border-purple-500/30 text-purple-600">
                 Plugin
               </Badge>
               <span className="text-muted-foreground">Via plugin</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="h-5 w-5 rounded-full bg-muted flex items-center justify-center">
-                <X className="h-3 w-3 text-muted-foreground" />
+            <div className="flex items-center gap-1.5">
+              <Badge variant="outline" className="text-[9px] px-1 py-0 border-amber-500/30 text-amber-600">
+                Soon
+              </Badge>
+              <span className="text-muted-foreground">On roadmap</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-4 w-4 rounded-full bg-muted flex items-center justify-center">
+                <X className="h-2.5 w-2.5 text-muted-foreground" />
               </div>
               <span className="text-muted-foreground">Not available</span>
             </div>
           </div>
 
           {/* Disclaimer */}
-          <p className="text-xs text-muted-foreground text-center mt-6 max-w-2xl mx-auto">
-            Feature availability researched as of late 2024. Some features may require specific plans or configurations.
-            We strive for accuracy—please{' '}
+          <p className="text-[10px] text-muted-foreground text-center mt-4 max-w-xl mx-auto">
+            Feature availability researched as of late 2024. Some features may require specific plans.{' '}
             <a href="https://github.com/framersai/openstrand/issues" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
-              let us know
-            </a>{' '}
-            if you spot any inaccuracies.
+              Report inaccuracies
+            </a>
           </p>
         </div>
       </section>
     </TooltipProvider>
   );
 }
-

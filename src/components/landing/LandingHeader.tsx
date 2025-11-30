@@ -391,17 +391,18 @@ export function LandingHeader({ variant = 'landing' }: LandingHeaderProps) {
             )}
           </div>
 
-          {/* Mobile: Dashboard button + Menu button */}
-          <div className="flex items-center gap-2 lg:hidden">
+          {/* Mobile: Theme, Language, Dashboard, Menu */}
+          <div className="flex items-center gap-1.5 lg:hidden">
+            <ThemeSwitcher />
+            
             {/* Dashboard CTA - always visible on mobile */}
             <Button
               asChild
               size="sm"
-              className="gap-1 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-md shadow-primary/20"
+              className="gap-1 h-9 px-3 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-md shadow-primary/20 text-white"
             >
               <Link href={localizePath('/dashboard')}>
                 <BarChart3 className="h-4 w-4" />
-                <span className="hidden xs:inline">Dashboard</span>
               </Link>
             </Button>
             
@@ -409,6 +410,7 @@ export function LandingHeader({ variant = 'landing' }: LandingHeaderProps) {
             <Button
               variant="ghost"
               size="icon"
+              className="h-9 w-9"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >

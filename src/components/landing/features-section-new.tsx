@@ -49,7 +49,6 @@ const TECH_FEATURE_CONFIG = [
   { key: 'plugins', icon: Puzzle, gradient: 'from-purple-500/10 to-pink-500/10' },
 ] as const;
 
-const COMPARISON_PRODUCTS = ['openstrand', 'notion', 'obsidian', 'tableau'] as const;
 
 export function FeaturesSection({ id, className }: FeaturesSectionProps) {
   const tFeatures = useTranslations('landing.features');
@@ -79,28 +78,6 @@ export function FeaturesSection({ id, className }: FeaturesSectionProps) {
     [tFeatures],
   );
 
-  interface ComparisonRow {
-    feature: string;
-    openstrand: boolean | string;
-    notion: boolean | string;
-    obsidian: boolean | string;
-    tableau?: boolean | string;
-  }
-
-  const comparisonRows = useMemo(
-    () => ((tFeatures.raw('comparison.rows') as ComparisonRow[]) ?? []),
-    [tFeatures],
-  );
-
-  const comparisonProducts = useMemo(
-    () => ({
-      openstrand: tFeatures('comparison.products.openstrand'),
-      notion: tFeatures('comparison.products.notion'),
-      obsidian: tFeatures('comparison.products.obsidian'),
-      tableau: tFeatures('comparison.products.tableau'),
-    }),
-    [tFeatures],
-  );
 
   return (
     <section id={id} className={cn('landing-section py-24', className)}>
@@ -211,61 +188,14 @@ export function FeaturesSection({ id, className }: FeaturesSectionProps) {
           </div>
         </div>
 
-        {/* Comparison table */}
-        <div className="rounded-2xl border border-cyan-200/30 bg-gradient-to-br from-white to-cyan-50/10 p-8 dark:border-cyan-800/30 dark:from-gray-900 dark:to-cyan-950/10">
-          <h3 className="mb-8 text-center text-2xl font-semibold text-foreground">
-            {tFeatures('comparison.title')}
-          </h3>
-
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-cyan-200/30 dark:border-cyan-800/30">
-                  <th className="pb-4 text-left text-sm font-semibold text-foreground">
-                    {tFeatures('comparison.featureColumn')}
-                  </th>
-                  {COMPARISON_PRODUCTS.map((product) => (
-                    <th key={product} className="pb-4 text-center text-sm font-semibold text-muted-foreground">
-                      <span className={product === 'openstrand' ? 'text-cyan-600 dark:text-cyan-400' : undefined}>
-                        {comparisonProducts[product]}
-                      </span>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {comparisonRows.map((row) => (
-                  <tr key={row.feature} className="border-b border-gray-100 dark:border-gray-800">
-                    <td className="py-3 text-sm text-foreground">{row.feature}</td>
-                    {COMPARISON_PRODUCTS.map((product) => {
-                      const hasFeature = row[product];
-                      return (
-                        <td key={product} className="py-3 text-center">
-                          {hasFeature ? (
-                            <div className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900">
-                              <Shield className="h-3 w-3 text-emerald-600 dark:text-emerald-300" />
-                            </div>
-                          ) : (
-                            <span className="text-gray-400">{tFeatures('comparison.notAvailable')}</span>
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* CTA */}
-          <div className="mt-8 text-center">
-            <p className="mb-4 text-sm text-muted-foreground">{tFeatures('cta.note')}</p>
-            <Button className="gap-2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white hover:from-cyan-700 hover:to-teal-700">
-              <Sparkles className="h-4 w-4" />
-              {tFeatures('cta.button')}
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
+        {/* CTA */}
+        <div className="text-center">
+          <p className="mb-4 text-sm text-muted-foreground">{tFeatures('cta.note')}</p>
+          <Button className="gap-2 bg-gradient-to-r from-cyan-600 to-teal-600 text-white hover:from-cyan-700 hover:to-teal-700">
+            <Sparkles className="h-4 w-4" />
+            {tFeatures('cta.button')}
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </div>
       </div>
     </section>
