@@ -90,21 +90,20 @@ export function LandingHeader({ variant = 'landing' }: LandingHeaderProps) {
           {/* Logo */}
           <Link
             href={localizePath(isDashboard ? '/landing' : '/')}
-            className="flex items-center gap-2.5 group"
+            className="flex items-center gap-2 group"
             onClick={closeMobileMenu}
           >
             <div className="relative">
-              <OpenStrandLogo size="md" variant="default" />
-              <div className="absolute inset-0 bg-primary/20 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              <OpenStrandLogo size="sm" variant="default" />
+              <div className="absolute inset-0 bg-primary/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
-            <div className="flex flex-col">
-              <span className="text-lg font-bold tracking-tight text-foreground">
-                OpenStrand
-              </span>
-              <span className="text-[10px] uppercase tracking-[0.2em] text-primary/70 font-medium -mt-0.5">
-                Knowledge Fabric
-              </span>
-            </div>
+            {/* Full name on larger screens, abbreviated on small */}
+            <span className="text-lg font-bold tracking-tight text-foreground hidden sm:block">
+              OpenStrand
+            </span>
+            <span className="text-lg font-bold tracking-tight text-foreground sm:hidden">
+              OS
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -392,16 +391,30 @@ export function LandingHeader({ variant = 'landing' }: LandingHeaderProps) {
             )}
           </div>
 
-          {/* Mobile menu button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
+          {/* Mobile: Dashboard button + Menu button */}
+          <div className="flex items-center gap-2 lg:hidden">
+            {/* Dashboard CTA - always visible on mobile */}
+            <Button
+              asChild
+              size="sm"
+              className="gap-1 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-md shadow-primary/20"
+            >
+              <Link href={localizePath('/dashboard')}>
+                <BarChart3 className="h-4 w-4" />
+                <span className="hidden xs:inline">Dashboard</span>
+              </Link>
+            </Button>
+            
+            {/* Menu button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          </div>
         </nav>
       </div>
 
