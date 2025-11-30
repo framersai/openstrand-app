@@ -2896,12 +2896,215 @@ export const teamAdminAPI = {
   },
 };
 
+// ============================================================================
+// Oracle Q&A API (v2.0)
+// Semantic search and question answering with graceful fallbacks
+// ============================================================================
+
+export interface OracleQueryRequest {
+  question: string;
+  scope?: {
+    strandId?: string;
+    loomId?: string;
+    weaveId?: string;
+    tags?: string[];
+  };
+  searchOptions?: {
+    topK?: number;
+    minScore?: number;
+    method?: 'semantic' | 'lexical' | 'hybrid';
+    strandIds?: string[];
+    loomIds?: string[];
+    weaveIds?: string[];
+    tags?: string[];
+    types?: string[];
+  };
+  answerOptions?: {
+    mode?: 'extractive' | 'generative' | 'hybrid';
+    maxTokens?: number;
+    temperature?: number;
+    model?: string;
+    stream?: boolean;
+    includeCitations?: boolean;
+    includeSocratic?: boolean;
+    language?: string;
+  };
+  dryRun?: boolean;
+}
+
+export interface OracleCitation {
+  index: number;
+  strandId: string;
+  chunkId?: string;
+  title: string;
+  text: string;
+  score: number;
+  url?: string;
+}
+
+export interface OracleSocraticQuestion {
+  question: string;
+  type: 'clarifying' | 'deepening' | 'challenging' | 'connecting';
+  relatedTopic?: string;
+}
+
+export interface OracleQueryResponse {
+  queryId: string;
+  question: string;
+  answer: string;
+  confidence: number;
+  mode: 'extractive' | 'generative' | 'hybrid' | 'fallback';
+  citations: OracleCitation[];
+  relatedResults?: Array<{
+    id: string;
+    strandId: string;
+    title: string;
+    score: number;
+  }>;
+  socraticQuestions?: OracleSocraticQuestion[];
+  suggestedStrands?: Array<{
+    strandId: string;
+    title: string;
+    reason: string;
+  }>;
+  metadata: {
+    durationMs: number;
+    searchMethod: 'semantic' | 'lexical' | 'hybrid';
+    chunksSearched: number;
+    resultsRetrieved: number;
+    llmModel?: string;
+    tokens?: {
+      prompt: number;
+      completion: number;
+      total: number;
+    };
+    estimatedCost?: number;
+  };
+}
+
+export interface OracleStreamChunk {
+  type: 'text' | 'citation' | 'socratic' | 'metadata' | 'done' | 'error';
+  content?: string;
+  citation?: OracleCitation;
+  socraticQuestion?: OracleSocraticQuestion;
+  metadata?: Partial<OracleQueryResponse['metadata']>;
+  error?: string;
+  done?: boolean;
+}
+
+export const oracleAPI = {
+  /**
+   * Execute a Q&A query (non-streaming)
+   */
+  async query(request: OracleQueryRequest): Promise<OracleQueryResponse> {
+    const response = await apiFetch('/oracle/query', {
+      method: 'POST',
+      body: JSON.stringify(request),
+    });
+    return await parseData<OracleQueryResponse>(response);
+  },
+
+  /**
+   * Execute a streaming Q&A query
+   * Returns an async iterator of stream chunks
+   */
+  async *queryStream(request: OracleQueryRequest): AsyncGenerator<OracleStreamChunk, void, unknown> {
+    const response = await fetch(`${API_BASE_URL}/oracle/query/stream`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      throw new APIError(response.status, response.statusText);
+    }
+
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error('No response body');
+    }
+
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const data = line.slice(6);
+            if (data === '[DONE]') {
+              return;
+            }
+            try {
+              yield JSON.parse(data) as OracleStreamChunk;
+            } catch {
+              // Ignore parse errors
+            }
+          }
+        }
+      }
+    } finally {
+      reader.releaseLock();
+    }
+  },
+
+  /**
+   * Generate embedding for text (server-side fallback)
+   */
+  async embed(text: string): Promise<{
+    embedding: number[];
+    dimensions: number;
+    model: string;
+  }> {
+    const response = await apiFetch('/oracle/embed', {
+      method: 'POST',
+      body: JSON.stringify({ text }),
+    });
+    return await parseData(response);
+  },
+
+  /**
+   * Estimate query cost (dry run)
+   */
+  async estimateCost(request: OracleQueryRequest): Promise<{
+    estimatedCost: number;
+    breakdown: {
+      embedding: number;
+      generation: number;
+    };
+    notes: string[];
+  }> {
+    const response = await apiFetch('/oracle/estimate', {
+      method: 'POST',
+      body: JSON.stringify(request),
+    });
+    return await parseData(response);
+  },
+
+  /**
+   * Check Oracle service health
+   */
+  async health(): Promise<{ status: string; message: string }> {
+    const response = await apiFetch('/oracle/health');
+    return await parseData(response);
+  },
+};
+
 /**
  * Combined OpenStrand API
  */
 export const openstrandAPI = {
   strands: strandAPI,
   weave: weaveAPI,
+  oracle: oracleAPI,
   analytics: analyticsAPI,
   learning: learningAPI,
   ai: aiAPI,

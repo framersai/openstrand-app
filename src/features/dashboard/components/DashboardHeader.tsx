@@ -4,7 +4,6 @@ import { useLocale, useTranslations } from 'next-intl';
 import { 
   Menu, 
   Settings, 
-  Sparkles, 
   X, 
   Database, 
   User, 
@@ -18,7 +17,9 @@ import {
   ExternalLink,
   Play,
   ChevronDown,
+  Sparkles,
 } from 'lucide-react';
+import { OpenStrandLogo } from '@/components/icons/OpenStrandLogo';
 
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { CostTracker } from '@/components/cost-tracker';
@@ -175,24 +176,21 @@ export function DashboardHeader({ onOpenSettings }: DashboardHeaderProps) {
           <div className="flex w-full items-center gap-4">
             <div className="flex min-w-0 flex-1 items-center gap-4">
               <Link
-                href={localizePath('/')}
-                className="flex flex-shrink-0 items-center gap-3"
+                href={localizePath('/landing')}
+                className="flex flex-shrink-0 items-center gap-2 group"
                 onClick={closeMobileMenu}
               >
-                <span className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary via-primary/90 to-primary/70 shadow-lg shadow-primary/30">
-                  <Sparkles className="h-4 w-4 text-primary-foreground" />
-                  <span className="absolute -top-1 -right-1 rounded-full bg-background px-1 py-0.5 text-[8px] font-semibold uppercase text-primary">
-                    ai
-                  </span>
-                </span>
-                <div className="hidden sm:flex flex-col">
-                  <span className="text-lg font-semibold tracking-tight text-foreground">
-                    {tCommon('app.name')}
-                  </span>
-                  <span className="text-[10px] uppercase tracking-[0.2em] text-primary/80">
-                    {tCommon('app.tagline')}
-                  </span>
+                <div className="relative">
+                  <OpenStrandLogo size="sm" variant="default" />
+                  <div className="absolute inset-0 bg-primary/20 rounded-lg blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
+                {/* Full name on larger screens, abbreviated on small */}
+                <span className="text-lg font-bold tracking-tight text-foreground hidden sm:block">
+                  OpenStrand
+                </span>
+                <span className="text-lg font-bold tracking-tight text-foreground sm:hidden">
+                  OS
+                </span>
               </Link>
 
               <Separator orientation="vertical" className="hidden h-6 lg:block" />

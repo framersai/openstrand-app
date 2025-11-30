@@ -128,12 +128,19 @@ function EditionCard({
         ) : (
           <Users className="h-3.5 w-3.5 text-blue-600" />
         )}
-        <span className="font-semibold text-xs">
-          {isCommunity ? 'Community' : 'Teams'}
-        </span>
+        <div className="flex flex-col">
+          <span className="font-semibold text-xs">
+            {isCommunity ? 'Community' : 'OpenStrand'}
+          </span>
+          {!isCommunity && (
+            <span className="text-[9px] font-medium uppercase tracking-wider text-blue-600">
+              Teams
+            </span>
+          )}
+        </div>
         {isCommunity && (
           <Badge className="bg-emerald-500 text-white text-[9px] ml-auto px-1.5 py-0">
-            Free
+            Free Forever
           </Badge>
         )}
       </div>
@@ -228,7 +235,7 @@ export function HeroSection({ id, className }: HeroSectionProps) {
               >
                 <Link href="#pricing">
                   <Users className="h-4 w-4" />
-                  Teams & Enterprise
+                  View Teams Plans
                 </Link>
               </Button>
             </div>
