@@ -243,8 +243,9 @@ export default function DashboardPage() {
 
         <TabsContent 
           value="visualize" 
-          className="flex-1 overflow-y-auto p-3 mt-0 focus-visible:outline-none" 
+          className="flex-1 overflow-y-auto p-3 mt-0 focus-visible:outline-none data-[state=inactive]:hidden" 
           tabIndex={-1}
+          forceMount
         >
           <VisualizeTabContent
             datasetId={dataset?.id ?? null}
