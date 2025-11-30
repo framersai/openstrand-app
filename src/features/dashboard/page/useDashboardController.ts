@@ -423,6 +423,13 @@ export function useDashboardController() {
     }));
   }, []);
 
+  // Callback ref for opening mobile sidebar - set by DashboardPage
+  const openMobileSidebarRef = useRef<(() => void) | null>(null);
+  
+  const setOpenMobileSidebarCallback = useCallback((callback: () => void) => {
+    openMobileSidebarRef.current = callback;
+  }, []);
+
   const runAutoInsights = useCallback(() => {
     if (!dataset) {
       toast.error('Upload a dataset before running Auto Insights.');
@@ -433,8 +440,17 @@ export function useDashboardController() {
       toast.error('Auto Insights is still preparing. Try again in a moment.');
       return;
     }
+    
+    // Check if we already have cached insights - if so, just switch tabs and show them
+    const hasCachedInsights = autoInsightsSnapshot.recommendations.length > 0;
+    
     // Switch to Create tab to show the auto insights UI
     setActiveTab('visualize');
+    
+    // Open mobile sidebar if on mobile
+    if (openMobileSidebarRef.current) {
+      openMobileSidebarRef.current();
+    }
     
     // Scroll to and highlight the auto insights section after a short delay for tab switch
     setTimeout(() => {
@@ -449,11 +465,18 @@ export function useDashboardController() {
       }
     }, 100);
     
+    // If we already have cached insights, just focus on visualizations - don't re-run
+    if (hasCachedInsights) {
+      toast.success('Showing cached insights. Click "Analyze Data" to refresh.');
+      focusVisualizations();
+      return;
+    }
+    
     // Focus on visualizations panel
     focusVisualizations();
     // Run the auto insights analysis
     autoInsightsRunnerRef.current();
-  }, [dataset, focusVisualizations]);
+  }, [dataset, focusVisualizations, autoInsightsSnapshot.recommendations.length]);
 
   const handleRunRecommendation = useCallback(
     async (recommendation: InsightRecommendation) => {
@@ -1354,6 +1377,7 @@ export function useDashboardController() {
     setIsPaletteOpen,
     openUpload,
     runAutoInsights,
+    setOpenMobileSidebarCallback,
     openVisualize,
     dashboardOverview,
     providerUsage,

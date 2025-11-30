@@ -119,10 +119,13 @@ export default function DashboardPage() {
     setIsPaletteOpen,
     openUpload,
     runAutoInsights,
+    setOpenMobileSidebarCallback,
     openVisualize,
     dashboardOverview,
     providerUsage,
     feedbackOverview,
+    activeTab,
+    setActiveTab,
   } = useDashboardController();
 
   const { mode } = useAppMode();
@@ -132,10 +135,14 @@ export default function DashboardPage() {
   const environmentMode = capabilities?.environment?.mode ?? mode;
   const t = useTranslations('dashboard');
 
-  const [activeTab, setActiveTab] = useState<'upload' | 'visualize'>('upload');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
   const [datasetInfoExpanded, setDatasetInfoExpanded] = useState(true);
+  
+  // Register the mobile sidebar callback so controller can open it
+  useEffect(() => {
+    setOpenMobileSidebarCallback(() => setMobileSheetOpen(true));
+  }, [setOpenMobileSidebarCallback]);
 
   const shouldShowLocalOnboarding = environmentMode === 'offline';
   const shouldShowTeamOnboarding =
