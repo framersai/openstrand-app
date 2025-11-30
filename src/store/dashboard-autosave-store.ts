@@ -10,11 +10,19 @@ import { persist } from 'zustand/middleware';
 // Types
 // ============================================================================
 
-export interface DashboardSession {
+export interface DatasetSnapshot {
   id: string;
+  filename: string;
+  rowCount: number;
+  columns: string[];
+}
+
+export interface SavedSession {
+  id: string;
+  name: string;
   timestamp: number;
-  datasetId?: string;
-  datasetName?: string;
+  dataset: DatasetSnapshot | null;
+  visualizationIds: string[];
   visualizationCount: number;
 }
 
@@ -26,26 +34,35 @@ export interface AutoSaveSettings {
   maxSessionHistory: number;
 }
 
+export interface SaveSessionInput {
+  name: string;
+  dataset: DatasetSnapshot | null;
+  visualizationIds?: string[];
+  visualizationCount: number;
+}
+
 export interface DashboardAutoSaveState {
   // Current session data
-  currentDatasetId: string | null;
-  currentDatasetName: string | null;
-  visualizationIds: string[];
-  lastSavedAt: number | null;
-  
+  lastSession: SavedSession | null;
+  lastAutoSavedAt: number | null;
+
   // Settings
   settings: AutoSaveSettings;
-  
+
   // Session history
-  sessionHistory: DashboardSession[];
-  
+  sessionHistory: SavedSession[];
+
+  // Loading state
+  isRestoring: boolean;
+
   // Actions
-  saveSession: (datasetId: string | null, datasetName: string | null, visualizationIds: string[]) => void;
-  restoreSession: () => { datasetId: string | null; visualizationIds: string[] } | null;
-  clearSession: () => void;
-  updateSettings: (settings: Partial<AutoSaveSettings>) => void;
-  addToHistory: (session: DashboardSession) => void;
+  saveSession: (input: SaveSessionInput) => void;
+  restoreSession: (sessionId: string) => SavedSession | null;
+  deleteSession: (sessionId: string) => void;
   clearHistory: () => void;
+  updateSettings: (settings: Partial<AutoSaveSettings>) => void;
+  setIsRestoring: (isRestoring: boolean) => void;
+  markAutoSaved: () => void;
 }
 
 // ============================================================================
@@ -68,55 +85,59 @@ export const useDashboardAutoSaveStore = create<DashboardAutoSaveState>()(
   persist(
     (set, get) => ({
       // Initial state
-      currentDatasetId: null,
-      currentDatasetName: null,
-      visualizationIds: [],
-      lastSavedAt: null,
+      lastSession: null,
+      lastAutoSavedAt: null,
       settings: DEFAULT_SETTINGS,
       sessionHistory: [],
+      isRestoring: false,
 
       // Save current session
-      saveSession: (datasetId, datasetName, visualizationIds) => {
+      saveSession: (input: SaveSessionInput) => {
         const now = Date.now();
-        set({
-          currentDatasetId: datasetId,
-          currentDatasetName: datasetName,
-          visualizationIds,
-          lastSavedAt: now,
-        });
-
-        // Add to history if we have data
-        if (datasetId || visualizationIds.length > 0) {
-          const session: DashboardSession = {
-            id: `session-${now}`,
-            timestamp: now,
-            datasetId: datasetId || undefined,
-            datasetName: datasetName || undefined,
-            visualizationCount: visualizationIds.length,
-          };
-          get().addToHistory(session);
-        }
-      },
-
-      // Restore last session
-      restoreSession: () => {
-        const state = get();
-        if (!state.currentDatasetId && state.visualizationIds.length === 0) {
-          return null;
-        }
-        return {
-          datasetId: state.currentDatasetId,
-          visualizationIds: state.visualizationIds,
+        const session: SavedSession = {
+          id: `session-${now}`,
+          name: input.name,
+          timestamp: now,
+          dataset: input.dataset,
+          visualizationIds: input.visualizationIds ?? [],
+          visualizationCount: input.visualizationCount,
         };
+
+        set((state) => {
+          // Add to history, keeping max items
+          const newHistory = [session, ...state.sessionHistory].slice(
+            0,
+            state.settings.maxSessionHistory
+          );
+
+          return {
+            lastSession: session,
+            sessionHistory: newHistory,
+          };
+        });
       },
 
-      // Clear current session
-      clearSession: () => {
+      // Restore a session by ID
+      restoreSession: (sessionId: string) => {
+        const state = get();
+        const session = state.sessionHistory.find((s) => s.id === sessionId);
+        return session ?? null;
+      },
+
+      // Delete a session from history
+      deleteSession: (sessionId: string) => {
+        set((state) => ({
+          sessionHistory: state.sessionHistory.filter((s) => s.id !== sessionId),
+          lastSession:
+            state.lastSession?.id === sessionId ? null : state.lastSession,
+        }));
+      },
+
+      // Clear all session history
+      clearHistory: () => {
         set({
-          currentDatasetId: null,
-          currentDatasetName: null,
-          visualizationIds: [],
-          lastSavedAt: null,
+          sessionHistory: [],
+          lastSession: null,
         });
       },
 
@@ -127,29 +148,21 @@ export const useDashboardAutoSaveStore = create<DashboardAutoSaveState>()(
         }));
       },
 
-      // Add session to history
-      addToHistory: (session) => {
-        set((state) => {
-          const history = [session, ...state.sessionHistory];
-          // Keep only the max number of sessions
-          return {
-            sessionHistory: history.slice(0, state.settings.maxSessionHistory),
-          };
-        });
+      // Set restoring state
+      setIsRestoring: (isRestoring: boolean) => {
+        set({ isRestoring });
       },
 
-      // Clear session history
-      clearHistory: () => {
-        set({ sessionHistory: [] });
+      // Mark auto-saved timestamp
+      markAutoSaved: () => {
+        set({ lastAutoSavedAt: Date.now() });
       },
     }),
     {
       name: 'openstrand-dashboard-autosave',
       partialize: (state) => ({
-        currentDatasetId: state.currentDatasetId,
-        currentDatasetName: state.currentDatasetName,
-        visualizationIds: state.visualizationIds,
-        lastSavedAt: state.lastSavedAt,
+        lastSession: state.lastSession,
+        lastAutoSavedAt: state.lastAutoSavedAt,
         settings: state.settings,
         sessionHistory: state.sessionHistory,
       }),
@@ -161,9 +174,15 @@ export const useDashboardAutoSaveStore = create<DashboardAutoSaveState>()(
 // Selectors
 // ============================================================================
 
-export const selectAutoSaveSettings = (state: DashboardAutoSaveState) => state.settings;
-export const selectSessionHistory = (state: DashboardAutoSaveState) => state.sessionHistory;
-export const selectLastSavedAt = (state: DashboardAutoSaveState) => state.lastSavedAt;
-export const selectHasSavedSession = (state: DashboardAutoSaveState) => 
-  state.currentDatasetId !== null || state.visualizationIds.length > 0;
-
+export const selectAutoSaveSettings = (state: DashboardAutoSaveState) =>
+  state.settings;
+export const selectSessionHistory = (state: DashboardAutoSaveState) =>
+  state.sessionHistory;
+export const selectLastAutoSavedAt = (state: DashboardAutoSaveState) =>
+  state.lastAutoSavedAt;
+export const selectLastSession = (state: DashboardAutoSaveState) =>
+  state.lastSession;
+export const selectIsRestoring = (state: DashboardAutoSaveState) =>
+  state.isRestoring;
+export const selectHasSavedSession = (state: DashboardAutoSaveState) =>
+  state.lastSession !== null;
