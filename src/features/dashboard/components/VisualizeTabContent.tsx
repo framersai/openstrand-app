@@ -685,9 +685,10 @@ export function VisualizeTabContent({
           </p>
         )}
       </section>
+      )}
 
-      {/* Status & Recommendations */}
-      {(autoInsightsLoading || autoInsightsError || recommendations.length > 0) && (
+      {/* Status & Recommendations - Always show when there are insights */}
+      {!hideAutoInsights && (autoInsightsLoading || autoInsightsError || recommendations.length > 0) && (
         <section className="space-y-3 pt-2">
           {/* Status Bar */}
           {(autoInsightsLoading || autoInsightsError) && (
