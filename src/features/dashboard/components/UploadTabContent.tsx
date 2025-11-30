@@ -27,6 +27,7 @@ import { formatBytes, formatDate } from '@/lib/formatters';
 import type { PlanTier } from '@/lib/plan-info';
 import { PlanSummaryPill } from './PlanSummaryPill';
 import { DatasetSummaryPanel } from './DatasetSummaryPanel';
+import { DataSourceTabs } from './DataSourceTabs';
 
 interface UploadTabContentProps {
   metadata?: DatasetMetadata | null;
@@ -292,7 +293,7 @@ export function UploadTabContent({
           </Card>
         )}
 
-        {/* Sample Datasets Section */}
+        {/* Data Sources - Datasets, Codex, Community */}
         <Card className="overflow-hidden">
           <CardHeader
             className="cursor-pointer hover:bg-muted/50 transition-colors py-3"
@@ -302,19 +303,16 @@ export function UploadTabContent({
               <div className="flex items-center gap-2">
                 <Database className="h-4 w-4 text-primary" />
                 <CardTitle className="text-sm font-medium">
-                  {tDatasets('samples.title')}
+                  Browse Data Sources
                 </CardTitle>
-                <Badge variant="outline" className="text-xs">
-                  {samples.length}
-                </Badge>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Info className="h-3 w-3 text-muted-foreground" />
                   </TooltipTrigger>
                   <TooltipContent side="right" className="max-w-xs">
                     <p className="text-xs">
-                      Pre-loaded sample datasets to help you get started quickly.
-                      Click to load any sample dataset.
+                      Browse datasets for visualizations, Codex documentation, 
+                      or community-uploaded content.
                     </p>
                   </TooltipContent>
                 </Tooltip>
@@ -328,73 +326,17 @@ export function UploadTabContent({
           </CardHeader>
 
           {expandedSections.samples && (
-            <CardContent className="pt-0 pb-4 space-y-2">
-              {isLoadingSamples ? (
-                <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Loading samples...
-                </div>
-              ) : samples.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  No sample datasets available
-                </p>
-              ) : (
-                <div className="space-y-2">
-                  {samples.map((sample) => {
-                    const isActive = activeDatasetId === sample.id;
-                    return (
-                      <div
-                        key={sample.id}
-                        className={`
-                          flex items-center justify-between rounded-lg border p-2
-                          ${isActive ? 'border-primary bg-primary/5' : 'border-border hover:bg-muted/50'}
-                          transition-colors
-                        `}
-                      >
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium truncate">
-                              {sample.filename}
-                            </span>
-                            {sample.isDefault && (
-                              <Badge variant="secondary" className="text-xs px-1.5 py-0">
-                                Default
-                              </Badge>
-                            )}
-                            {isActive && (
-                              <Badge variant="default" className="text-xs px-1.5 py-0">
-                                Active
-                              </Badge>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground">
-                            {formatBytes(sample.sizeBytes)} · {formatDate(sample.lastModified)}
-                          </p>
-                        </div>
-
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant={isActive ? 'secondary' : 'ghost'}
-                              size="sm"
-                              className="h-7 px-2"
-                              onClick={() => onLoadSample(sample.filename)}
-                              disabled={isProcessing || isActive}
-                            >
-                              <Download className="h-3 w-3" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="text-xs">
-                              {isActive ? 'Currently active' : 'Load this dataset'}
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+            <CardContent className="pt-0 pb-4">
+              <DataSourceTabs
+                samples={samples}
+                isLoadingSamples={isLoadingSamples}
+                activeDatasetId={activeDatasetId}
+                onLoadSample={onLoadSample}
+                isProcessing={isProcessing}
+                codexRepo={process.env.NEXT_PUBLIC_CODEX_REPO || 'framersai/codex'}
+                codexBranch={process.env.NEXT_PUBLIC_CODEX_BRANCH || 'master'}
+                codexPath={process.env.NEXT_PUBLIC_CODEX_PATH || 'weaves'}
+              />
             </CardContent>
           )}
         </Card>
