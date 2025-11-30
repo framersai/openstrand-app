@@ -54,6 +54,10 @@ const SpiralCurriculumSection = dynamic(
   () => import('@/components/landing/spiral-curriculum-section').then((m) => m.SpiralCurriculumSection),
   { ssr: false, loading: () => <SpiralCurriculumSkeleton /> },
 );
+const CompetitorComparison = dynamic(
+  () => import('@/components/landing/competitor-comparison').then((m) => m.CompetitorComparison),
+  { ssr: false },
+);
 
 type LandingPageParams = {
   params: {
@@ -141,6 +145,9 @@ export default function LandingPage({ params }: LandingPageParams) {
 
         <LazyOnViewport rootMargin="300px">
           <VisualizationShowcase id="use-cases" />
+        </LazyOnViewport>
+        <LazyOnViewport rootMargin="300px">
+          <CompetitorComparison id="comparison" />
         </LazyOnViewport>
         <LazyOnViewport rootMargin="300px">
           <SpiralCurriculumSection id="spiral-learning" />
