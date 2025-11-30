@@ -119,7 +119,7 @@ export default async function LocaleLayout({
             <SupabaseProvider>
               <PluginRuntimeProvider>
                 <TooltipProvider delayDuration={200}>
-                  <div className="flex min-h-screen flex-col">
+                  <div className="flex min-h-screen min-h-[100dvh] flex-col">
                     <main className="flex-1">{children}</main>
                     <SiteFooter />
                   </div>

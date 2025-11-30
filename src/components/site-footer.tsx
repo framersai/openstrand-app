@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   Github,
   Linkedin,
@@ -28,6 +29,15 @@ import { useAppMode } from '@/hooks/useAppMode';
 import { OpenStrandLogo } from '@/components/icons/OpenStrandLogo';
 import { GitHubStats } from '@/components/github/GitHubStats';
 import { Badge } from '@/components/ui/badge';
+
+// Pages that should NOT show the footer (full-screen app pages)
+const FULL_SCREEN_PAGES = [
+  '/dashboard',
+  '/pkms',
+  '/weave',
+  '/composer',
+  '/flashcards/study',
+];
 
 type FooterSectionKey = 'product' | 'company' | 'resources' | 'support' | 'legal';
 
@@ -131,6 +141,16 @@ export function SiteFooter() {
   const tFooter = useTranslations('footer');
   const localizePath = useLocalizedPath();
   const { mode } = useAppMode();
+  const pathname = usePathname();
+
+  // Don't render footer on full-screen app pages
+  const isFullScreenPage = FULL_SCREEN_PAGES.some(page => 
+    pathname?.includes(page)
+  );
+
+  if (isFullScreenPage) {
+    return null;
+  }
 
   return (
     <footer className="border-t border-border/40 bg-gradient-to-b from-background to-background/95">
