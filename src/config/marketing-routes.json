@@ -1,103 +1,197 @@
 [
   {
     "path": "/",
-    "title": "OpenStrand - AI-Enhanced Personal Knowledge Management System",
-    "description": "Transform your data into interactive visual stories with OpenStrand. Offline-ready analytics blend with optional generative AI overlays.",
+    "title": "OpenStrand - Free Open Source Personal Knowledge Management System",
+    "description": "OpenStrand is a free, open source PKMS that organizes your markdown notes into interconnected knowledge fabrics. Works 100% offline, forever free, with AI-powered flashcards and quizzes.",
     "keywords": [
       "PKMS",
-      "knowledge management",
-      "data visualization",
-      "AI visualization",
-      "offline analytics",
-      "OpenStrand"
+      "personal knowledge management",
+      "knowledge management system",
+      "markdown notes",
+      "open source",
+      "offline first",
+      "note taking app",
+      "obsidian alternative",
+      "notion alternative",
+      "knowledge graph",
+      "zettelkasten",
+      "second brain"
     ]
   },
   {
     "path": "/landing",
-    "title": "OpenStrand Landing - Guided Visual Storytelling Platform",
-    "description": "Explore the OpenStrand marketing hub: offline-first analytics, guided storytelling, optional AI overlays, and a built-in admin console for Stripe & LemonSqueezy telemetry.",
+    "title": "OpenStrand - Open Source Knowledge Fabric for Markdown Notes",
+    "description": "Transform your markdown notes into an interconnected knowledge fabric. OpenStrand is a free, open source PKMS that works 100% offline with AI-powered learning tools. Compare to Obsidian, Notion, Roam Research.",
     "keywords": [
-      "OpenStrand landing",
-      "AI storytelling platform",
-      "offline analytics",
+      "personal knowledge management",
+      "markdown editor",
+      "knowledge graph",
+      "open source notes",
+      "offline note taking",
+      "obsidian alternative",
+      "notion alternative",
+      "roam research alternative",
+      "logseq alternative",
+      "zettelkasten software",
+      "second brain app",
+      "PKM tool",
+      "flashcard generator",
+      "spaced repetition",
+      "AI note taking"
+    ]
+  },
+  {
+    "path": "/dashboard",
+    "title": "Dashboard - OpenStrand AI Data Visualization",
+    "description": "Create beautiful data visualizations with natural language. Upload CSV, JSON, or TSV files and let AI generate charts, graphs, and insights automatically.",
+    "keywords": [
       "data visualization",
-      "knowledge management"
+      "AI charts",
+      "natural language visualization",
+      "CSV visualization",
+      "data analytics",
+      "chart generator"
     ]
   },
   {
     "path": "/pricing",
-    "title": "Pricing - OpenStrand",
-    "description": "Compare OpenStrand plans. Start with offline core features and scale to AI-powered storytelling with Pro and Enterprise tiers.",
+    "title": "Pricing - OpenStrand Community & Teams Editions",
+    "description": "OpenStrand Community Edition is free forever with full features. Teams Edition adds collaboration, sharing, and enterprise features. Compare plans and choose what's right for you.",
     "keywords": [
       "OpenStrand pricing",
-      "AI visualization pricing",
-      "knowledge management plans"
+      "free knowledge management",
+      "teams collaboration",
+      "enterprise PKMS"
+    ]
+  },
+  {
+    "path": "/pkms",
+    "title": "Knowledge Fabric Browser - OpenStrand PKMS",
+    "description": "Browse and organize your knowledge fabric with OpenStrand's hierarchical browser. Navigate Weaves, Looms, and Strands in your personal knowledge management system.",
+    "keywords": [
+      "knowledge browser",
+      "PKMS navigation",
+      "folder hierarchy",
+      "markdown organization"
+    ]
+  },
+  {
+    "path": "/weave",
+    "title": "Knowledge Graph - OpenStrand",
+    "description": "Visualize connections between your notes with OpenStrand's interactive knowledge graph. See how ideas link together and discover new relationships.",
+    "keywords": [
+      "knowledge graph",
+      "note connections",
+      "bidirectional links",
+      "graph visualization"
+    ]
+  },
+  {
+    "path": "/flashcards",
+    "title": "AI Flashcards & Spaced Repetition - OpenStrand",
+    "description": "Generate flashcards automatically from your notes using AI. Study with spaced repetition for optimal long-term retention. Free in Community Edition with your own API keys.",
+    "keywords": [
+      "AI flashcards",
+      "spaced repetition",
+      "anki alternative",
+      "study cards",
+      "learning tools"
     ]
   },
   {
     "path": "/tutorials",
-    "title": "OpenStrand Tutorial Suite",
-    "description": "Browse a multi-guide learning hub for analog workflows, deterministic analytics, AI augmentation, metadata governance, and DX/UX operations.",
+    "title": "OpenStrand Tutorials & Documentation",
+    "description": "Learn how to use OpenStrand effectively with our comprehensive tutorials. From pen-and-paper modeling to AI augmentation workflows.",
     "keywords": [
-      "openstrand tutorials",
-      "knowledge management guides",
-      "ai workflows",
-      "metadata playbook"
+      "OpenStrand tutorials",
+      "PKMS guides",
+      "knowledge management documentation",
+      "markdown workflow"
     ]
   },
   {
     "path": "/tutorials/pen-and-paper-strand",
-    "title": "Tutorial: Start a Strand with Pen and Paper",
-    "description": "Learn the essentials of creating a collaborative zettelkasten strand from pen-and-paper sketches to AI-enhanced workflows and team publishing.",
+    "title": "Tutorial: Pen & Paper Knowledge Modeling - OpenStrand",
+    "description": "Learn OpenStrand's statistical and deterministic approach to knowledge organization. Model your Fabric, Weaves, Looms, and Strands on paper before digitizing.",
     "keywords": [
-      "zettelkasten tutorial",
+      "knowledge modeling",
       "pen and paper notes",
-      "collaborative knowledge management",
-      "OpenStrand tutorial"
+      "zettelkasten method",
+      "analog to digital workflow"
     ]
   },
   {
     "path": "/tutorials/offline-analytics",
-    "title": "Tutorial: Modeling Strands Without LLMs",
-    "description": "Follow a deterministic enrichment pipeline—from statistical profiling to extractive summarisation—tailored for regulated or offline deployments.",
+    "title": "Tutorial: Offline-First Analytics Without LLMs - OpenStrand",
+    "description": "Use OpenStrand's deterministic NLP pipeline for auto-tagging and categorization without API keys. Perfect for air-gapped or privacy-conscious deployments.",
     "keywords": [
-      "deterministic summarisation",
       "offline analytics",
-      "compliance data",
-      "knowledge management"
+      "deterministic NLP",
+      "no API keys",
+      "privacy-first"
     ]
   },
   {
     "path": "/tutorials/llm-augmentations",
-    "title": "Tutorial: LLM-Augmented Strand Workflows",
-    "description": "Design prompt chains, queue jobs, and human review flows so AI-assisted strands remain auditable and cost efficient.",
+    "title": "Tutorial: AI-Augmented Workflows - OpenStrand",
+    "description": "Enhance your knowledge management with optional AI features. Learn prompt engineering, cost optimization, and human-in-the-loop review workflows.",
     "keywords": [
-      "prompt chaining",
-      "ai knowledge management",
-      "openstrand ai",
-      "llm workflow"
+      "AI knowledge management",
+      "LLM workflows",
+      "prompt engineering",
+      "AI augmentation"
     ]
   },
   {
     "path": "/tutorials/metadata-playbook",
-    "title": "Tutorial: Metadata Architecture Playbook",
-    "description": "Standardise taxonomy, authorship, and retention policies for strands and dashboards with reusable templates and governance checklists.",
+    "title": "Tutorial: Metadata Architecture - OpenStrand",
+    "description": "Design robust metadata schemas for your knowledge fabric. Learn taxonomy design, tagging strategies, and governance best practices.",
     "keywords": [
-      "metadata governance",
+      "metadata architecture",
       "knowledge taxonomy",
-      "retention policies",
-      "openstrand metadata"
+      "tagging system",
+      "information architecture"
     ]
   },
   {
     "path": "/tutorials/dx-ux-blueprint",
-    "title": "Tutorial: Developer & Experience Blueprint",
-    "description": "Coordinate DX and UX workflows when extending OpenStrand components, tutorials, composer metadata, and dashboards.",
+    "title": "Tutorial: Developer Experience Blueprint - OpenStrand",
+    "description": "Extend and customize OpenStrand with our DX/UX guidelines. Build plugins, themes, and integrations following best practices.",
     "keywords": [
       "developer experience",
-      "ux blueprint",
-      "design systems",
-      "openstrand dx"
+      "OpenStrand plugins",
+      "customization guide"
+    ]
+  },
+  {
+    "path": "/teams",
+    "title": "Teams Edition - OpenStrand Collaboration",
+    "description": "OpenStrand Teams Edition enables real-time collaboration, sharing, comments, and enterprise features. Perfect for research teams, companies, and organizations.",
+    "keywords": [
+      "team collaboration",
+      "shared knowledge base",
+      "enterprise PKMS",
+      "team wiki"
+    ]
+  },
+  {
+    "path": "/faq",
+    "title": "FAQ - OpenStrand",
+    "description": "Frequently asked questions about OpenStrand. Learn about features, pricing, data privacy, offline capabilities, and more.",
+    "keywords": [
+      "OpenStrand FAQ",
+      "knowledge management questions",
+      "PKMS help"
+    ]
+  },
+  {
+    "path": "/about",
+    "title": "About OpenStrand - Our Mission",
+    "description": "OpenStrand is built by Frame.dev to democratize knowledge management. Learn about our mission, team, and commitment to open source.",
+    "keywords": [
+      "about OpenStrand",
+      "Frame.dev",
+      "open source mission"
     ]
   }
 ]

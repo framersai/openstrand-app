@@ -58,6 +58,10 @@ const CompetitorComparison = dynamic(
   () => import('@/components/landing/competitor-comparison').then((m) => m.CompetitorComparison),
   { ssr: false },
 );
+const UseCasesSection = dynamic(
+  () => import('@/components/landing/use-cases-section').then((m) => m.UseCasesSection),
+  { ssr: false },
+);
 
 type LandingPageParams = {
   params: {
@@ -144,7 +148,10 @@ export default function LandingPage({ params }: LandingPageParams) {
         </section>
 
         <LazyOnViewport rootMargin="300px">
-          <VisualizationShowcase id="use-cases" />
+          <UseCasesSection id="use-cases" />
+        </LazyOnViewport>
+        <LazyOnViewport rootMargin="300px">
+          <VisualizationShowcase id="visualizations" />
         </LazyOnViewport>
         <LazyOnViewport rootMargin="300px">
           <CompetitorComparison id="comparison" />
