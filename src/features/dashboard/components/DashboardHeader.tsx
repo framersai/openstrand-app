@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
+import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
 import { 
   Menu, 
   Settings, 
@@ -17,6 +18,7 @@ import {
   MessageCircle,
   ExternalLink,
   Play,
+  ChevronDown,
 } from 'lucide-react';
 
 import { LanguageSwitcher } from '@/components/language-switcher';
@@ -32,14 +34,7 @@ import { useTourController } from '@/components/guided-tour/GuidedTour';
 import { GuestCreditIndicator } from '@/components/guest-credit-indicator';
 import { useSupabase } from '@/features/auth';
 import type { Locale } from '@/i18n/config';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
-} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 interface DashboardHeaderProps {
   onOpenSettings: () => void;
@@ -60,6 +55,29 @@ const NAV_ITEMS: NavItem[] = [
   { key: 'support', href: '/contact', icon: LifeBuoy },
 ];
 
+// Navigation Menu Item component for consistent styling
+function NavMenuItem({ 
+  children, 
+  className,
+  onClick,
+}: { 
+  children: React.ReactNode; 
+  className?: string;
+  onClick?: () => void;
+}) {
+  return (
+    <div 
+      className={cn(
+        'flex gap-2 py-2 px-2 rounded-lg hover:bg-accent/50 transition-colors cursor-pointer items-center',
+        className
+      )}
+      onClick={onClick}
+    >
+      {children}
+    </div>
+  );
+}
+
 export function DashboardHeader({ onOpenSettings }: DashboardHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const tCommon = useTranslations('common');
@@ -71,6 +89,11 @@ export function DashboardHeader({ onOpenSettings }: DashboardHeaderProps) {
   const { startTour, TourComponent } = useTourController();
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
+
+  const handleKeyboardShortcuts = () => {
+    const event = new KeyboardEvent('keydown', { key: 'k', metaKey: true });
+    window.dispatchEvent(event);
+  };
 
   return (
     <TooltipProvider>
@@ -146,56 +169,74 @@ export function DashboardHeader({ onOpenSettings }: DashboardHeaderProps) {
               <ThemeSwitcher tooltip="Change theme & appearance" />
               <LanguageSwitcher currentLocale={locale} variant="compact" showName={false} />
               
-              {/* Help Menu */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 px-2 gap-1.5">
-                    <HelpCircle className="h-4 w-4" />
-                    <span className="hidden xl:inline text-xs">Help</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                    Get Started
-                  </DropdownMenuLabel>
-                  <DropdownMenuItem onClick={startTour} className="gap-2 cursor-pointer">
-                    <Play className="h-4 w-4 text-primary" />
-                    <span>Take a Tour</span>
-                    <Badge variant="secondary" className="ml-auto text-[10px]">New</Badge>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="gap-2 cursor-pointer">
-                    <Link href={localizePath('/tutorials')}>
-                      <BookOpen className="h-4 w-4" />
-                      <span>Tutorials</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="gap-2 cursor-pointer" onClick={() => {
-                    // Trigger command palette with keyboard shortcut info
-                    const event = new KeyboardEvent('keydown', { key: 'k', metaKey: true });
-                    window.dispatchEvent(event);
-                  }}>
-                    <Keyboard className="h-4 w-4" />
-                    <span>Keyboard Shortcuts</span>
-                    <kbd className="ml-auto text-[10px] bg-muted px-1 py-0.5 rounded">⌘K</kbd>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                    Resources
-                  </DropdownMenuLabel>
-                  <DropdownMenuItem asChild className="gap-2 cursor-pointer">
-                    <a href="https://docs.openstrand.ai" target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-4 w-4" />
-                      <span>Documentation</span>
-                    </a>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="gap-2 cursor-pointer">
-                    <Link href={localizePath('/contact')}>
-                      <MessageCircle className="h-4 w-4" />
-                      <span>Contact Support</span>
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {/* Help Menu - Using NavigationMenu for hover behavior */}
+              <NavigationMenuPrimitive.Root className="relative z-10">
+                <NavigationMenuPrimitive.List className="flex items-center">
+                  <NavigationMenuPrimitive.Item>
+                    <NavigationMenuPrimitive.Trigger className="group inline-flex items-center gap-1.5 h-8 px-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-accent/50 data-[state=open]:text-foreground data-[state=open]:bg-accent/50">
+                      <HelpCircle className="h-4 w-4" />
+                      <span className="hidden xl:inline text-xs">Help</span>
+                      <ChevronDown className="h-3 w-3 opacity-60 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                    </NavigationMenuPrimitive.Trigger>
+                    <NavigationMenuPrimitive.Content className="absolute right-0 top-0 w-[240px] data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out">
+                      <div className="p-2 space-y-1">
+                        <p className="text-xs text-muted-foreground font-medium px-2 py-1">Get Started</p>
+                        <NavigationMenuPrimitive.Link asChild>
+                          <div onClick={startTour}>
+                            <NavMenuItem>
+                              <Play className="h-4 w-4 text-primary" />
+                              <span className="text-sm flex-1">Take a Tour</span>
+                              <Badge variant="secondary" className="text-[10px]">New</Badge>
+                            </NavMenuItem>
+                          </div>
+                        </NavigationMenuPrimitive.Link>
+                        <NavigationMenuPrimitive.Link asChild>
+                          <Link href={localizePath('/tutorials')}>
+                            <NavMenuItem>
+                              <BookOpen className="h-4 w-4" />
+                              <span className="text-sm">Tutorials</span>
+                            </NavMenuItem>
+                          </Link>
+                        </NavigationMenuPrimitive.Link>
+                        <NavigationMenuPrimitive.Link asChild>
+                          <div onClick={handleKeyboardShortcuts}>
+                            <NavMenuItem>
+                              <Keyboard className="h-4 w-4" />
+                              <span className="text-sm flex-1">Keyboard Shortcuts</span>
+                              <kbd className="text-[10px] bg-muted px-1 py-0.5 rounded">⌘K</kbd>
+                            </NavMenuItem>
+                          </div>
+                        </NavigationMenuPrimitive.Link>
+                        <div className="border-t border-border/50 my-2" />
+                        <p className="text-xs text-muted-foreground font-medium px-2 py-1">Resources</p>
+                        <NavigationMenuPrimitive.Link asChild>
+                          <a href="https://docs.openstrand.ai" target="_blank" rel="noopener noreferrer">
+                            <NavMenuItem>
+                              <ExternalLink className="h-4 w-4" />
+                              <span className="text-sm">Documentation</span>
+                            </NavMenuItem>
+                          </a>
+                        </NavigationMenuPrimitive.Link>
+                        <NavigationMenuPrimitive.Link asChild>
+                          <Link href={localizePath('/contact')}>
+                            <NavMenuItem>
+                              <MessageCircle className="h-4 w-4" />
+                              <span className="text-sm">Contact Support</span>
+                            </NavMenuItem>
+                          </Link>
+                        </NavigationMenuPrimitive.Link>
+                      </div>
+                    </NavigationMenuPrimitive.Content>
+                  </NavigationMenuPrimitive.Item>
+                </NavigationMenuPrimitive.List>
+
+                {/* Viewport for dropdown content */}
+                <div className="absolute right-0 top-full flex justify-end perspective-[2000px]">
+                  <NavigationMenuPrimitive.Viewport 
+                    className="relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-xl border border-border/50 bg-popover/95 backdrop-blur-xl text-popover-foreground shadow-xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 origin-top-right md:w-[var(--radix-navigation-menu-viewport-width)]"
+                  />
+                </div>
+              </NavigationMenuPrimitive.Root>
 
               {/* Profile link */}
               <Link href={localizePath('/profile')}>
@@ -225,7 +266,7 @@ export function DashboardHeader({ onOpenSettings }: DashboardHeaderProps) {
                 </Button>
               )}
 
-              <Button asChild size="sm" variant="default">
+              <Button asChild size="sm" variant="default" className="text-white">
                 <Link href={localizePath('/billing')}>
                   <Sparkles className="mr-1 h-4 w-4" />
                   {tBilling('plans.free.button')}
@@ -286,7 +327,7 @@ export function DashboardHeader({ onOpenSettings }: DashboardHeaderProps) {
               </div>
               <div className="flex items-center justify-between gap-2">
                 <AuthButton />
-                <Button asChild size="sm" variant="default" className="flex-1">
+                <Button asChild size="sm" variant="default" className="flex-1 text-white">
                   <Link href={localizePath('/billing')}>
                     <Sparkles className="mr-1 h-4 w-4" />
                     {tBilling('plans.free.button')}
@@ -334,5 +375,3 @@ export function DashboardHeader({ onOpenSettings }: DashboardHeaderProps) {
     </TooltipProvider>
   );
 }
-
-
