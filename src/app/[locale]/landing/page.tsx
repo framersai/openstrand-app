@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 
 import dynamic from 'next/dynamic';
-import { HeroSection } from '@/components/landing/hero-section-new';
 import { AnimatedBackground } from '@/components/landing/animated-backgrounds';
-import { UnifiedHeader } from '@/components/navigation/UnifiedHeader';
+import { LandingHeader } from '@/components/landing/LandingHeader';
 import { landingStructuredData } from '@/components/seo/structured-data';
 import { getRouteMetadata, siteMetadata } from '@/config/seo';
 import type { Locale } from '@/i18n/config';
@@ -16,7 +15,14 @@ import {
   TestimonialsSkeleton,
   CTASkeleton,
   SpiralCurriculumSkeleton,
+  HeroSkeleton,
 } from '@/components/landing/landing-skeletons';
+
+// Hero section - loaded immediately but with skeleton fallback
+const HeroSection = dynamic(
+  () => import('@/components/landing/hero-section-new').then((m) => m.HeroSection),
+  { loading: () => <HeroSkeleton /> },
+);
 
 // Defer heavy client components until they are near viewport to reduce TBT
 // Each component shows a skeleton loader while loading for better perceived performance
@@ -112,7 +118,7 @@ export default function LandingPage({ params }: LandingPageParams) {
       {/* Global animated background */}
       <AnimatedBackground variant="particles" intensity="light" />
 
-      <UnifiedHeader />
+      <LandingHeader />
       <main className="flex-1 relative z-10">
         <section className="relative">
           <AnimatedBackground variant="ocean" intensity="medium" />

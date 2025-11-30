@@ -8,6 +8,105 @@ interface SectionSkeletonProps {
 }
 
 /**
+ * Skeleton for the Hero section
+ */
+export function HeroSkeleton({ className }: SectionSkeletonProps) {
+  return (
+    <section className={cn('landing-section hero-section relative overflow-hidden py-12 lg:py-16', className)}>
+      <div className="container relative z-10 mx-auto grid gap-12 px-4 lg:grid-cols-2 lg:items-center">
+        {/* Left content */}
+        <div className="space-y-6">
+          {/* Badges */}
+          <div className="flex flex-wrap items-center gap-3">
+            <Skeleton className="h-8 w-40 rounded-full" />
+            <Skeleton className="h-6 w-24 rounded-full" />
+          </div>
+
+          {/* Headline */}
+          <div className="space-y-3">
+            <Skeleton className="h-12 w-full max-w-lg" />
+            <Skeleton className="h-12 w-4/5 max-w-md" />
+          </div>
+
+          {/* Subheadline */}
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-full max-w-xl" />
+            <Skeleton className="h-5 w-3/4 max-w-lg" />
+          </div>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-wrap gap-3">
+            <Skeleton className="h-12 w-44 rounded-lg" />
+            <Skeleton className="h-12 w-48 rounded-lg" />
+          </div>
+
+          {/* Feature highlights */}
+          <div className="space-y-3 pt-4">
+            <Skeleton className="h-4 w-32" />
+            <div className="grid gap-3 sm:grid-cols-2">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex items-start gap-3 rounded-xl border border-border/30 p-3">
+                  <Skeleton className="h-10 w-10 rounded-lg flex-shrink-0" />
+                  <div className="flex-1 space-y-1">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-3 w-full" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right content - Demo card */}
+        <div className="relative lg:pl-8">
+          <div className="rounded-3xl border border-border/50 bg-card/80 overflow-hidden">
+            {/* Card header */}
+            <div className="border-b border-border/30 px-6 py-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-10 w-10 rounded-xl" />
+                  <div className="space-y-1">
+                    <Skeleton className="h-3 w-24" />
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                </div>
+                <Skeleton className="h-6 w-20 rounded-full" />
+              </div>
+            </div>
+
+            {/* Card content */}
+            <div className="p-6 space-y-6">
+              {/* Data flow */}
+              <div>
+                <Skeleton className="h-3 w-32 mb-3" />
+                <div className="flex items-center justify-between">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className="flex flex-col items-center gap-2">
+                      <Skeleton className="h-12 w-12 rounded-full" />
+                      <Skeleton className="h-3 w-12" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* CTA button */}
+              <Skeleton className="h-12 w-full rounded-lg" />
+
+              {/* Trust badges */}
+              <div className="flex items-center justify-center gap-6">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-16" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/**
  * Skeleton for the Features section
  */
 export function FeaturesSkeleton({ className }: SectionSkeletonProps) {
