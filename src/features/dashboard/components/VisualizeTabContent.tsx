@@ -560,7 +560,11 @@ export function VisualizeTabContent({
         </div>
 
       {/* Auto Insights Section */}
-      <section className="space-y-3">
+      <section 
+        id="auto-insights-section"
+        data-tour-id="auto-insights-section"
+        className="space-y-3 scroll-mt-4"
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h3 className="text-sm font-medium text-foreground flex items-center gap-2">

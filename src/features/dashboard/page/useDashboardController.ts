@@ -433,7 +433,25 @@ export function useDashboardController() {
       toast.error('Auto Insights is still preparing. Try again in a moment.');
       return;
     }
+    // Switch to Create tab to show the auto insights UI
+    setActiveTab('visualize');
+    
+    // Scroll to and highlight the auto insights section after a short delay for tab switch
+    setTimeout(() => {
+      const autoInsightsSection = document.getElementById('auto-insights-section');
+      if (autoInsightsSection) {
+        autoInsightsSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Add highlight animation
+        autoInsightsSection.classList.add('ring-2', 'ring-primary', 'ring-offset-2', 'ring-offset-background', 'rounded-lg', 'transition-all');
+        setTimeout(() => {
+          autoInsightsSection.classList.remove('ring-2', 'ring-primary', 'ring-offset-2', 'ring-offset-background', 'rounded-lg');
+        }, 2000);
+      }
+    }, 100);
+    
+    // Focus on visualizations panel
     focusVisualizations();
+    // Run the auto insights analysis
     autoInsightsRunnerRef.current();
   }, [dataset, focusVisualizations]);
 
