@@ -77,6 +77,8 @@ interface VisualizeTabContentProps {
   leaderboardLoading?: boolean;
   onRefreshLeaderboards?: () => void;
   onNavigateToVisualizations?: () => void;
+  /** Hide Auto Insights section (when it's shown in main content instead) */
+  hideAutoInsights?: boolean;
 }
 
 // Categorized visualization presets with icons and descriptions
@@ -267,6 +269,7 @@ export function VisualizeTabContent({
   onQuickAction,
   onProcessingChange,
   onNavigateToVisualizations,
+  hideAutoInsights = false,
 }: VisualizeTabContentProps) {
   const [autoInsights, setAutoInsights] = useState<DatasetInsights | null>(null);
   const [autoInsightsLoading, setAutoInsightsLoading] = useState(false);
@@ -547,19 +550,22 @@ export function VisualizeTabContent({
           )}
         </section>
 
-        {/* Divider */}
-        <div className="relative py-2">
-          <div className="absolute inset-0 flex items-center" aria-hidden="true">
-            <div className="w-full border-t border-border/50" />
+        {/* Divider - Only show if Auto Insights is visible in sidebar */}
+        {!hideAutoInsights && (
+          <div className="relative py-2">
+            <div className="absolute inset-0 flex items-center" aria-hidden="true">
+              <div className="w-full border-t border-border/50" />
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-card px-3 text-xs text-muted-foreground uppercase tracking-wider">
+                or use AI analysis
+              </span>
+            </div>
           </div>
-          <div className="relative flex justify-center">
-            <span className="bg-card px-3 text-xs text-muted-foreground uppercase tracking-wider">
-              or use AI analysis
-            </span>
-          </div>
-        </div>
+        )}
 
-      {/* Auto Insights Section */}
+      {/* Auto Insights Section - Hidden when shown in main content */}
+      {!hideAutoInsights && (
       <section 
         id="auto-insights-section"
         data-tour-id="auto-insights-section"
@@ -805,8 +811,8 @@ export function VisualizeTabContent({
         </section>
       )}
 
-      {/* Empty State */}
-      {!hasDataset && !autoInsightsLoading && recommendations.length === 0 && (
+      {/* Empty State - Only show when Auto Insights is visible and no data */}
+      {!hideAutoInsights && !hasDataset && !autoInsightsLoading && recommendations.length === 0 && (
         <div className="text-center py-6" role="status">
           <Wand2 className="h-8 w-8 text-muted-foreground/50 mx-auto mb-3" aria-hidden="true" />
           <p className="text-sm text-muted-foreground">

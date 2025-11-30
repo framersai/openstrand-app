@@ -196,42 +196,78 @@ export default function DashboardPage() {
     onOpenSettings: openSettings,
   });
 
-  // Sidebar content - memoized to prevent unnecessary re-renders
+  // Sidebar content - Simplified to just action buttons and dataset upload
+  // Auto Insights has been moved to the main content area
   const sidebarContent = useMemo(() => (
     <div className="flex flex-col h-full">
-      {/* Tabs */}
-      <Tabs
-        value={activeTab}
-        onValueChange={(v) => {
-          setActiveTab(v as 'upload' | 'visualize');
-          setMobileSheetOpen(false);
-        }}
-        className="flex-1 flex flex-col"
-      >
-        <TabsList className="mx-3 mt-3 grid grid-cols-2 h-9 bg-muted/50">
-          <TabsTrigger 
-            value="upload" 
-            className="text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"
-            data-tour-id="upload-tab"
-          >
-            <Database className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
-            Data
-          </TabsTrigger>
-          <TabsTrigger 
-            value="visualize" 
-            className="text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"
-            data-tour-id="visualize-tab"
-          >
-            <Sparkles className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
-            Create
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent 
-          value="upload" 
-          className="flex-1 overflow-y-auto p-3 mt-0 focus-visible:outline-none"
-          tabIndex={-1}
+      {/* Action Buttons Section */}
+      <div className="p-3 space-y-2">
+        <h3 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+          Actions
+        </h3>
+        
+        {/* Upload Button */}
+        <Button
+          variant={activeTab === 'upload' ? 'secondary' : 'ghost'}
+          className="w-full justify-start gap-2 h-9"
+          onClick={() => setActiveTab('upload')}
+          data-tour-id="upload-tab"
         >
+          <Database className="h-4 w-4" aria-hidden="true" />
+          <span className="text-sm">Data</span>
+          {dataset && (
+            <Badge variant="outline" className="ml-auto text-[10px]">
+              {metadata?.rowCount?.toLocaleString() || '0'} rows
+            </Badge>
+          )}
+        </Button>
+
+        {/* Create/Visualize Button */}
+        <Button
+          variant={activeTab === 'visualize' ? 'secondary' : 'ghost'}
+          className="w-full justify-start gap-2 h-9"
+          onClick={() => setActiveTab('visualize')}
+          data-tour-id="visualize-tab"
+        >
+          <Sparkles className="h-4 w-4" aria-hidden="true" />
+          <span className="text-sm">Create</span>
+        </Button>
+
+        {/* Auto Insights Quick Action */}
+        <Button
+          variant="outline"
+          className={cn(
+            "w-full justify-start gap-2 h-9 border-primary/30",
+            autoInsightsSnapshot.isLoading && "animate-pulse"
+          )}
+          onClick={runAutoInsights}
+          disabled={!dataset || isProcessing || autoInsightsSnapshot.isLoading}
+          data-tour-id="auto-insights"
+        >
+          {autoInsightsSnapshot.isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden="true" />
+          ) : (
+            <Zap className="h-4 w-4 text-primary" aria-hidden="true" />
+          )}
+          <span className="text-sm">
+            {autoInsightsSnapshot.isLoading ? 'Analyzing...' : 'Auto Insights'}
+          </span>
+          {autoInsightsSnapshot.recommendations.length > 0 && (
+            <Badge className="ml-auto bg-primary/10 text-primary text-[10px]">
+              {autoInsightsSnapshot.recommendations.length}
+            </Badge>
+          )}
+        </Button>
+      </div>
+
+      {/* Divider */}
+      <div className="px-3">
+        <div className="border-t border-border/40" />
+      </div>
+
+      {/* Tab Content */}
+      <div className="flex-1 overflow-y-auto p-3">
+        {activeTab === 'upload' ? (
           <UploadTabContent
             metadata={metadata ?? null}
             isProcessing={isProcessing}
@@ -247,13 +283,7 @@ export default function DashboardPage() {
             isSummaryLoading={isSummaryLoading}
             onRefreshSummary={handleRefreshSummary}
           />
-        </TabsContent>
-
-        <TabsContent 
-          value="visualize" 
-          className="flex-1 overflow-y-auto p-3 mt-0 focus-visible:outline-none" 
-          tabIndex={-1}
-        >
+        ) : (
           <VisualizeTabContent
             datasetId={dataset?.id ?? null}
             isProcessing={isProcessing}
@@ -271,9 +301,23 @@ export default function DashboardPage() {
             leaderboardLoading={leaderboardLoading}
             onRefreshLeaderboards={refreshLeaderboards}
             onNavigateToVisualizations={focusVisualizations}
+            // Hide auto insights from sidebar - it's now in main content
+            hideAutoInsights
           />
-        </TabsContent>
-      </Tabs>
+        )}
+      </div>
+
+      {/* Settings at bottom */}
+      <div className="p-3 border-t border-border/40">
+        <Button
+          variant="ghost"
+          className="w-full justify-start gap-2 h-9 text-muted-foreground hover:text-foreground"
+          onClick={openSettings}
+        >
+          <Settings className="h-4 w-4" aria-hidden="true" />
+          <span className="text-sm">Settings</span>
+        </Button>
+      </div>
     </div>
   ), [
     activeTab,
@@ -281,7 +325,7 @@ export default function DashboardPage() {
     isProcessing,
     isLoadingSamples,
     sampleDatasets,
-    dataset?.id,
+    dataset,
     handleFileUpload,
     handleClearDataset,
     handleLoadSampleDataset,
@@ -302,7 +346,9 @@ export default function DashboardPage() {
     leaderboardLoading,
     refreshLeaderboards,
     focusVisualizations,
-    handleAutoInsightsUpdate,
+    autoInsightsSnapshot,
+    runAutoInsights,
+    openSettings,
   ]);
 
   return (
